@@ -2,6 +2,7 @@
 title: 'CRD 298: Spatial Methods in Community Research'
 subtitle: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 author: <h4 style="font-style:normal">University of California, Davis</h4>
+date: <h4 style="font-style:normal">Department of Human Ecology, Community and Regional Development</h4>
 ---
 
 <style>
@@ -20,13 +21,14 @@ font-style: italic;
 
 \
 
-Welcome to the CRD 150 website!  This website complements the class [Canvas](https://login.canvas.ucdavis.edu/) site.  
+Welcome to the CRD 298 website!  This website complements the class [Canvas](https://login.canvas.ucdavis.edu/) site.  
 
 On this website you will find:
 
 * An abridged syllabus
 * Assignment guidelines 
 * Lab and homework assignment material
+* Other useful R related material
 
 On Canvas you will find:
 
@@ -43,7 +45,7 @@ On Canvas you will find:
 
 ## About the class
 
-This course is an introduction to the use of statistical methods and tools to uncover, understand and conceptualize patterns in data.  The empirical and theoretical emphasis will be on the community; that is, the class will give you the methodological skills to use data to better describe communities and examine community-level phenomena.  You will work with both nonspatial and spatial data from traditional (e.g. U.S. Census) and nontraditional sources (e.g. open data portals).  Specific topics covered include data acquisition, management, and presentation (graphs, tables, maps), descriptive analysis (opportunity mapping, spatial clustering), citizen science and participatory mapping, and measuring place-based inequalities.  Lectures will present abstract statistical concepts alongside data analysis examples motivated through real-world problems.  Labs will provide hands-on practice of the methods covered in lecture using software programs ([R](https://www.r-project.org/), [Carto](https://carto.com/)). 
+Many community socioeconomic and demographic processes such as poverty, crime, healthy food access, school quality, migration, and segregation have important spatial components.  Spatial data are becoming more ubiquitous and the tools for managing, processing, examining, and modelling these data are becoming more accessible.  This course introduces students to the important theoretical roles that space and place have in community research.  Here, the community is broadly defined as a geographic unit with recognizable boundaries that possesses a resident sense of place.  The course will also have a large analytical component, exposing students to the acquisition, management, examination, and modelling of spatial data for understanding communities.  The course will focus on applications in the social sciences and public health, including demography, epidemiology, sociology, criminology, human geography, public policy, education, and others.  The course assumes you have taken an introductory class in statistics and have an understanding of univariate statistics such as linear regression.  We will be using the statistical program [R](https://www.r-project.org/) in this class. Experience with any statistical package (like Stata, SAS or R) is useful but not required.
 
 
 ***
