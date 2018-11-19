@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Lab 1: Working with the United States Census</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 298: Winter 2019</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab0.html">Lab 0</a>
+    </li>
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Assignments
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Assignment 1</li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Lab 1: Working with the United States Census</h1>
+<h3 class="subtitle"><em><h4 style="font-style:normal">
+CRD 298 - Spatial Methods in Community Research
+</h4></em></h3>
+<h4 class="author"><em><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></em></h4>
+<h4 class="date"><em><h4 style="font-style:normal">
+January 9, 2019
+</h4></em></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+}
+
+</style>
+<p><br />
+</p>
+<p>In this guide you will learn how to download, clean, manage and summarize United States Census data using R. The goal, however, is not to just gain exposure to Census data, but to also acquire skills in data acquisition, management and presentation using R. You will be working with data on California census tracts. The objectives of the guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Download Census data using their API</li>
+<li>Read data into R</li>
+<li>Learn data wrangling functions</li>
+<li>Summarize data using descriptive statistics and graphs</li>
+</ol>
+<p>This lab guide follows closely and supplements the material presented in Chapters 1, 3, 5, 8-10, 14 and 22 in the textbook <a href="http://r4ds.had.co.nz/index.html">R for Data Science</a> (RDS).</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="open-up-a-new-r-markdown-file" class="section level2">
+<h2><strong>Open up a new R Markdown file</strong></h2>
+<p><br />
+When going through lab guides, I would recommend not copying and pasting code directly into the R Console, but saving and running it from either an R Script or Markdown file. You can use either one, but because you’ll be using R Markdown for assignments, use R Markdown first to get you some practice. The code is in <strong>your</strong> document, so you can add explanatory text or supplement the guide’s code with your own code.</p>
+<p>To open a new R Markdown file, click on <em>File</em> at the top menu in RStudio, select <em>New File</em>, and then <em>R Markdown</em>. A window should pop up. In that window, for <em>Title</em>, put in “Lab 1”. For <em>Author</em>, put your name. Leave the HTML radio button clicked, and select OK. A new R Markdown file should pop up in the top left window. Don’t change anything inside the YAML (the stuff at the top in between the <code>---</code>). Also keep the grey chunk after the YAML.</p>
+<pre><code>```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```</code></pre>
+<p>Delete everything else. Save this file (File -&gt; Save) in an appropriate folder. If you are using your laptop for this guide, it’s best to set up a clean and efficient file management structure like we described in lecture and outlined <a href="">here</a>. For example, below is where I would save this file in my Mac laptop (I named the file “Lab1”). Save all other files used in this lab in this same folder. Now your R Markdown file is ready for Lab!</p>
+<center>
+<div class="figure">
+<img src="lab1fig1.png" alt="This is what file organization looks like" />
+<p class="caption">This is what file organization looks like</p>
+</div>
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="downloading-census-data" class="section level2">
+<h2><strong>Downloading Census Data</strong></h2>
+<p><br />
+The Census is the most important source of community data in the United States. There are two ways to bring Census data into R.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="using-the-census-api" class="section level3">
+<h3><strong>Using the Census API</strong></h3>
+<p><br />
+The first way is to bring it directly into R using the <a href="https://www.census.gov/data/developers/guidance/api-user-guide.What_is_the_API.html">Census Application Program Interface (API)</a>. An API allows for direct requests for data in machine-readable form. That is, rather than you having to navigate to some website, scroll around to find a dataset, download that dataset once you find it, save that data onto your hard drive, and then bring the data into R, you just tell R to retrieve data directly from that website using one or two lines of code. In order to download from the Census API, you will need to load in the <strong>tidyverse</strong> package, which we covered in <a href="https://crd230.github.io/lab0.html">Lab 0</a>. You will also need to install and load in the <strong>tidycensus</strong> package using the <code>install.packages()</code> and <code>library()</code> functions.</p>
+<pre class="r"><code>install.packages(&quot;tidycensus&quot;)
+library(tidyverse)
+library(tidycensus)</code></pre>
+<p>In order to directly download data from the Census API, you need a key. You can sign up for a free key <a href="http://api.census.gov/data/key_signup.html">here</a>, which you should have already done before the lab. Type your key in quotes using the <code>census_api_key()</code> command</p>
+<pre class="r"><code>census_api_key(&quot;YOUR API KEY GOES HERE&quot;)</code></pre>
+<p>The function for downloading American Community Survey (ACS) Census data is <code>get_acs()</code>. The command for downloading decennial Census data is <code>get_decennial()</code>. Getting variables using the Census API requires knowing the variable ID - and there are thousands of variables (and thus thousands of IDs) across the different Census files. To rapidly search for variables, use the commands <code>load_variables()</code> and <code>View()</code>. Because we’ll be using the ACS in this guide, let’s check the variables in the most recent 5-year ACS (2012-2016)</p>
+<pre class="r"><code>v16 &lt;- load_variables(2016, &quot;acs5&quot;, cache = TRUE)
+View(v16)</code></pre>
+<p>A window in the top left of your RStudio interface should have popped up showing you a record layout of the 2012-16 ACS. To search for specific data, select “Filter”&quot; located at the top left of this window and use the search boxes that pop up. For example, type in “Hispanic” in the box under “Label”. You should see at the top of the list the first set of variables we’ll want to download - race/ethnicity. Let’s extract that data and total population for California census tracts using the <code>get_acs()</code> command</p>
+<pre class="r"><code>ca &lt;- get_acs(geography = &quot;tract&quot;, 
+              year = 2016,
+              variables = c(tpopr = &quot;B03002_001&quot;, 
+                            nhwhite = &quot;B03002_003&quot;, nhblk = &quot;B03002_004&quot;, 
+                            nhasn = &quot;B03002_006&quot;, hisp = &quot;B03002_012&quot;), 
+              state = &quot;CA&quot;,
+              survey = &quot;acs5&quot;)</code></pre>
+<p>In the above code, we specified the following arguments</p>
+<ul>
+<li><code>geography</code>: The leve of geography we want that data in - in our case, tract. Other geographic options can be found <a href="https://walkerke.github.io/tidycensus/articles/basic-usage.html#geography-in-tidycensus">here</a>.</li>
+<li><code>year</code>: The end year of the data (because we want 2012-2016, we use 2016).</li>
+<li><code>variables</code>: The variables we want to bring in as specified in a vector you create using the function <code>c()</code>. Note that we created variable names of our own (e.g. “nhwhite”) and we put the ACS IDs in quotes. (“B03002_003”). Had we not done this, the variable names will come in as they are named in the ACS, which is not all that descriptive.</li>
+<li><code>state</code>: We can filter the tracts to those in a specific case, here it is “CA” - if we don’t specify this, we get all tracts in the United States.</li>
+<li><code>survey</code>: The specific Census survey were extracting data from. We want 5-year American Community Surveym so we specify “acs5” - remember that the ACS comes in 1-, 3-, and 5-year varieties.</li>
+</ul>
+<p>Type in <code>? get_acs()</code> to see the full list of options. If you type in <em>ca</em> in your console, you should see a tibble pop up with the variables we selected. Cool, right?</p>
+<pre class="r"><code>ca</code></pre>
+<pre><code>## # A tibble: 40,285 x 5
+##    GEOID      NAME                                 variable estimate   moe
+##    &lt;chr&gt;      &lt;chr&gt;                                &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+##  1 060014001… Census Tract 4001, Alameda County, … tpopr        3018   195
+##  2 060014001… Census Tract 4001, Alameda County, … nhwhite      2145   192
+##  3 060014001… Census Tract 4001, Alameda County, … nhblk          92    54
+##  4 060014001… Census Tract 4001, Alameda County, … nhasn         491   144
+##  5 060014001… Census Tract 4001, Alameda County, … hisp           83    57
+##  6 060014002… Census Tract 4002, Alameda County, … tpopr        1960    94
+##  7 060014002… Census Tract 4002, Alameda County, … nhwhite      1426   131
+##  8 060014002… Census Tract 4002, Alameda County, … nhblk          11    12
+##  9 060014002… Census Tract 4002, Alameda County, … nhasn         165    54
+## 10 060014002… Census Tract 4002, Alameda County, … hisp          211    67
+## # ... with 40,275 more rows</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="downloading-from-an-online-source" class="section level3">
+<h3><strong>Downloading from an online source</strong></h3>
+<p><br />
+The other way to get Census data is to download them directly from the web. There are several websites where you can download Census data including <a href="https://www.socialexplorer.com/">Social Explorer</a>, which as UC Davis affiliates we have free access to, and <a href="https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml">Fact Finder</a>, which is free for everyone. The site we used in lecture is the <a href="https://www.nhgis.org/">National Historical Geographic Information System (NHGIS)</a>. You may choose to use NHGIS (or any of the other sources listed above) over the API because it is more user friendly in terms of selecting variables. I’ve uploaded a brief step-by-step tutorial for downloading NHGIS data <a href="http://crd230.github.io/nhgis.html">here</a>.</p>
+<p>To save us time, I’ve uploaded an NHGIS csv file on GitHub for you to use in this lab. Download the file from <a href="https://raw.githubusercontent.com/crd230/data/master/nhgis0106_ds225_20165_2016_tract.csv">here</a> and save it into the same folder where your Lab 1 R Markdown file resides. The file contains census tract-level data on median household income for all tracts in the United States. The record layout/codebook for the file can be found <a href="https://raw.githubusercontent.com/crd230/data/master/nhgis0106_ds225_20165_2016_tract_codebook.txt">here</a>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="reading-in-data" class="section level2">
+<h2><strong>Reading in data</strong></h2>
+<p><br />
+Most of the data files you will encounter are comma-delimited (or comma-separated) files, which have <code>.csv</code> extensions. Comma-delimted means that columns are separated by commas. The file from NHGIS is a <code>.csv</code> file. To import this file in R, use the <code>read_csv()</code> command, which is found in the <strong>tidyverse</strong> package.</p>
+<p>To read in the csv file you downloaded from NHGIS, first make sure that R is pointed to the folder you saved your data into. Type in <code>getwd()</code> to find out the current directory and <code>setwd(&quot;directory name&quot;)</code> to set the directory to the folder containing the data. For me, the NHGIS file is located in the folder shown in Figure 1.</p>
+<center>
+<div class="figure">
+<img src="lab1fig2.png" alt="Figure 1: Direct R to where your data reside." />
+<p class="caption">Figure 1: Direct R to where your data reside.</p>
+</div>
+</center>
+<p>I type in the following command to set the directory to the folder containing my data on my Mac laptop</p>
+<pre class="r"><code>setwd(&quot;/Users/noli/Documents/Classes/CRD 298/Lab/Lab 1&quot;)</code></pre>
+<p>Note that on a Windows system, the file pathway may be indicated with a back slash <code>\</code>. R doesnt like that because it thinks of a single backslash as an escape character. Use instead two back slahses <code>\\</code> or a forward slash <code>/</code>. Use <code>read_csv()</code> and plug in the name of the file in quotes inside parentheses</p>
+<pre class="r"><code>nhgisfile1 &lt;- read_csv(&quot;nhgis0106_ds225_20165_2016_tract.csv&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="data-wrangling" class="section level2">
+<h2><strong>Data Wrangling</strong></h2>
+<p><br />
+It is rare that the data set you download is in exactly the right form for data analysis. For example, you might want to analyze just Yolo county neighborhoods. Or you might want to discard certain variables from the dataset to reduce clutter. Or you encounter missing data.</p>
+<p>In this lab, we won’t have time to go through all of the methods and functions in R that are associated with the data wrangling process. We will cover more in later labs and many methods you will have to learn on your own given the specific tasks you will need to accomplish. In the rest of this guide, we’ll go through some of the basic data wrangling techniques using the functions found in the package <strong>dplyr</strong>, which was automatically installed and loaded when you brought in the <strong>tidyverse</strong> package. These functions can be used for tibbles and regular data frames.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="selecting-and-renaming-variables" class="section level3">
+<h3><strong>Selecting and renaming variables</strong></h3>
+<p><br />
+In practice, most of the data files you will download will contain variables you don’t need. It is easier to work with a smaller dataset as it reduces clutter and clears up memory space, which is important if you are executing complex tasks on a large number of observations. Use the command <code>select()</code> to keep variables by name. Visually, we are doing this (taken from the RStudio <a href="http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf">cheatsheet</a>)</p>
+<center>
+<div class="figure">
+<img src="subsetcols.png" />
+
+</div>
+</center>
+<p>To see the names of variables in your dataset, use the <code>names()</code> command.</p>
+<pre class="r"><code>names(ca)</code></pre>
+<pre><code>## [1] &quot;GEOID&quot;    &quot;NAME&quot;     &quot;variable&quot; &quot;estimate&quot; &quot;moe&quot;</code></pre>
+<p>Let’s keep <em>GEOID</em>, <em>NAME</em>, <em>variable</em>, and <em>estimate</em> from the <em>ca</em> dataset.</p>
+<pre class="r"><code>select(ca, GEOID, NAME, variable, estimate)</code></pre>
+<pre><code>## # A tibble: 40,285 x 4
+##    GEOID       NAME                                      variable estimate
+##    &lt;chr&gt;       &lt;chr&gt;                                     &lt;chr&gt;       &lt;dbl&gt;
+##  1 06001400100 Census Tract 4001, Alameda County, Calif… tpopr        3018
+##  2 06001400100 Census Tract 4001, Alameda County, Calif… nhwhite      2145
+##  3 06001400100 Census Tract 4001, Alameda County, Calif… nhblk          92
+##  4 06001400100 Census Tract 4001, Alameda County, Calif… nhasn         491
+##  5 06001400100 Census Tract 4001, Alameda County, Calif… hisp           83
+##  6 06001400200 Census Tract 4002, Alameda County, Calif… tpopr        1960
+##  7 06001400200 Census Tract 4002, Alameda County, Calif… nhwhite      1426
+##  8 06001400200 Census Tract 4002, Alameda County, Calif… nhblk          11
+##  9 06001400200 Census Tract 4002, Alameda County, Calif… nhasn         165
+## 10 06001400200 Census Tract 4002, Alameda County, Calif… hisp          211
+## # ... with 40,275 more rows</code></pre>
+<p>A shortcut way of doing this is to use the <code>:</code> operator.</p>
+<pre class="r"><code>select(ca, GEOID:estimate)</code></pre>
+<pre><code>## # A tibble: 40,285 x 4
+##    GEOID       NAME                                      variable estimate
+##    &lt;chr&gt;       &lt;chr&gt;                                     &lt;chr&gt;       &lt;dbl&gt;
+##  1 06001400100 Census Tract 4001, Alameda County, Calif… tpopr        3018
+##  2 06001400100 Census Tract 4001, Alameda County, Calif… nhwhite      2145
+##  3 06001400100 Census Tract 4001, Alameda County, Calif… nhblk          92
+##  4 06001400100 Census Tract 4001, Alameda County, Calif… nhasn         491
+##  5 06001400100 Census Tract 4001, Alameda County, Calif… hisp           83
+##  6 06001400200 Census Tract 4002, Alameda County, Calif… tpopr        1960
+##  7 06001400200 Census Tract 4002, Alameda County, Calif… nhwhite      1426
+##  8 06001400200 Census Tract 4002, Alameda County, Calif… nhblk          11
+##  9 06001400200 Census Tract 4002, Alameda County, Calif… nhasn         165
+## 10 06001400200 Census Tract 4002, Alameda County, Calif… hisp          211
+## # ... with 40,275 more rows</code></pre>
+<p>The <code>:</code> operator tells R to select all the variables from <em>GEOID</em> to <em>estimate</em>. This operator is useful when you’ve got a lot of variables to keep and they all happen to be ordered sequentially.</p>
+<p>You can use also use <code>select()</code> command to keep variables <em>except</em> for the ones you designate. For example, to keep all variables in <em>ca</em> except <em>moe</em> and save this into a new tibble called <em>ca1</em>, type in</p>
+<pre class="r"><code>ca1 &lt;- select(ca, -(moe))</code></pre>
+<p>The negative sign tells R to exclude the variable named within the parentheses.</p>
+<p>You will likely encounter a variable with a name that is not so descriptive. Use the command <code>rename()</code> to, what else, rename a variable! Let’s rename <em>AF49E001</em> to <em>medincome</em> in the <em>nhgisfile1</em> dataset. Make this permanent by assigning it back to <em>nhgisfile1</em> using the arrow operator <code>&lt;-</code></p>
+<pre class="r"><code>nhgisfile1 &lt;- rename(nhgisfile1, medincome = AF49E001)
+names(nhgisfile1)</code></pre>
+<pre><code>##  [1] &quot;GISJOIN&quot;   &quot;YEAR&quot;      &quot;REGIONA&quot;   &quot;DIVISIONA&quot; &quot;STATE&quot;    
+##  [6] &quot;STATEA&quot;    &quot;COUNTY&quot;    &quot;COUNTYA&quot;   &quot;COUSUBA&quot;   &quot;PLACEA&quot;   
+## [11] &quot;TRACTA&quot;    &quot;BLKGRPA&quot;   &quot;CONCITA&quot;   &quot;AIANHHA&quot;   &quot;RES_ONLYA&quot;
+## [16] &quot;TRUSTA&quot;    &quot;AITSCEA&quot;   &quot;ANRCA&quot;     &quot;CBSAA&quot;     &quot;CSAA&quot;     
+## [21] &quot;METDIVA&quot;   &quot;NECTAA&quot;    &quot;CNECTAA&quot;   &quot;NECTADIVA&quot; &quot;UAA&quot;      
+## [26] &quot;CDCURRA&quot;   &quot;SLDUA&quot;     &quot;SLDLA&quot;     &quot;ZCTA5A&quot;    &quot;SUBMCDA&quot;  
+## [31] &quot;SDELMA&quot;    &quot;SDSECA&quot;    &quot;SDUNIA&quot;    &quot;PUMA5A&quot;    &quot;BTTRA&quot;    
+## [36] &quot;BTBGA&quot;     &quot;NAME_E&quot;    &quot;medincome&quot; &quot;NAME_M&quot;    &quot;AF49M001&quot;</code></pre>
+<p>Note that you can rename multiple variables within the same <code>rename()</code> command.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="tidy-up" class="section level3">
+<h3><strong>Tidy up</strong></h3>
+<p><br />
+Tidying up a dataset means following the rules outlined on page 149 of RDS: (1) Each variable must have its own column, (2) each observation must have its own row, and (3) each value must have its own cell. The dataset <em>nhgisfile1</em> looks “tidy”, but the dataset <em>ca1</em> is not. Why?</p>
+<p>We’ll need to “spread” the dataset. This will convert the dataset from long to wide. Use the function <code>spread()</code> and save the tidy dataset back into <em>ca1</em>.</p>
+<pre class="r"><code>ca1 &lt;- spread(ca1, key = variable, value = estimate)
+ca1</code></pre>
+<pre><code>## # A tibble: 8,057 x 7
+##    GEOID     NAME                           hisp nhasn nhblk nhwhite tpopr
+##    &lt;chr&gt;     &lt;chr&gt;                         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+##  1 06001400… Census Tract 4001, Alameda C…    83   491    92    2145  3018
+##  2 06001400… Census Tract 4002, Alameda C…   211   165    11    1426  1960
+##  3 06001400… Census Tract 4003, Alameda C…   386   599   606    3346  5236
+##  4 06001400… Census Tract 4004, Alameda C…   266   458   410    2758  4171
+##  5 06001400… Census Tract 4005, Alameda C…   486   140   944    1972  3748
+##  6 06001400… Census Tract 4006, Alameda C…   158   116   584     636  1661
+##  7 06001400… Census Tract 4007, Alameda C…   752   119  1691    1700  4552
+##  8 06001400… Census Tract 4008, Alameda C…   421   436  1093    1390  3506
+##  9 06001400… Census Tract 4009, Alameda C…   264   188   734     899  2262
+## 10 06001401… Census Tract 4010, Alameda C…  1380   194  2057    1914  6193
+## # ... with 8,047 more rows</code></pre>
+<p>Compare <em>ca1</em> and <em>ca</em>. <em>ca</em> is a tract by variable level dataset whereas <em>ca</em> is a tract level dataset. Check the dimensions</p>
+<pre class="r"><code>dim(ca)</code></pre>
+<pre><code>## [1] 40285     5</code></pre>
+<pre class="r"><code>dim(ca1)</code></pre>
+<pre><code>## [1] 8057    7</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="creating-new-variables" class="section level3">
+<h3><strong>Creating new variables</strong></h3>
+<p><br />
+The <code>mutate()</code> function allows you to create new variables within your dataset. This is important when you need to transform variables in some way - for example, calculating a ratio or adding two variables together. Visually, you are doing this</p>
+<center>
+<div class="figure">
+<img src="mutate.png" />
+
+</div>
+</center>
+<p>You can use the <code>mutate()</code> command to generate as many new variables as you would like. For example, let’s construct four new variables in <em>ca1</em> - the percent of residents who are non-Hispanic white, non-Hispanic Asian, non-Hispanic black, and Hispanic. Name these variables <em>pnhwhite</em>, <em>pnhasn</em>, <em>pnhblk</em>, and <em>phisp</em>, respectively.</p>
+<pre class="r"><code>mutate(ca1, pnhwhite = nhwhite/tpopr, pnhasn = nhasn/tpopr, 
+              pnhblk = nhblk/tpopr, phisp = hisp/tpopr)</code></pre>
+<p>Note that you can create new variables based on the variables you just created in the same line of code. For example, you can create a categorical variable yielding “Majority” if the tract is majority Hispanic and “Not Majority” otherwise after creating the percent Hispanic variable within the same <code>mutate()</code> command. Let’s save these changes back into <em>ca1</em>.</p>
+<pre class="r"><code>ca1 &lt;- mutate(ca1, pnhwhite = nhwhite/tpopr, pnhasn = nhasn/tpopr, 
+              pnhblk = nhblk/tpopr, phisp = hisp/tpopr,
+              mhisp = ifelse(phisp &gt; 0.5, &quot;Majority&quot;,&quot;Not Majority&quot;))
+ca1</code></pre>
+<p>We used the function <code>ifelse()</code> to create <em>mhisp</em> - the function tells R that if the condition <code>phisp &gt; 0.5</code> is met, the tract’s value for the variable <em>mhisp</em> will be “Majority”, otherwise it will be “Not Majority”.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="merging-files" class="section level3">
+<h3><strong>Merging files</strong></h3>
+<p><br />
+We need to join the two datasets <em>nhgisfile1</em> and <em>ca1</em> together. Remember from lecture that the unique Census ID for a tract combines the tract, county and state IDs. We have this ID as the single variable GEOID in <em>ca1</em>, but separated as <em>STATEA</em>, <em>COUNTYA</em> and <em>TRACTA</em> in nhgisfile1. See Figure 2.</p>
+<center>
+<div class="figure">
+<img src="lab1fig3.png" alt="Figure 2: Geographic IDs" />
+<p class="caption">Figure 2: Geographic IDs</p>
+</div>
+</center>
+<p>We can merge the two files by either merging on a single variable or on the two separate variables. We just need to make sure it is consistent across the two datasets. Let’s combine <em>STATEA</em>, <em>COUNTYA</em> and <em>TRACTA</em> into a single variable so it will match <em>GEOID</em>. To do this, use the command <code>str_c()</code> in the <code>mutate()</code> command. This function concatenates (joins together) two or more character variables.</p>
+<pre class="r"><code>nhgisfile1 &lt;- mutate(nhgisfile1, GEOID = str_c(STATEA, COUNTYA, TRACTA))</code></pre>
+<p>The function <code>str_c()</code> concatenates. There is also a function that separates, which is unsuprisingly named <code>separate()</code>. The function separates a character variable based on <a href="https://en.wikipedia.org/wiki/Delimiter">delimiters</a>. The variable <em>NAME</em> in <em>ca1</em> combines census tract name, county, and state. Let’s use <code>separate()</code> to separate this variable into its three separate parts.</p>
+<pre class="r"><code>ca1 &lt;- separate(ca1, col = NAME, into = c(&quot;Tract&quot;, &quot;County&quot;, &quot;State&quot;), sep = &quot;, &quot;)</code></pre>
+<p>In the <code>separate()</code> function, you specify the variable or column you want to separate (<code>col = NAME</code>), the names of the three new variables containing the separate data pieces (<code>into = c(&quot;Tract&quot;, &quot;County&quot;, &quot;State&quot;)</code>), and the delimiter, which is a comma with a space (<code>sep = &quot;, &quot;</code>).</p>
+<p>To merge the two datasets together, we’ll use the function <code>left_join()</code>, which matches pairs of observations whenever their keys are equal. We match on the variable <em>GEOID</em> and save the merged data set into a new object called <em>cacounty</em>.</p>
+<pre class="r"><code>catracts &lt;- left_join(ca1, nhgisfile1, by = &quot;GEOID&quot;)</code></pre>
+<p>Remember that <em>nhgisfile1</em> contains data on all U.S. tracts.</p>
+<pre class="r"><code>dim(nhgisfile1)</code></pre>
+<pre><code>## [1] 74001    41</code></pre>
+<p>The resulting join merges the variables from <em>nhgisfile1</em> <strong>into</strong> <em>ca1</em>. As such, <em>catracts</em> should only contain California tracts. You can check by examining the dimensions of <em>ca1</em> and <em>catracts</em> - the number of rows should be equal.</p>
+<pre class="r"><code>dim(catracts)</code></pre>
+<pre><code>## [1] 8057   54</code></pre>
+<pre class="r"><code>dim(ca1)</code></pre>
+<pre><code>## [1] 8057   14</code></pre>
+<p>There are other types of joins, which you can read more about in Chapter 10 of RDS.</p>
+<p>Let’s keep a dataset containing race/ethnicity, median household income and some essential ID variables.</p>
+<pre class="r"><code>catracts &lt;- select(catracts, GEOID, County, COUNTYA, pnhwhite:mhisp, medincome)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="pipes" class="section level3">
+<h3><strong>Pipes</strong></h3>
+<p><br />
+One of the important innovations from the tidy verse is the pipe operator <code>%&gt;%</code>. You use the pipe operator when you want to combine mutiple operations into one line of code. For example, in cleaning the data set <em>ca</em>, we had two lines of code that (1) eliminate the variable <em>moe</em> and (2) made the data set tidy friendly. A pipe allows us to do this in one line of code</p>
+<pre class="r"><code>ca2 &lt;- ca %&gt;% 
+      select(-(moe)) %&gt;% 
+      spread(key = variable, value = estimate) </code></pre>
+<p>Let’s break down what the pipe is doing here. First, you start out with your dataset <em>ca</em>. You “pipe” that into the command <code>select()</code>. Notice that you didn’t have to type in <em>ca</em> inside that command - <code>%&gt;%</code> pipes that in for you. <code>select()</code> deletes <em>moe</em> and then pipes this result into the command <code>spread()</code>, which converts the data from long to wide. Finally, the code saves the result into <em>ca2</em> which we designated at the beginning with the arrow operator.</p>
+<p>The pipe operator is very useful for complex operations, which you will encounter in the coming weeks. From now on, we’ll be using the pipe operator to make our code more efficient.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="subsettingfiltering" class="section level3">
+<h3><strong>Subsetting/Filtering</strong></h3>
+<p><br />
+Subsetting or filtering means selecting rows/obsevervations based on their values. To subset in R, use the command <code>filter()</code>. Visually, subsetting rows looks like.</p>
+<center>
+<div class="figure">
+<img src="subsetrows.png" />
+
+</div>
+</center>
+<p>The first argument in the parentheses of this command is the name of the data frame. The second and any subsequent arguments (separated by commas) are the expressions that filter the data frame. For example, we can select Sacramento county using its <a href="https://www.nrcs.usda.gov/wps/portal/nrcs/detail/ca/home/?cid=nrcs143_013697">FIPS code</a></p>
+<pre class="r"><code>filter(catracts, COUNTYA == &quot;06067&quot;)</code></pre>
+<p>The double equal operator <code>==</code> means equal to. We can also explicitly exclude cases and keep everything else by using the not equal operator <code>!=</code>. The following code <em>excludes</em> Sacramento county.</p>
+<pre class="r"><code>filter(catracts, COUNTYA != &quot;06067&quot;)</code></pre>
+<p>What about filtering if a county has a value greater than a specified value? For example, counties with a percent white greater than 0.5 (50%).</p>
+<pre class="r"><code>filter(catracts, pnhwhite &gt; 0.50)</code></pre>
+<p>What about less than 0.5 (50%)?</p>
+<pre class="r"><code>filter(catracts, pnhwhite &lt; 0.50)</code></pre>
+<p>Both lines of code do not include counties that have a percent white equal to 0.5. We include it by using the less than or equal operator <code>&lt;=</code> or greater than or equal operator <code>&gt;=</code>.</p>
+<pre class="r"><code>filter(catracts, pnhwhite &lt;= 0.5)</code></pre>
+<p>In addition to comparison operators, subsetting may also utilize logical operators that make multiple selections. There are three basic logical operators: <code>&amp;</code> (and), <code>|</code> is (or), and <code>!</code> is (not). We can keep counties with <em>pnhwhite</em> greater than 0.5 <strong>and</strong> <em>medincome</em> greater than $80,000 using <code>&amp;</code>.</p>
+<pre class="r"><code>filter(catracts, pnhwhite &gt; 0.5 &amp; medincome &gt; 80000)</code></pre>
+<p>Use <code>|</code> to keep counties with a <em>COUNTYA</em> of “06067” (Sacramento) <strong>or</strong> “06113” (Yolo) <strong>or</strong> “06075” (San Francisco)</p>
+<pre class="r"><code>sub.tracts &lt;- filter(catracts, COUNTYA == &quot;067&quot; | COUNTYA == &quot;113&quot; | COUNTYA == &quot;075&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="summarizing-variables" class="section level2">
+<h2><strong>Summarizing variables</strong></h2>
+<p><br />
+We now move from functions that help bring in and clean your data set to those that help summarize its variables. We use the function <code>summarize()</code> to get descriptive statistics of our data. For example, let’s calculate mean neighborhood income in San Franciso, Yolo, and Sacramento counties. The first argument inside <code>summarize()</code> is the data object ncal.tracts and the second argument is the function calculating the specific summary statistic, in this case <code>mean()</code>.</p>
+<pre class="r"><code>summarize(sub.tracts, mean(medincome))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean(medincome)`
+##               &lt;dbl&gt;
+## 1                NA</code></pre>
+<center>
+<div class="figure">
+<img src="11swwp.jpg" />
+
+</div>
+</center>
+<p>We got an NA. This means we have missing median household income for at least one of our tracts. I’ve uploaded a <a href="">tutorial</a> for dealing with missing data. The methods I suggest are <em>basic</em> - one can teach an entire class on missing data - so keep this in mind when you deal with missing data in your projects. Please read through the tutorial on your own time. For now, let’s use the <code>na.rm = TRUE</code> argument, which removes tracts that are missing median household income.</p>
+<pre class="r"><code>summarize(sub.tracts, mean(medincome, na.rm = TRUE))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean(medincome, na.rm = TRUE)`
+##                             &lt;dbl&gt;
+## 1                          71925.</code></pre>
+<p>Does the average neighborhood income differ by county? We need to pair <code>summarize()</code> with the function <code>group_by()</code> to answer this question. The function <code>group_by()</code> tells R to run subsequent functions on the data object by a group characteristic (such as gender, educational attainment, or in this case, county). We’ll need to use our new best friend <code>%&gt;%</code> to accomplish this task</p>
+<pre class="r"><code>sub.tracts %&gt;%
+  group_by(County) %&gt;%
+  summarize(mean(medincome, na.rm=TRUE))</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   County               `mean(medincome, na.rm = TRUE)`
+##   &lt;chr&gt;                                          &lt;dbl&gt;
+## 1 Sacramento County                             61440.
+## 2 San Francisco County                          91151.
+## 3 Yolo County                                   62020.</code></pre>
+<p>The first pipe sends sub.tracts into the function <code>group_by()</code>, which tells R to group <em>sub.tracts</em> by the variable <em>County</em>.</p>
+<p>How do you know the tibble is grouped? Because it tells you</p>
+<center>
+<div class="figure">
+<img src="lab1fig4.png" />
+
+</div>
+</center>
+<p>The second pipe takes this grouped dataset and sends it into the <code>summarize()</code> command, which calculates the mean neighborhood income (by county, because the dataset is grouped by county).</p>
+<p>We can calculate more than one summary statistic within <code>summarize()</code>. For example, to get the mean, median and standard deviation of median income, its correlation with percent Hispanic, and give column labels for the variables in the resulting summary table, we type in</p>
+<pre class="r"><code>sub.tracts %&gt;%
+  group_by(County) %&gt;%
+  summarize(incmn = mean(medincome, na.rm=TRUE),
+            incmd = median(medincome, na.rm=TRUE),
+            incsd = sd(medincome, na.rm=TRUE),
+            corhispinc = cor(medincome, phisp, use = &quot;complete&quot;))</code></pre>
+<pre><code>## # A tibble: 3 x 5
+##   County                incmn incmd  incsd corhispinc
+##   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Sacramento County    61440. 56806 26565.     -0.562
+## 2 San Francisco County 91151. 89668 38718.     -0.307
+## 3 Yolo County          62020. 61106 22430.     -0.383</code></pre>
+<p>We usually summarize categorical variables by examining a frequency table. To get the percent of tracts that have a majority Hispanic population, you’ll need to combine the functions <code>group_by()</code>, <code>summarize()</code> and <code>mutate()</code> using %&gt;%.</p>
+<pre class="r"><code>sub.tracts %&gt;%
+  group_by(mhisp) %&gt;%
+  summarize(n = n()) %&gt;%
+  mutate(freq = n / sum(n))</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   mhisp            n    freq
+##   &lt;chr&gt;        &lt;int&gt;   &lt;dbl&gt;
+## 1 Majority        20 0.0360 
+## 2 Not Majority   533 0.960  
+## 3 &lt;NA&gt;             2 0.00360</code></pre>
+<p>The code <code>group_by(mhisp)</code> separates the neighborhoods by the categories of <em>mhisp</em> (Majority, Not Majority - there are two tracts with missing values). We then used <code>summarize()</code> to count the number of neighborhoods that are Majority and Not Majority. The function to get a count is <code>n()</code>, and we saved this count in a variable named <em>n</em>.</p>
+<p>Next, we used <code>mutate()</code> on this table to get the proportion of all neighborhoods by Majority Hispanic designation. The code sum(n) adds the values of n. We then divide the value of each <em>n</em> by this sum. That yields the final frequency table.</p>
+<p>We can add city to the group_by() function to disaggregate by County. Let’s remove tracts with a missing value for <em>mhisp</em> using the <code>filter()</code> command</p>
+<pre class="r"><code>sub.tracts %&gt;%
+  filter(is.na(mhisp) == FALSE) %&gt;%
+  group_by(County, mhisp) %&gt;%
+  summarize (n = n()) %&gt;%
+  mutate(freq = n / sum(n))</code></pre>
+<pre><code>## # A tibble: 6 x 4
+## # Groups:   County [3]
+##   County               mhisp            n    freq
+##   &lt;chr&gt;                &lt;chr&gt;        &lt;int&gt;   &lt;dbl&gt;
+## 1 Sacramento County    Majority        11 0.0347 
+## 2 Sacramento County    Not Majority   306 0.965  
+## 3 San Francisco County Majority         1 0.00513
+## 4 San Francisco County Not Majority   194 0.995  
+## 5 Yolo County          Majority         8 0.195  
+## 6 Yolo County          Not Majority    33 0.805</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="summarizing-variables-using-graphs" class="section level2">
+<h2><strong>Summarizing variables using graphs</strong></h2>
+<p><br />
+Another way of summarizing variables and their relationships is through graphs and charts. The main package for R graphing is <strong>ggplot2</strong> which is a part of the <strong>tidyverse</strong> package. The graphing function is <code>ggplot()</code> and it takes on the basic template</p>
+<pre><code>ggplot(data = &lt;DATA&gt;) +
+      &lt;GEOM_FUNCTION&gt;(mapping = aes(x, y))</code></pre>
+<ul>
+<li><code>ggplot()</code> is the base function where you specify your dataset using the <code>data = &lt;DATA&gt;</code> argument.<br />
+</li>
+<li>You then need to build on this base by using the plus operator <code>+</code> and <code>&lt;GEOM_FUNCTION&gt;()</code> where <code>&lt;GEOM_FUNCTION&gt;()</code> is a unique function indicating the type of graph you want to plot. For example, the <code>&lt;GEOM_FUNCTION&gt;()</code> for a histogram is <code>geom_histogram()</code>.</li>
+<li>Each unique function has its unique set of mapping arguments which you specify using the <code>mapping = aes()</code> argument. Charts and graphs have an x-axis, y-axis, or both.</li>
+</ul>
+<p>A typical visual for summarizing a numeric variable is a histogram. To create a histogram, use <code>geom_histogram()</code> for <code>&lt;GEOM_FUNCTION()&gt;</code>. Let’s create a histogram of median household income.</p>
+<pre class="r"><code>sub.tracts %&gt;% 
+  ggplot() + 
+  geom_histogram(mapping = aes(x=medincome), na.rm = TRUE)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="lab1_files/figure-html/unnamed-chunk-40-1.png" /><!-- --></p>
+<p>We can use a boxplot to visually summarize the distribution of a single variable or the relationship between a categorical and numeric variable. Use geom_boxplot() for <GEOM_FUNCTION()> to create a boxplot. Let’s examine median household income.</p>
+<pre class="r"><code>sub.tracts %&gt;%
+  ggplot() +
+     geom_boxplot(mapping = aes(y = medincome), na.rm = TRUE)</code></pre>
+<p><img src="lab1_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
+<p>Let’s check the distribution of median income by <em>mhisp</em>. Because we are examining the association between two variables, we need to specify x and y variables. The <code>geom_boxplot()</code> won’t eliminate the NA values from <em>mhisp</em>, so we’ll have to use the <code>filter()</code> command to remove them manually</p>
+<pre class="r"><code>sub.tracts %&gt;%
+  filter(is.na(mhisp) == FALSE) %&gt;%
+  ggplot() +
+    geom_boxplot(mapping = aes(x = mhisp, y = medincome), na.rm = TRUE)</code></pre>
+<p><img src="lab1_files/figure-html/unnamed-chunk-42-1.png" /><!-- --></p>
+<p>The boxplot is for all neighborhoods combined. Use the <code>facet_wrap()</code> function to separate by County</p>
+<pre class="r"><code>sub.tracts %&gt;%
+  filter(is.na(mhisp) == FALSE) %&gt;%
+  ggplot() +
+  geom_boxplot(mapping = aes(x = mhisp, y = medincome), na.rm = TRUE) +
+  facet_wrap(~County) </code></pre>
+<p><img src="lab1_files/figure-html/unnamed-chunk-43-1.png" /><!-- --></p>
+<p><code>ggplot()</code> is a powerful function, and you can make a lot of really visually captivating graphs. You can also make maps with the function, which we’ll cover in next week’s lab. We have just scratched the surface of its functions and features. The list of all possible plots for <code>&lt;GEOM_FUNCTION&gt;()</code> can be found <a href="https://ggplot2.tidyverse.org/reference/">here</a>. You can also make your graphs really “pretty” and professional looking by altering graphing features, including colors, labels, titles and axes. For a list of <code>ggplot()</code> functions that alter various features of a graph, check out <a href="http://r4ds.had.co.nz/graphics-for-communication.html">Chapter 22 in RDS</a>.</p>
+<hr />
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>

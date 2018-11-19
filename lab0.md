@@ -1,6 +1,6 @@
 ---
 title: "Lab 0: Introduction to R"
-subtitle: <h4 style="font-style:normal">CRD 298 - Quantitative Methods in Community Research</h4>
+subtitle: <h4 style="font-style:normal">CRD 298 - Spatial Methods in Community Research</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 output: 
   html_document:
