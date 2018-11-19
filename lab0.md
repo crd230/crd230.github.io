@@ -2,7 +2,6 @@
 title: "Lab 0: Introduction to R"
 subtitle: <h4 style="font-style:normal">CRD 298 - Quantitative Methods in Community Research</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
-date: <h4 style="font-style:normal">Winter 2019</h4>
 output: 
   html_document:
     toc: true
@@ -713,7 +712,7 @@ head(nycdf)
 names(nyctib)
 ````
 
-4. Not only will R let *you* know what you've done, but it also allows *others* know what you've done.  This is good for two reasons: (1) If you are working on a group project, having a well commented R Script informs everyone how you've conducted the analysis; (2) Reproducability.  It is good practice to be transparent in your data analysis decisions to the rest of the world.
+4. Not only will an R Script let *you* know what you've done, but it also allows *others* know what you've done.  This is good for two reasons: (1) If you are working on a group project, having a well commented R Script informs everyone how you've conducted the analysis; (2) Reproducability.  It is good practice to be transparent in your data analysis decisions to the rest of the world.
 
 
 <div style="margin-bottom:25px;">
