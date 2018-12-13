@@ -16,7 +16,7 @@ navbar:
     - text: "Other"
       menu: 
         - text: "Data Sources"
-          href:  ndata.html   
+          href:    
 output:
   html_document:
     theme: cosmo
