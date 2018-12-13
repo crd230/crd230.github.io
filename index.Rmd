@@ -1,5 +1,6 @@
 ---
 title: 'CRD 298: Spatial Methods in Community Research'
+output: html_document
 ---
 
 <style>
@@ -38,8 +39,8 @@ On Canvas you will find:
 * A detailed syllabus
 * Reading material
 * Lecture slides
-* Data for labs/assignments
-* Project and midterm material
+* Data for labs and assignments
+* Project material
 * Submit your homework
 * Grades
 
@@ -48,7 +49,7 @@ On Canvas you will find:
 
 ## About the class
 
-Many community socioeconomic and demographic processes such as poverty, crime, healthy food access, school quality, migration, and segregation have important spatial components.  Spatial data are becoming more ubiquitous and the tools for managing, processing, examining, and modelling these data are becoming more accessible.  This course introduces students to the important theoretical roles that space and place have in community research.  Here, the community is broadly defined as a geographic unit with recognizable boundaries that possesses a resident sense of place.  The course will also have a large analytical component, exposing students to the acquisition, management, examination, and modelling of spatial data for understanding communities.  The course will focus on applications in the social sciences and public health, including demography, epidemiology, sociology, criminology, human geography, public policy, education, and others.  The course assumes you have taken an introductory class in statistics and have an understanding of univariate statistics such as linear regression.  We will be using the statistical program [R](https://www.r-project.org/) in this class. Experience with any statistical package (like Stata, SAS or R) is useful but not required.
+Many community socioeconomic and demographic processes such as poverty, crime, healthy food access, school quality, migration, and segregation have important spatial components.  Spatial data are becoming more ubiquitous and the tools for managing, processing, examining, and modelling these data are becoming more accessible.  This course introduces students to the important theoretical roles that space and place have in community research.  Here, the community is broadly defined as a geographic unit with recognizable boundaries that possesses a resident sense of place.  The course will also have a large analytical component, exposing students to the acquisition, management, examination, and modelling of spatial data for understanding communities.  The course will focus on applications in the social sciences and public health, including demography, epidemiology, sociology, criminology, human geography, public policy, education, and others.  The course assumes you have taken an introductory class in statistics and have familiarity with univariate statistics such as linear regression.  Experience with a statistical package (like Stata, SAS or R) is useful but not required.
 
 
 ***
