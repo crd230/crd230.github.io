@@ -15,8 +15,7 @@ navbar:
           href: 
     - text: "Other"
       menu: 
-        - text: "Data Sources"
-          href:    
+   
 output:
   html_document:
     theme: cosmo
