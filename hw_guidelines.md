@@ -149,7 +149,7 @@ R will often spit out messages that are not necessary for answering the assignme
 
 You'll need to test code to make sure it is running properly.  Rather than writing all the code and then running it at the end, run them in chunks.  To run code in just one chunk, click on the R code chunk you want to run and either click on ![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/hwguide3.png) and select *Run Current Chunk* or click on ![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/hwguide4.png) located on the right corner of the chunk.  You can also use the keyboard shortcuts described in [Lab 0](https://crd230.github.io/lab0.html#r_scripts).
 
-To elaborate, let's say the first question in an assignment is (1) Add one plus one.  In your R Markdown document, type in the following to answer this question
+To elaborate, let's say the first question in an assignment is (1) Add one plus one.  In your R Markdown document, type in the following to answer this question.
 
 ````
 ```{r, warning=FALSE, message = FALSE}
