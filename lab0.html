@@ -307,19 +307,6 @@ div.tocify {
     <li>
       <a href="lab0.html">Lab 0</a>
     </li>
-    <li>
-      <a href="lab1.html">Lab 1</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Assignments
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li class="dropdown-header">Assignment 1</li>
   </ul>
 </li>
 <li class="dropdown">
@@ -329,9 +316,7 @@ div.tocify {
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="ndata.html">Data Sources</a>
-    </li>
+    <li class="dropdown-header">Data Sources</li>
   </ul>
 </li>
       </ul>
@@ -388,10 +373,10 @@ h1.title {
 <li>Understand R data types</li>
 <li>Understand R data structures, in particular vectors, data frames and tibbles</li>
 <li>Understand R functions and commands</li>
-<li>Understand the utility of R Scripts</li>
+<li>Understand R Scripts</li>
 </ol>
 <p>This lab guide follows closely and supplements the material presented in Chapters 2, 4, 6, and 7 in the textbook <a href="http://r4ds.had.co.nz/index.html">R for Data Science</a> (RDS).</p>
-<p>It is expected that you know the material presented in this lab before Lab 1. In Lab 1, we will jump right into working with Census data, data wrangling with tidy functions, and summarazing data with descriptive statistics and visualizations.</p>
+<p>It is expected that you know the material presented in this lab before Lab 1. In Lab 1, we will jump right into working with Census data, data wrangling with tidy functions, and summarizing data with descriptive statistics and visualizations.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -439,8 +424,7 @@ Open up RStudio. You should see the interface shown in Figure 1 which has three 
 <li><strong>Console</strong> (left) - The way R works is you write a line of code to execute some kind of task on a data object. The R Console allows you to run code interactively in R. This is where you type code in, press enter to execute the code, and see the results.</li>
 <li><strong>Environment, History, and Connections tabs</strong> (upper-right)
 <ul>
-<li><strong>Environment</strong> - shows all the R objects that are currently open in your workspace. This is the place, for example, where you will see any data you’ve loaded into R. When you exit RStudio, R will clear all objects in this window.<br />
-</li>
+<li><strong>Environment</strong> - shows all the R objects that are currently open in your workspace. This is the place, for example, where you will see any data you’ve loaded into R. When you exit RStudio, R will clear all objects in this window. You can also click on <img src="broom.png" /> to clear out all the objects loaded and created in your current session.</li>
 <li><strong>History</strong> - shows a list of executed commands in the current session.</li>
 <li><strong>Connections</strong> - you can connect to a variety of data sources, and explore the objects and data inside the connection. I typically don’t use this window, but you <a href="https://support.rstudio.com/hc/en-us/articles/115010915687-Using-RStudio-Connections">can</a>.<br />
 </li>
@@ -464,7 +448,7 @@ Open up RStudio. You should see the interface shown in Figure 1 which has three 
 <div id="r-data-types" class="section level2">
 <h2><strong>R Data Types</strong></h2>
 <p><br />
-R is really just a big fancy calculator. For example, type in the following mathematical expression in the R console</p>
+R is really just a big fancy calculator. For example, type in the following mathematical expression in the R console (left window)</p>
 <pre class="r"><code>1+1</code></pre>
 <p>Note that spacing does not matter: <code>1+1</code> will generate the same answer as <code>1      +       1</code>. Can you say hello to the world?<br />
 </p>
@@ -475,11 +459,14 @@ R is really just a big fancy calculator. For example, type in the following math
 <p>Nope. What is the problem here? We need to put quotes around it.</p>
 <pre class="r"><code>&quot;hello world&quot;</code></pre>
 <pre><code>## [1] &quot;hello world&quot;</code></pre>
-<p>“hello world” is a character and R recognizes characters only if there are quotes around it. This brings us to the topic of basic data types in R. There are three basic data types in R: character, logical, and numeric (there are two others - complex and raw - but we won’t cover them because they are rarely used).</p>
+<p>“hello world” is a character and R recognizes characters only if there are quotes around it. This brings us to the topic of basic data types in R. There are four basic data types in R: character, logical, numeric, and factors (there are two others - complex and raw - but we won’t cover them because they are rarely used).</p>
 <ul>
-<li><strong>Character</strong> - used to represent string values in R. We saw this above with “hello world”. Anything with quotes will be interpreted as a character. Another example of a character is the state you live in.</li>
+<li><strong>Character</strong> - used to represent string values in R. We saw this above with “hello world”. Anything with quotes will be interpreted as a character.<br />
+</li>
 <li><strong>Logical</strong> - takes on two values: FALSE or TRUE. Logicals are usually constructed with comparison operators, which we’ll go through more carefully in Lab 2. Think of a logical as the answer to a question like “Is this value greater than (lower than/equal to) this other value?”</li>
-<li><strong>Numeric</strong> - separated into two types: integer and double. The distinction between integers and doubles is usually not important. R treats numerics as doubles by default because it is a less restrictive data type.</li>
+<li><strong>Numeric</strong> - separated into two types: integer and double. The distinction between integers and doubles is usually not important. R treats numerics as doubles by default because it is a less restrictive data type.<br />
+</li>
+<li><strong>Factors</strong> - Think of a factor as a categorical variable. It is sort of like a character, but not really. It is actually a numeric code with character-valued levels. Think of a character as a true string and a factor as a set of categories represented as characters. We’ll revisit factors when we get to running regression models in R.</li>
 </ul>
 <p>A special value used across all data types is NA. The value NA indicates a missing value. Doubles also use other special values, in particular to handle problematic values after division. R spits out <code>-Inf</code> and <code>Inf</code> when dividing a negative and positive value by 0, respectively, and <code>NaN</code> when dividing 0 by 0.</p>
 <pre class="r"><code>-1/0</code></pre>
@@ -495,7 +482,7 @@ R is really just a big fancy calculator. For example, type in the following math
 <div id="r-data-structures" class="section level2">
 <h2><strong>R Data Structures</strong></h2>
 <p><br />
-You just learned that R has three basic data types. Now, let’s go through how we can store data in R. You do this by using R’s various data structures.</p>
+You just learned that R has four basic data types. Now, let’s go through how we can store data in R. You do this by using R’s various data structures.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -506,8 +493,8 @@ A vector is the most common and basic R data structure and is pretty much the wo
 <pre class="r"><code>c(4, 16, 9)</code></pre>
 <pre><code>## [1]  4 16  9</code></pre>
 <p>You can also have a vector of character values</p>
-<pre class="r"><code>c(&quot;luis&quot;, &quot;anne&quot;, &quot;ryan&quot;)</code></pre>
-<pre><code>## [1] &quot;luis&quot; &quot;anne&quot; &quot;ryan&quot;</code></pre>
+<pre class="r"><code>c(&quot;jacob&quot;, &quot;anne&quot;, &quot;gwen&quot;)</code></pre>
+<pre><code>## [1] &quot;jacob&quot; &quot;anne&quot;  &quot;gwen&quot;</code></pre>
 <p>The above code does not actually “save” the values 4, 16, and 9 - it just presents it on the screen in a vector. If you want to use these values again without having to type out <code>c(4, 16, 9)</code>, you can save it in a data object. You assign data to an object using the arrow sign <code>&lt;-</code>. This will create an object in R’s memory that can be called back into the command window at any time. For example, you can save “hello world” to a vector called <em>b</em> by typing in</p>
 <pre class="r"><code>b &lt;- &quot;hello world&quot;
 b</code></pre>
@@ -523,7 +510,7 @@ v1</code></pre>
 <p class="caption">Figure 2: Environment window</p>
 </div>
 </center>
-<p>Note that the name <em>v1</em> is nothing special here. You could have named the object <em>x</em> or <em>crd150</em> or your pet’s name (mine was <em>charlie</em>). You can’t, however, name objects using special characters (e.g. !, @, $) or only numbers (although you can combine numbers and letters, but a number cannot be at the beginning e.g. <em>2d2</em>). For example, you’ll get an error if you save the vector <em>c(4,16,9)</em> to an object with the following names</p>
+<p>Note that the name <em>v1</em> is nothing special here. You could have named the object <em>x</em> or <em>crd298</em> or your pet’s name (mine was <em>didi</em>). You can’t, however, name objects using special characters (e.g. !, @, $) or only numbers (although you can combine numbers and letters, but a number cannot be at the beginning e.g. <em>2d2</em>). For example, you’ll get an error if you save the vector <em>c(4,16,9)</em> to an object with the following names</p>
 <pre class="r"><code>123 &lt;- c(4, 16, 9)
 !!! &lt;- c(4, 16, 9)</code></pre>
 <pre><code>## Error: &lt;text&gt;:2:5: unexpected assignment
@@ -541,6 +528,20 @@ v1</code></pre>
 <pre><code>## [1] 1</code></pre>
 <pre class="r"><code>length(v1)</code></pre>
 <pre><code>## [1] 3</code></pre>
+<p>You can also directly determine if a vector is of a specific data type by using the command <code>is.X()</code> where you replace <code>X</code> with the data type. For example, to find out if <em>v1</em> is numeric, type in</p>
+<pre class="r"><code>is.numeric(b)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>is.numeric(v1)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>There is also <code>is.logical()</code>, <code>is.character()</code>, and <code>is.factor()</code>. You can also coerce a vector of one data type to another. For example, save the value “1” and “2” (both in quotes) into a vector named <em>x1</em></p>
+<pre class="r"><code>x1 &lt;- c(&quot;1&quot;, &quot;2&quot;)
+typeof(x1)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<p>To convert <em>x1</em> into a numeric, use the command <code>as.numeric()</code></p>
+<pre class="r"><code>x2 &lt;- as.numeric(x1)
+typeof(x2)</code></pre>
+<pre><code>## [1] &quot;double&quot;</code></pre>
+<p>There is also <code>as.logical()</code>, <code>as.character()</code>, and <code>as.factor()</code>.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -558,9 +559,9 @@ We learned that data values can be stored in data structures known as vectors. T
 ## 3  9 25</code></pre>
 <p>Store this data frame in an object called <em>df1</em></p>
 <pre class="r"><code>df1&lt;-data.frame(v1, v2)</code></pre>
-<p><em>df1</em> should pop up in your Environment window. You’ll notice a <img src="lab0fig2.png" /> next to <em>df1</em>. This tells you that <em>df1</em> possesses or holds more than one object. Click on <img src="lab0fig2.png" /> and you’ll see the two vectors we saved into <em>df1</em>. Another neat thing you can do is click on <em>df1</em> from the Environment window to bring up an Excel style worksheet on the top left of your RStudio interface. You can’t edit this worksheet directly, but it allows you to see the values that a higher level R data object contains.</p>
-<p>We can store different types of vectors in data frame. For example:</p>
-<pre class="r"><code>v3 &lt;- c(&quot;luis&quot;, &quot;anne&quot;, &quot;ryan&quot;)
+<p><em>df1</em> should pop up in your Environment window. You’ll notice a <img src="lab0fig2.png" /> next to <em>df1</em>. This tells you that <em>df1</em> possesses or holds more than one object. Click on <img src="lab0fig2.png" /> and you’ll see the two vectors we saved into <em>df1</em>. Another neat thing you can do is directly click on <em>df1</em> from the Environment window to bring up an Excel style worksheet on the top left of your RStudio interface. You can’t edit this worksheet directly, but it allows you to see the values that a higher level R data object contains.</p>
+<p>We can store different types of vectors in a data frame. For example:</p>
+<pre class="r"><code>v3 &lt;- c(&quot;jacob&quot;, &quot;anne&quot;, &quot;gwen&quot;)
 df2 &lt;- data.frame(v1, v3)
 df2</code></pre>
 <p>For higher level data structures like a data frame, use the function <code>class()</code> to figure out what kind of object you’re working with.</p>
@@ -576,7 +577,7 @@ df2</code></pre>
 <pre class="r"><code>colnames(df1) &lt;- c(&quot;col1&quot;, &quot;col2&quot;)
 colnames(df1)</code></pre>
 <pre><code>## [1] &quot;col1&quot; &quot;col2&quot;</code></pre>
-<p>We can extract columns from data frames by referring to their names using the <code>$</code> sign or index values</p>
+<p>When working with real datasets, columns will represent variables, like income or percent Hispanic. In this case, you would give the columns appropriate variable names (be succinct) like <em>income</em> and <em>phisp</em>. We can extract columns from data frames by referring to their names using the <code>$</code> sign or index values</p>
 <pre class="r"><code>df1$col1</code></pre>
 <pre><code>## [1]  4 16  9</code></pre>
 <pre class="r"><code>df1[,1]</code></pre>
@@ -590,8 +591,8 @@ colnames(df1)</code></pre>
 <pre><code>## [1] 16</code></pre>
 <p>To delete an object from your current R session, use the command <code>rm()</code></p>
 <pre class="r"><code>rm(df1)</code></pre>
-<p>The data frame object <em>df1</em> should have dissappeared from the Environment tab.</p>
-<p>We’ve been talking about the values in vectors and data frames rather abstractly. In practice, values, vectors and data frames have specific meaning in the context of data analysis. Let’s make things concrete. Take a look at this <a href="https://ucr.fbi.gov/crime-in-the-u.s/2016/crime-in-the-u.s.-2016/tables/table-6/table-6-state-cuts/california.xls">website</a> showing crimes in California cities in 2016. Sacramento had 3,549 violent crime incidences. This is a data value (numeric!). The collection of violent crime counts for each city is a vector. The data frame has California cities as rows and the population, violent crime, homicide, and so on as columns.</p>
+<p>The data frame object <em>df1</em> should have disappeared from the Environment tab.</p>
+<p>We’ve been talking about the values in vectors and data frames rather abstractly. In practice, values, vectors and data frames have specific meanings in the context of data analysis. Let’s make things concrete. Take a look at this <a href="https://ucr.fbi.gov/crime-in-the-u.s/2016/crime-in-the-u.s.-2016/tables/table-6/table-6-state-cuts/california.xls">website</a> showing crimes in California cities in 2016. Sacramento had 3,549 violent crime incidences. This is a data value (numeric!). The collection of violent crime counts for each city is a vector (variable!). The data frame has California cities as rows (units of observations!) and the population, violent crime, homicide, and so on as columns (variables!).</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -599,8 +600,8 @@ colnames(df1)</code></pre>
 <div id="commandsfunctions" class="section level3">
 <h3><strong>Commands/Functions</strong></h3>
 <p><br />
-Let’s take a step back and talk about functions (also known as commands). You execute many of your tasks in R using functions We have already used a couple of functions above including <code>typeof()</code> and <code>colnames()</code>. Every function in R will have the following basic format</p>
-<p><code>functionName(arg1 = val1, arg2 = val2, and so on)</code></p>
+Let’s take a step back and talk about functions (also known as commands). You execute all of your tasks in R using functions. We have already used a couple of functions above including <code>typeof()</code> and <code>colnames()</code>. Every function in R will have the following basic format</p>
+<p><code>functionName(arg1 = val1, arg2 = val2, ...)</code></p>
 <p>In R, you type in the function’s name and set a number of options or parameters within parentheses that are separated by commas. Some options <strong>need</strong> to be set by the user - i.e. the function will spit out an error because a required option is blank - whereas others can be set but are not required because there is a default value established.</p>
 <p>Let’s try using <code>seq()</code> which makes regular sequences of numbers. You can find out what the options are for a function by calling up its help documentation by typing <code>?</code> and the function name</p>
 <pre class="r"><code>? seq</code></pre>
@@ -610,7 +611,7 @@ Let’s take a step back and talk about functions (also known as commands). You 
 <p>You should get the same result if you type in</p>
 <pre class="r"><code>seq(1, 10)</code></pre>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
-<p>The above also demonstrates something about how R resolves function arguments. You can always specify in <code>name = value</code> form. But if you do not, R attempts to resolve by position. So in the code above, it is assumed that we want a sequence <code>from = 1</code> that goes <code>to = 10</code> because we typed 1 before 10. Type in 10 before 1 and see what happens. Since we didn’t specify step size, the default value of <code>by</code> in the function definition is used, which ends up being 1 in this case.</p>
+<p>The above also demonstrates something about how R resolves function arguments. When you use a function, you can always specify all the arguments in <code>arg = val</code> form. But if you do not, R attempts to resolve by position. So in the code above, it is assumed that we want a sequence <code>from = 1</code> that goes <code>to = 10</code> because we typed 1 before 10. Type in 10 before 1 and see what happens. Since we didn’t specify step size, the default value of <code>by</code> in the function definition is used, which ends up being 1 in this case.</p>
 <p>Each argument requires a certain type of data type. For example, you’ll get an error when you use a character in <code>seq()</code></p>
 <pre class="r"><code>seq(&quot;p&quot;, &quot;w&quot;)</code></pre>
 <pre><code>## Warning in seq.default(&quot;p&quot;, &quot;w&quot;): NAs introduced by coercion</code></pre>
@@ -627,6 +628,24 @@ Functions do not exist in a vacuum. They are a part of R packages. R is an open-
 <p>Next, you will need to load packages in your working environment (every time you start RStudio). We do this with the <code>library()</code> function.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <p>Don’t worry about all those messages - your system is just downloading <strong>all</strong> of the tidy packages in R. Unless you get a message in red that indicates there is an error (like we saw above when we typed in hello world without quotes), you should be fine.</p>
+<p>The Packages window at the lower-right shows you all the packages you currently have installed. If you don’t have a package listed in this window, you’ll need to use the <code>install.packages()</code> function to install it. Alternatively, you can click on <img src="install.png" /> from the Packages window and install the package using the window that pops up. Any package that has a check mark next to it is loaded in. If you want to load in a package, either use <code>library()</code>, which I recommend <strong>always</strong> doing, or you can click on the box next to the package from the Packages window.</p>
+<p>For example, here is a section of my Packages window</p>
+<center>
+<div class="figure">
+<img src="windows1.png" />
+
+</div>
+</center>
+<p><br />
+The only packages loaded into my current session is <strong>methods</strong>, a package that is loaded every time you open an R session. Let’s say I use <code>install.packages()</code> to install the package <strong>matrixStats</strong>. The window now looks like</p>
+<center>
+<div class="figure">
+<img src="windows2.png" />
+
+</div>
+</center>
+<p><br />
+Click on the box next to <strong>matrixStats</strong> to load it in. To unload the package using R code, use the function <code>detach()</code>. To uninstall a package, use the function <code>remove.packages()</code>.</p>
 <p><strong>Note that you only need to install packages once (<code>install.pacakges()</code>), but you need to load them each time you relaunch RStudio (<code>library()</code>)</strong>. Repeat after me: Install once, library every time. Also note that R has several packages already preloaded into your working environment. These are known as base packages and a list of their functions can be found <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/00Index.html">here</a>.</p>
 <div style="margin-bottom:25px;">
 
@@ -635,15 +654,17 @@ Functions do not exist in a vacuum. They are a part of R packages. R is an open-
 <div id="tibbles" class="section level3">
 <h3><strong>Tibbles</strong></h3>
 <p><br />
-Let’s take a step back and assess where we are in our journey into R land. We learned that there are three basic data types in R. We learned that we can store data values in vectors. We can then store vectors into data frames. And we run many tasks in R using commands/functions, which are created and stored in packages, which we need to install and load. For a long time, this was how R users worked with their data. Recently, a new framework for organizing data in R has emerged. This revolution is known as <em>tidy</em>, and you can read more about its principles in Chapter 9, pages 147-151 in RDS.</p>
+Where are we now in our journey into R land? We learned that there are four basic data types in R. We learned that we can store data values in vectors. We can then store vectors into data frames. And we run many tasks in R using commands/functions, which are created and stored in packages, which we need to install (just once!) and load (every time!). Recently, a new framework for organizing data in R has emerged. This revolution is known as <em>tidy</em>, and you can read more about its principles in Chapter 9, pages 147-151 in RDS.</p>
 <p>An integral component of the tidyverse are tibbles. Tibbles are data frames, but they tweak some older behaviors to make life a little easier. There are two main differences in the usage of a data frame vs a tibble: printing and subsetting. Let’s be clear here - tibbles are just a special kind of data frame. They just makes things a little “tidier.”</p>
 <p>Let’s bring in some actual data to illustrate the differences and similarities between data frames and tibbles. Install the package <strong>nycflights13</strong> using <code>install.packages(&quot;nycflights13&quot;)</code>. Make sure you also load the package.</p>
 <pre class="r"><code>library(nycflights13)</code></pre>
 <p>There is a dataset called <em>flights</em> included in this package. It includes information on all 336,776 flights that departed from New York City in 2013. Let’s save this file in the local R environment</p>
-<pre class="r"><code>nyctib &lt;- flights</code></pre>
-<p>This dataset is a tibble. Let’s also save it as a data frame by using the <code>as.data.frame()</code> function</p>
+<pre class="r"><code>nyctib &lt;- flights
+class(nyctib)</code></pre>
+<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<p>This dataset is a tibble. Let’s also save it as a regular data frame by using the <code>as.data.frame()</code> function</p>
 <pre class="r"><code>nycdf &lt;- as.data.frame(flights)</code></pre>
-<p>The first difference between data frames and tibbles is how the dataset “looks.” Tibbles have a refined print method that shows only the first 10 rows, and only the columns that fit on the screen. In addition, each column reports its name and type.</p>
+<p>The first difference between data frames and tibbles is how the dataset looks. Tibbles have a refined print method that shows only the first 10 rows, and only the columns that fit on the screen. In addition, each column reports its name and type.</p>
 <pre class="r"><code>nyctib</code></pre>
 <pre><code>## # A tibble: 336,776 x 19
 ##     year month   day dep_time sched_dep_time dep_delay arr_time
@@ -662,7 +683,7 @@ Let’s take a step back and assess where we are in our journey into R land. We 
 ## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
-<p>Tibbles are designed so that you don’t accidentally overwhelm your console when you print large data frames. Compare the print output above to what you get with a data frame</p>
+<p>Tibbles are designed so that you don’t overwhelm your console when you print large data frames. Compare the print output above to what you get with a data frame</p>
 <pre class="r"><code>nycdf</code></pre>
 <p>Ugly, right? You can shorten the print output on data frames by using the <code>head()</code> command, but the output is still not as “tidy” as a tibble</p>
 <pre class="r"><code>head(nycdf)</code></pre>
@@ -687,7 +708,8 @@ Let’s take a step back and assess where we are in our journey into R land. We 
 ## 4     45 2013-01-01 05:00:00
 ## 5      0 2013-01-01 06:00:00
 ## 6     58 2013-01-01 05:00:00</code></pre>
-<p>You can also use <code>head()</code> on tibbles, but it isn’t necessary since tibbles automatically shorten the output. If you insist on seeing the <strong>entire</strong> tibble on your Console screen, type the tibble into the function <code>print.data.frame()</code>.</p>
+<p>You can also use <code>head()</code> on tibbles, but it isn’t necessary since tibbles automatically shorten the output. If you insist on seeing the <strong>entire</strong> tibble on your Console screen, type the tibble into the function <code>print.data.frame()</code>. You can bring up the Excel like worksheet of the tibble (or data frame) using the <code>View()</code> function</p>
+<pre class="r"><code>View(nyctib)</code></pre>
 <p>You can identify the names of the columns (and hence the variables in the dataset) by using the function <code>names()</code></p>
 <pre class="r"><code>names(nyctib)</code></pre>
 <pre><code>##  [1] &quot;year&quot;           &quot;month&quot;          &quot;day&quot;            &quot;dep_time&quot;      
@@ -714,7 +736,7 @@ Let’s take a step back and assess where we are in our journey into R land. We 
 ## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
-<p>Not all functions work with tibbles, particularly those that are specific to spatial data. As such, we’ll be using a combination of tibbles and regular data frames throughout the class, with a preference towards tibbles where possible.</p>
+<p>Not all functions work with tibbles, particularly those that are specific to spatial data. As such, we’ll be using a combination of tibbles and regular data frames throughout the class, with a preference towards tibbles where possible. Note that when you search on the Google machine for how to do something in R, you will likely get non tidy ways of doing things. Most of these suggestions are fine, but some are not and may screw you up down the road. My advice is to try to stick with tidy functions to do things in R. This is why our textbook RDS is a valuable resource. When there is either no way to do it in tidy (as we will encounter when we do spatial data analysis) or it’s 3:15 am and you need to get your assignment done and the only advice you are getting is something non tidy, do it the non tidy way.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -723,14 +745,14 @@ Let’s take a step back and assess where we are in our journey into R land. We 
 <div id="r-scripts" class="section level2">
 <h2><strong>R Scripts</strong></h2>
 <p><br />
-Up to this point, you’ve been typing code into the R Console. But, that’s not the only way to run code in R. In fact, using the R Console is the most inefficient way. R provides three ways to run code.</p>
+Up to this point, you’ve been typing code into the R Console. But, that’s not the only way to run code in R. In fact, using the R Console is the most inefficient way to use R. R provides three ways to run code.</p>
 <ol style="list-style-type: decimal">
 <li>R console</li>
 <li>R Script</li>
 <li>R Markdown</li>
 </ol>
-<p>We’ll talk about R Markdown in the first week of class. The R console allows you to run code interactively. You type in the code into the Console, your output appears in the console, and the code you ran “disappears.” The benefit of programs like R, however, is that it allows you to prevent that code from disappearing. How do you do this? Well, that’s where the R Script comes in.</p>
-<p>An R script is simply a text file containing the same commands that you would enter on the command line of the R Console. To open an R script, click on File from the top menu, New File and R Script. A blank window should open up in the top left of your console. This is where you will write and save all the code you want to run. For example, type in the code we ran under the <strong>Tibbles</strong> section</p>
+<p>We’ll talk about R Markdown in the first week of class (or you can jump ahead and read through the <a href="https://crd230.github.io/hw_guidelines.html">homework guidelines</a>. The R console allows you to run code interactively. You type in the code into the console, your output appears in the console, and the code you ran “disappears.” The benefit of programs like R, however, is that it allows you to prevent that code from disappearing. How do you do this? Well, that’s where the R Script comes in.</p>
+<p>An R script is simply a text file containing and consequently saving the commands you would enter on the command line of the R Console. To open an R script, click on File from the top menu bar, then New File and R Script. A blank window should open up in the top left of your console. This is where you will write and save all the code you want to run. For example, type in the code we ran under the <strong>Tibbles</strong> section</p>
 <pre><code>library(tidyverse)
 library(nycflights13)
 
@@ -738,15 +760,15 @@ nyctib &lt;- flights
 nycdf &lt;- as.data.frame(flights)
 head(nycdf)
 names(nyctib)</code></pre>
-<p>Then save this file (File -&gt; Save) in an appropriate folder in your hard drive (say, “CRD 298”). Now that code is saved! You can open that file in R (File -&gt; Open File) two months from now and run that code again. How do you run code from R Script. There are three (common) ways</p>
+<p>Then save this file (File -&gt; Save) in an appropriate folder in your hard drive (say, “CRD 298 Lab 0”). Now that code is saved! It’s a living, breathing document that tells you and others what you did to your data. You can open that file in R (File -&gt; Open File) two months from now and run that code again. How do you run code from an R Script? There are three (common) ways</p>
 <ol style="list-style-type: decimal">
-<li>Click on <img src="lab0fig3.png" /> to run either the current line that your cursor is currently on or the code that you have currently selected.</li>
-<li>From the top menu, click on Code and the resulting menu offers a couple of different ways to run code: Run Selected Line or Run Region, which allows you to run chunks of code.</li>
+<li>Click on <img src="lab0fig3.png" /> to run either the current line that your cursor is currently on or the code that you currently have highlighted</li>
+<li>From the top menu bar, click on Code and the resulting menu offers a couple of different ways to run code: Run Selected Line or Run Region, which allows you to run chunks of code.</li>
 <li>Keyboard shortcuts. Select the code you want to run and in Mac select Command and return and in a Windows machine select Ctrl and Enter.</li>
 </ol>
 <p>Saving and running code through an R Script is the standard way for programming in R. Why? Let us count the ways…</p>
 <ol style="list-style-type: decimal">
-<li>By saving your code, it let’s you rerun tasks if you find out later that you messed up. Let’s say you need to delete a column in a table. You open the table in Excel and delete the column. Let’s say 5 months later, you find out that you actually want that column. But, you deleted it - it disappeared, and you can’t bring it back. If you did this through an R Script, all you would need to do is change one line of code.</li>
+<li>By saving your code, you can rerun tasks if you find out later that you messed up. Let’s say you need to delete a column in a table. You open the table in Excel and delete the column. Let’s say 5 months later, you find out that you actually need that column. But, you deleted it - it disappeared, and you can’t bring it back. If you did this through an R Script, all you would need to do is change one line of code to bring the column back.</li>
 <li>An R Script tells you exactly what you’ve done to your data and what analyses you’ve conducted. It allows you to go back and determine how you constructed a variable, dealt with missing data, ran a regression, or do any of the numerous tasks you undertake when doing data analysis.</li>
 <li>Piggybacking on (2), you can actually document in words what each code is actually doing. You do this by adding comments to your code. Comments are indicated by the pound sign #. For example, you can add comments to the R Script you saved</li>
 </ol>
@@ -763,8 +785,26 @@ head(nycdf)
 #What are the columns names of nyctib
 names(nyctib)</code></pre>
 <ol start="4" style="list-style-type: decimal">
-<li>Not only will an R Script let <em>you</em> know what you’ve done, but it also allows <em>others</em> know what you’ve done. This is good for two reasons: (1) If you are working on a group project, having a well commented R Script informs everyone how you’ve conducted the analysis; (2) Reproducability. It is good practice to be transparent in your data analysis decisions to the rest of the world.</li>
+<li>Not only will an R Script let <em>you</em> know what you’ve done, but it also allows <em>others</em> know what you’ve done. This is good for two reasons: (1) If you are working on a group project, having a well commented R Script informs everyone how you’ve conducted the analysis; (2) Reproducibility. It is good practice to be transparent in your data analysis decisions to the rest of the world.</li>
 </ol>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="other-things-to-know" class="section level2">
+<h2><strong>Other things to know</strong></h2>
+<p><br />
+Try to keep the most updated version of R installed. If you’ve used R before this class, make sure it is the most recent version. To check your version of R, type in</p>
+<pre class="r"><code>sessionInfo()$R.version$version.string</code></pre>
+<pre><code>## [1] &quot;R version 3.5.1 (2018-07-02)&quot;</code></pre>
+<p>Check the <a href="https://www.r-project.org/">CRAN website</a> to see if you need to install a newer version.</p>
+<p>You will also need to make sure your packages are up to date. To check the version of a package by using the following code, which checks the version for the package <strong>abind</strong>.</p>
+<pre class="r"><code>packageDescription(&quot;abind&quot;)$Version</code></pre>
+<pre><code>## [1] &quot;1.4-5&quot;</code></pre>
+<p>You can check the versions of <em>all</em> installed packages by typing in</p>
+<pre class="r"><code>installed.packages()[,c(&quot;Package&quot;, &quot;Built&quot;)] </code></pre>
+<p>You can update a package by using the function <code>update.packages()</code>, where you type in quotes inside the parentheses the package you want to update.</p>
+<p>When you install a package, sometimes R will ask you to restart. Say yes (what else are you going to do?). After the restart, all the objects in your Environment remains the same. However, you will need to reload (using <code>library()</code>) all the packages you previously loaded into the session.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -773,12 +813,13 @@ names(nyctib)</code></pre>
 <h2><strong>Other resources</strong></h2>
 <p><br />
 If you are interested in getting deeper into R before the class begins, read through RDS chapters 2, 4, 6, and 7. You can read ahead and look through other chapters on data wrangling and exploratory data analysis, but we’ll go through most of these techniques in the first week or so of class.</p>
-<p>Although the guides I will provide and the RDS textbook should get you through a lot of the functions needed to successfully accomplish tasks for this class, there are a number of useful online resources on R and RStudio that you can look into if you get stuck or want to learn more.</p>
+<p>Although the guides I will provide and the RDS and GWR textbooks should get you through a lot of the functions needed to successfully accomplish tasks for this class, there are a number of useful online resources on R and RStudio that you can look into if you get stuck or want to learn more.</p>
 <ul>
 <li><a href="https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf">RStudio IDE cheatsheet</a></li>
 <li><a href="https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf">Data wrangling cheatsheet</a></li>
 <li><a href="https://stackoverflow.com/questions/tagged/r">Stackoverflow</a></li>
 </ul>
+<p>And the Google machine will be an important friend in your journey into R land. Google your R related question and you’re bound to find some guidance. If you get an R error that is baffling you, Google the error itself inside quotations to get a more directed response to your issue.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -788,7 +829,7 @@ If you are interested in getting deeper into R before the class begins, read thr
 <p><br />
 There are practice questions located at the end of each chapter in RDS. Once again, the chapters I would recommend looking through are 2, 4, 6, and 7. Below are some additional questions I gave to my undergraduate course on quantitative methods.</p>
 <ol style="list-style-type: decimal">
-<li>Look up the help documentation for the function <code>rep()</code>. Use this function to create the following 3 vectors. (Each question is worth 1 point).</li>
+<li>Look up the help documentation for the function <code>rep()</code>. Use this function to create the following 3 vectors.</li>
 </ol>
 <ol style="list-style-type: lower-alpha">
 <li>[1] 0 0 0 0 0</li>
@@ -796,14 +837,20 @@ There are practice questions located at the end of each chapter in RDS. Once aga
 <li>[1] 4 5 5 6 6 6</li>
 </ol>
 <ol start="2" style="list-style-type: decimal">
-<li>What are the differences and similarities between the output produced by a data frame and the equivalent tibble for the following operations. (Each question is worth 1 point).</li>
+<li>What are the differences and similarities between the output produced by a data frame and the equivalent tibble for the following operations.</li>
 </ol>
 <ol style="list-style-type: lower-alpha">
 <li>nyctib$year, nycdf$year</li>
 <li>nyctib[,1], nycdf[,1]</li>
 </ol>
 <ol start="3" style="list-style-type: decimal">
-<li>What is the mean of c(3,6,12,89)? Standard deviation? Lowest value? Highest value?</li>
+<li><p>What is the mean of c(3,6,12,89)? Standard deviation? Lowest value? Highest value?</p></li>
+<li>Look up the help documentation for the function <code>cut()</code>.<br />
+</li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li>Describe the purpose of this function. What kind of data type(s) does this function accept? Which arguments/options are required? Which arguments are not required and what are their default value(s)?</li>
+<li>Create an example vector and use the <code>cut()</code> function on it. Explain your results.</li>
 </ol>
 <hr />
 <p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>

@@ -12,7 +12,7 @@ navbar:
     - text: "Labs"
       menu: 
         - text: "Lab 0"
-          href: 
+          href: lab0.html
     - text: "Other"
       menu: 
         - text: "Data Sources"
