@@ -1,7 +1,6 @@
 ---
 title: "Syllabus"
 subtitle: <h4 style="font-style:normal">CRD 298 - Spatial Methods in Community Research</h4>
-date: <h4 style="font-style:normal">Winter 2019</h4>
 output: 
   html_document:
     toc: true
@@ -9,6 +8,8 @@ output:
     toc_float: true
     theme: cosmo
 ---
+
+<h4 style="font-style:normal">Winter 2019</h4>
 
 <style>
 h1.title {
