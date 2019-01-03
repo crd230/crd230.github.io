@@ -11,6 +11,7 @@ output:
     code_folding: show
 ---
 
+<h4 style="font-style:normal">Winter 2019</h4>
 
 <style>
 p.comment {
