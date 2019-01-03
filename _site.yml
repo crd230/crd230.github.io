@@ -13,10 +13,20 @@ navbar:
       menu: 
         - text: "Lab 0"
           href: lab0.html
+    - text: "Mini Labs"
+      menu: 
+        - text: "Download data from NHGIS"
+          href:
+        - text: "Dealing with missing data"
+          href:          
+        - text: "Introduction to QGIS"
+          href:
     - text: "Other"
       menu: 
         - text: "Data Sources"
-          href:    
+          href:   
+        - text: "Census Geographies"
+          href:   
 output:
   html_document:
     theme: cosmo

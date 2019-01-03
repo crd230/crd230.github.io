@@ -108,7 +108,7 @@ The textbook is free online at: https://geocompr.robinlovelace.net/
 
 1. Assignments (4 x 15%: 60%)
 
-Students are required to complete four homework assignments during the quarter which are due approximately every 1 ½ weeks.  The assignments will largely correspond to the material covered in lectures and labs.  Each assignment will ask students to apply spatial methods in R. For each assignment, you will need to submit R Markdown Rmd and html files on Canvas. Assignment guidelines can be found [here](https://crd230.github.io/hw_guidelines.html). Collaboration of ideas among seminar participants is encouraged, but the assignments must be completed independently. All assignments must be submitted via Canvas.  
+Students are required to complete four homework assignments during the quarter which are due approximately every 2 weeks.  The assignments will largely correspond to the material covered in lectures and labs.  Each assignment will ask students to apply spatial methods in R. For each assignment, you will need to submit R Markdown Rmd and html files on Canvas. Assignment guidelines can be found [here](https://crd230.github.io/hw_guidelines.html). Collaboration of ideas among seminar participants is encouraged, but the assignments must be completed independently. All assignments must be submitted via Canvas.  
 
 Late submissions will be deducted 10% per 24 hours until 72 hours after the submission due time.  After 72 hours your submission will not be graded.  No exception unless you provide documentation of your illness or bereavement before the due date.  If you cannot upload the assignment on Canvas due to technical issues, you must email it as an attachment to me by the submission due time.
 
