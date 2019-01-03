@@ -251,8 +251,6 @@ Here are links to various open data portals in US cities (updated 10/31/18)
 
 * Google released a Beta site for a dataset search site akin to Google Scholar, Images, Books and so on.  Check it out [here](https://toolbox.google.com/datasetsearch).
 
-* Kaggle is a crowd-sourced platform for all things data science.  This includes competitions, discussion forums, online tutorials, and most importantly, at least for the purpose of this guide, a repository of big data sources.  A lot of these data are not pertinent to this class, but some are; specifically, those with geographic information that allows you to connect data to geographic locations. Check out their datasets [here](https://www.kaggle.com/datasets).
-
 * Esri provides a repository that many of its members use to store various big and open data all in shapefile format.  Check out what's available [here](http://hub.arcgis.com/pages/open-data).
 
 
