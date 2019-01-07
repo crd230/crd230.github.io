@@ -96,7 +96,7 @@ sac.city.tracts.sf %>% summarize(mean = mean(psubhous))
 
 We get "NA" which tells us that there are some neighborhoods with missing data.  If a variable has an NA, most R functions summarizing that variable automatically yield an NA.
 
-What if we try to do some kind of spatial data analysis on the data? Surely, R won't give us a problem since spatial is special, right?  Let's calculate the Moran's I (see [Lab 5]()) for *psubhous*.
+What if we try to do some kind of spatial data analysis on the data? Surely, R won't give us a problem since spatial is special, right?  Let's calculate the Moran's I (see [Lab 5](https://crd230.github.io/lab5.html)) for *psubhous*.
 
 ```{r, warning = FALSE, error=TRUE}
 #Turn sac.city.tracts.sf into an sp object.
@@ -255,7 +255,7 @@ Multivariate methods include
 
 Some of the multivariate functions may not be fully developed at the moment, but their test versions may be available for download.  If you're looking to use a multivariate method to impute missingness, check the **Hmisc** and **MICE** packages.
 
-The **MICE** package provides functions for imputing missing values using multiple imputation methods. These methods take into account the uncertainty related to the unknown real values by imputing M plausible values for each unobserved response in the data. This renders M different versions of the data set, where the non-missing data is identical, but the missing data entries differ. These methods go beyond the scope of this class, but you can check a number of user created vignettes, include [this](https://www.gerkovink.com/miceVignettes/Ad_hoc_and_mice/Ad_hoc_methods.html), [this](https://stats.idre.ucla.edu/r/faq/how-do-i-perform-multiple-imputation-using-predictive-mean-matching-in-r/) and [this](http://www.contrib.andrew.cmu.edu/~aurorat/MIA_r.html). I've also uploaded onto Canvas a chapter from Gelman and Hill that covers missing data.
+The **MICE** package provides functions for imputing missing values using multiple imputation methods. These methods take into account the uncertainty related to the unknown real values by imputing M plausible values for each unobserved response in the data. This renders M different versions of the data set, where the non-missing data is identical, but the missing data entries differ. These methods go beyond the scope of this class, but you can check a number of user created vignettes, include [this](https://www.gerkovink.com/miceVignettes/Ad_hoc_and_mice/Ad_hoc_methods.html), [this](https://stats.idre.ucla.edu/r/faq/how-do-i-perform-multiple-imputation-using-predictive-mean-matching-in-r/) and [this](http://www.contrib.andrew.cmu.edu/~aurorat/MIA_r.html). I've also uploaded onto Canvas (Additional Readings folder) a chapter from Gelman and Hill that covers missing data.
 
 
 
