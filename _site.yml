@@ -16,9 +16,9 @@ navbar:
     - text: "Mini Labs"
       menu: 
         - text: "Download data from NHGIS"
-          href:
+          href: nhgis.html
         - text: "Dealing with missing data"
-          href:          
+          href: missingdata.html      
         - text: "Introduction to QGIS"
           href:
     - text: "Other"

@@ -34,7 +34,7 @@ This guide is a reference tool describing online sources that provide data typic
 **Comprehensive neighborhood data sources**
 
 * [PolicyMap](https://ucdavis.policymap.com/maps) 
-    + PolicyMap is a data and mapping resource that provides a wealth of policy, education, socioeconomic, demographic, health and neighborhood dimension data at various geographic scales including census tracts.  As UC Davis affiliates, we have access to the subscription or paid edition. You either need to be on campus or on [VPN](https://www.library.ucdavis.edu/service/connect-from-off-campus/) setup.  Although allowing the user to upload and map shapefiles, the site does not all you to download shapefiles.
+    + PolicyMap is a data and mapping resource that provides a wealth of policy, education, socioeconomic, demographic, health and neighborhood dimension data at various geographic scales including census tracts.  As UC Davis affiliates, we have access to the subscription or paid edition. You either need to be on campus or on [VPN](https://www.library.ucdavis.edu/service/connect-from-off-campus/) setup.  Although allowing the user to upload and map shapefiles, the site does not allow you to download shapefiles.
 
 * [Social Explorer](https://www.socialexplorer.com/)
     + Similar to PolicyMap, but focuses more on historical data, including Census data going back to the first Census in 1790. Also like PolicyMap, UC Davis affiliates have access to all Social Explorer tools. Focuses on census data, but provides data from other sources, including religious organizations.
