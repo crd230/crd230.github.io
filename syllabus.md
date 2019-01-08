@@ -37,7 +37,7 @@ The following is an abridged version of the course syllabus.  A full course syll
 
 Dr. Noli Brazil  
 *Contact*: nbrazil.at.ucdavis.edu  
-*Office hours*: Tuesdays from 1:00-3:00 pm or by appointment, in 2325 Hart Hall.  Please sign up for a slot [here](https://www.wejoinin.com/sheets/eqmhu). Out of courtesy to other students, please do not sign up for more than two 15-minute blocks.  If you do, I will keep only the first two blocks.
+*Office hours*: Thursdays from 1:00-3:00 pm or by appointment, in 2325 Hart Hall.  Please sign up for a slot [here](https://www.wejoinin.com/sheets/eqmhu). Out of courtesy to other students, please do not sign up for more than two 15-minute blocks.  If you do, I will keep only the first two blocks.
 
 <div style="margin-bottom:25px;">
 </div>
