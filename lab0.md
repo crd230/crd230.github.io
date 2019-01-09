@@ -804,7 +804,7 @@ sessionInfo()$R.version$version.string
 ```
 
 ```
-## [1] "R version 3.5.1 (2018-07-02)"
+## [1] "R version 3.5.2 (2018-12-20)"
 ```
 
 Check the [CRAN website](https://www.r-project.org/) to see if you need to install a newer version.

@@ -1,5 +1,5 @@
 ---
-title: 'Lab 1: Working with the United States Census'
+title: 'Lab 1: Working with Data in R'
 subtitle: <h4 style="font-style:normal">CRD 298 - Spatial Methods in Community Research</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 date: <h4 style="font-style:normal">January 9, 2019</h4>
@@ -38,7 +38,7 @@ h1.title {
 
 
 
-In this guide you will learn how to download, clean, manage and summarize United States Census data using R. The goal, however, is not to just gain exposure to Census data, but to also acquire skills in data acquisition, management and presentation using R.  You will be working with data on California census tracts. The objectives of the guide are as follows
+In this guide you will learn how to download, clean, manage and summarize non-spatial data using R. You  will also learn how to work with data from the United States Census, the leading source for timely and relevant information about communities.  The objectives of the guide are as follows
 
 1. Download Census data using their API
 2. Read data into R
@@ -49,12 +49,12 @@ This lab guide follows closely and supplements the material presented in Chapter
 
 <div style="margin-bottom:25px;">
 </div>
-## **Open up a new R Markdown file**
+## **R Script or R Markdown**
 \
 
-When going through lab guides, I would recommend not copying and pasting code directly into the R Console, but saving and running it from either an R Script or Markdown file. You can use either one, but because you'll be using R Markdown for assignments, use R Markdown first to get you some practice. The code is in **your** document, so you can add explanatory text or supplement the guide's code with your own code.  
+When going through lab guides, I would recommend not copying and pasting code directly into the R Console, but saving and running it from either an R Script or R Markdown file. We covered R Scripts in [Lab 0](https://crd230.github.io/lab0.html) and R Markdown files in the [Assignment Guidelines](https://crd230.github.io/hw_guidelines.html). 
 
-To open a new R Markdown file, click on *File* at the top menu in RStudio, select *New File*, and then *R Markdown*. A window should pop up. In that window, for *Title*, put in "Lab 1".  For *Author*, put your name. Leave the HTML radio button clicked, and select OK.  A new R Markdown file should pop up in the top left window.  Don't change anything inside the YAML (the stuff at the top in between the `---`).  Also keep the grey chunk after the YAML.
+If you decide to use an R Markdown file, click on *File* at the top menu in RStudio, select *New File*, and then *R Markdown*. A window should pop up. In that window, for *Title*, put in "Lab 1".  For *Author*, put your name. Leave the HTML radio button clicked, and select OK.  A new R Markdown file should pop up in the top left window.  Don't change anything inside the YAML (the stuff at the top in between the `---`).  Also keep the grey chunk after the YAML.
 
 ````
 ```{r setup, include=FALSE}
@@ -75,7 +75,7 @@ Delete everything else. Save this file (File -> Save) in an appropriate folder. 
 ## **Downloading Census Data**
 \
 
-The Census is the most important source of community data in the United States. There are two ways to bring Census data into R. 
+The primary source of data that we'll be using in this class is the United States Census. There are two ways to bring Census data into R. 
 
 <div style="margin-bottom:25px;">
 </div>
@@ -126,11 +126,11 @@ ca <- get_acs(geography = "tract",
 
 In the above code, we specified the following arguments
 
-* `geography`: The leve of geography we want that data in - in our case, tract.  Other geographic options can be found [here](https://walkerke.github.io/tidycensus/articles/basic-usage.html#geography-in-tidycensus). 
+* `geography`: The level of geography we want that data in - in our case, tract (we'll go through the meaning and importance of tracts in community research in Week 2.  If you can't wait, check out the Census definition [here](https://www.census.gov/geo/reference/gtc/gtc_ct.html).).  Other geographic options can be found [here](https://walkerke.github.io/tidycensus/articles/basic-usage.html#geography-in-tidycensus). 
 * `year`: The end year of the data (because we want 2012-2016, we use 2016).
 * `variables`: The variables we want to bring in as specified in a vector you create using the function `c()`. Note that we created variable names of our own (e.g. "nhwhite") and we put the ACS IDs in quotes. ("B03002_003"). Had we not done this, the variable names will come in as they are named in the ACS, which is not all that descriptive.
-* `state`: We can filter the tracts to those in a specific case, here it is "CA" - if we don't specify this, we get all tracts in the United States.
-* `survey`: The specific Census survey were extracting data from.  We want 5-year American Community Surveym so we specify "acs5" - remember that the ACS comes in 1-, 3-, and 5-year varieties.  
+* `state`: We can filter the tracts to those in a specific state, here it is "CA" - if we don't specify this, we get all tracts in the United States.  There is also a `county` filter.
+* `survey`: The specific Census survey were extracting data from.  We want 5-year American Community Survey, so we specify "acs5" - the ACS comes in 1-, 3-, and 5-year varieties (more on this in Week 2 lecture).  
 
 Type in `? get_acs()` to see the full list of options. If you type in *ca* in your console, you should see a tibble pop up with the variables we selected. Cool, right?
 
@@ -161,16 +161,16 @@ ca
 ### **Downloading from an online source**
 \
 
-The other way to get Census data is to download them directly from the web.  There are several websites where you can download Census data including [Social Explorer](https://www.socialexplorer.com/), which as UC Davis affiliates we have free access to, and [Fact Finder](https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml), which is free for everyone.  The site we used in lecture is the [National Historical Geographic Information System (NHGIS)](https://www.nhgis.org/).  You may choose to use NHGIS (or any of the other sources listed above) over the API because it is more user friendly in terms of selecting variables.  I've uploaded a brief step-by-step tutorial for downloading NHGIS data [here](http://crd230.github.io/nhgis.html).
+The other way to get Census data is to download them directly from the web.  There are several websites where you can download Census data including [Social Explorer](https://www.socialexplorer.com/), which as UC Davis affiliates we have free access to, and [Fact Finder](https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml), which is free for everyone.  The best online source for downloading machine-readable census data is the [National Historical Geographic Information System (NHGIS)](https://www.nhgis.org/).  You may choose to use NHGIS (or any of the other sources listed above) over the API because it is more user friendly in terms of selecting variables.  I've uploaded a brief step-by-step tutorial for downloading NHGIS data [here](http://crd230.github.io/nhgis.html).
 
-To save us time, I've uploaded an NHGIS csv file on GitHub for you to use in this lab. Download the file from [here](https://raw.githubusercontent.com/crd230/data/master/nhgis0106_ds225_20165_2016_tract.csv) and save it into the same folder where your Lab 1 R Markdown file resides.  The file contains census tract-level data on median household income for all tracts in the United States. The record layout/codebook for the file can be found [here](https://raw.githubusercontent.com/crd230/data/master/nhgis0106_ds225_20165_2016_tract_codebook.txt).  
+To save us time, I've uploaded an NHGIS csv file on GitHub for you to use in this lab. Download the file from [here](https://raw.githubusercontent.com/crd230/data/master/nhgis0106_ds225_20165_2016_tract.csv) and save it into the same folder where your Lab 1 R Markdown or R Script file resides.  The file contains census tract-level data on median household income for all tracts in the United States. The record layout/codebook for the file can be found [here](https://raw.githubusercontent.com/crd230/data/master/nhgis0106_ds225_20165_2016_tract_codebook.txt).  
 
 <div style="margin-bottom:25px;">
 </div>
 ## **Reading in data**
 \
 
-Most of the data files you will encounter are comma-delimited (or comma-separated) files, which have `.csv` extensions.  Comma-delimted means that columns are separated by commas.  The file from NHGIS is a `.csv` file.  To import this file in R, use the `read_csv()` command, which is found in the **tidyverse** package. 
+Getting data directly into R through an API is super cool and convenient, but you'll have to download and read in most data without an API.  Most data files you will encounter are comma-delimited (or comma-separated) files, which have `.csv` extensions.  Comma-delimted means that columns are separated by commas.  The file from NHGIS is a `.csv` file.  To import this file in R, use the `read_csv()` command, which is found in the **tidyverse** package. 
 
 
 
@@ -202,7 +202,7 @@ nhgisfile1 <- read_csv("nhgis0106_ds225_20165_2016_tract.csv")
 ## **Data Wrangling** 
 \
 
-It is rare that the data set you download is in exactly the right form for data analysis.  For example, you might want to analyze just Yolo county neighborhoods. Or you might want to discard certain variables from the dataset to reduce clutter. Or you encounter missing data. 
+It is rare that the data set you download is in exactly the right form for data analysis.  For example, you might want to analyze just Yolo county neighborhoods. Or you might want to discard certain variables from the dataset to reduce clutter. Or you encounter missing data. The process of gathering data in its raw form and molding it into a form that is suitable for its end use is known as *data wrangling*.  
 
 In this lab, we won't have time to go through all of the methods and functions in R that are associated with the data wrangling process. We will cover more in later labs and many methods you will have to learn on your own given the specific tasks you will need to accomplish.  In the rest of this guide, we'll go through some of the basic data wrangling techniques using the functions found in the package **dplyr**, which was automatically installed and loaded when you brought in the **tidyverse** package.  These functions can be used for tibbles and regular data frames.
 
@@ -211,7 +211,7 @@ In this lab, we won't have time to go through all of the methods and functions i
 ### **Selecting and renaming variables**
 \
 
-In practice, most of the data files you will download will contain variables you don't need. It is easier to work with a smaller dataset as it reduces clutter and clears up memory space, which is important if you are executing complex tasks on a large number of observations.  Use the command `select()` to keep variables by name.  Visually, we are doing this (taken from the RStudio [cheatsheet](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf))  
+In practice, most of the data files you will download will contain variables you don't need. It is easier to work with a smaller dataset as it reduces clutter and clears up memory space, which is important if you are executing complex tasks on a large number of observations.  Use the command `select()` to keep variables by name.  Visually, we are doing the following (taken from the RStudio [cheatsheet](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf))  
 
 <center>
 ![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/subsetcols.png)
@@ -399,7 +399,7 @@ We used the function `ifelse()` to create *mhisp* - the function tells R that if
 ### **Merging files**
 \
 
-We need to join the two datasets *nhgisfile1* and *ca1* together.  Remember from lecture that the unique Census ID for a tract combines the tract, county and state IDs.  We have this ID as the single variable GEOID in *ca1*, but separated as *STATEA*, *COUNTYA* and *TRACTA* in nhgisfile1.  See Figure 2.
+We need to join the two datasets *nhgisfile1* and *ca1* together. To do this, we need a unique ID that connects the tracts across the two files. The unique Census ID for a tract combines the tract, county and state IDs.  We have this ID as the single variable GEOID in *ca1*, but separated as *STATEA*, *COUNTYA* and *TRACTA* in nhgisfile1.  See Figure 2.
 
 <center>
 ![Figure 2: Geographic IDs](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/lab1fig3.png)
@@ -407,14 +407,21 @@ We need to join the two datasets *nhgisfile1* and *ca1* together.  Remember from
 </center>
 
 
-We can merge the two files by either merging on a single variable or on the two separate variables.  We just need to make sure it is consistent across the two datasets.  Let's combine *STATEA*, *COUNTYA* and *TRACTA* into a single variable so it will match *GEOID*.  To do this, use the command `str_c()` in the `mutate()` command.  This function concatenates (joins together) two or more character variables.
+We can merge the two files by either merging on a single variable or on the three separate variables.  We just need to make sure it is consistent across the two datasets.  Let's combine *STATEA*, *COUNTYA* and *TRACTA* into a single variable so it will match *GEOID*.  To do this, use the command `str_c()` in the `mutate()` command.  This function concatenates (joins together) two or more character variables.
 
 
 ```r
 nhgisfile1 <- mutate(nhgisfile1, GEOID = str_c(STATEA, COUNTYA, TRACTA))
 ```
 
-The function `str_c()` concatenates.  There is also a function that separates, which is unsuprisingly named `separate()`.  The function separates a character variable based on [delimiters](https://en.wikipedia.org/wiki/Delimiter).  The variable *NAME* in *ca1* combines census tract name, county, and state.  Let's use `separate()` to separate this variable into its three separate parts.
+The function `str_c()` concatenates.  There is also a function that separates, which is unsuprisingly named `separate()`.  The function separates a character variable based on [delimiters](https://en.wikipedia.org/wiki/Delimiter).  The variable *NAME* in *ca1* combines census tract name, county, and state.
+
+````
+Census Tract 4001, Alameda County, California
+````
+
+The `separate()` function tells R to separate *NAME* into three variables with the names *tract*, *county*, and *state*.
+
 
 
 ```r
@@ -552,10 +559,24 @@ sub.tracts <- filter(catracts, COUNTYA == "067" | COUNTYA == "113" | COUNTYA == 
 
 <div style="margin-bottom:25px;">
 </div>
+### **Saving data**
+\
+
+If you want to save your data frame or tibble as a csv file on your hard drive, use the command `write_csv()`.
+
+
+```r
+write_csv(sub.tracts, "lab1_file.csv")
+```
+
+The first argument is the name of the R object you want to save. The second argument is the name of the csv file in quotes.  Make sure to add the .csv extension.  The file is saved in the folder you set as the current working directory.
+
+<div style="margin-bottom:25px;">
+</div>
 ## **Summarizing variables**
 \
 
-We now move from functions that help bring in and clean your data set to those that help summarize its variables.  We use the function `summarize()` to get descriptive statistics of our data.  For example, let's calculate mean neighborhood income in San Franciso, Yolo, and Sacramento counties. The first argument inside `summarize()` is the data object ncal.tracts and the second argument is the function calculating the specific summary statistic, in this case `mean()`.
+We now move from functions that help bring in and clean your data set to those that help summarize its variables.  We use the function `summarize()` to get descriptive statistics of our data.  For example, let's calculate mean neighborhood income in San Franciso, Yolo, and Sacramento counties. The first argument inside `summarize()` is the data object *ncal.tracts* and the second argument is the function calculating the specific summary statistic, in this case `mean()`.
 
 
 ```r
@@ -576,7 +597,7 @@ summarize(sub.tracts, mean(medincome))
 </center>
 
 
-We got an NA.  This means we have missing median household income for at least one of our tracts.  I've uploaded a [tutorial]() for dealing with missing data.  The methods I suggest are *basic* - one can teach an entire class on missing data - so keep this in mind when you deal with missing data in your projects.  Please read through the tutorial on your own time.  For now, let's use the `na.rm = TRUE` argument, which removes tracts that are missing median household income.
+We got an NA.  This means we have missing median household income for at least one of our tracts.  I've posted a [mini lab](https://crd230.github.io/missingdata.html) for dealing with missing data.  The methods I suggest in that lab are *basic* - one can teach an entire class on missing data - so keep this in mind when you deal with missing data in your projects.  Please read through the tutorial on your own time.  For now, let's use the `na.rm = TRUE` argument, which removes tracts that are missing median household income.
 
 
 ```r
@@ -609,7 +630,7 @@ sub.tracts %>%
 ## 3 Yolo County                                   62020.
 ```
 
-The first pipe sends sub.tracts into the function `group_by()`, which tells R to group *sub.tracts* by the variable *County*.
+The first pipe sends *sub.tracts* into the function `group_by()`, which tells R to group *sub.tracts* by the variable *County*.
 
 How do you know the tibble is grouped? Because it tells you
 
@@ -643,7 +664,7 @@ sub.tracts %>%
 ## 3 Yolo County          62020. 61106 22430.     -0.383
 ```
 
-We usually summarize categorical variables by examining a frequency table.  To get the percent of tracts that have a majority Hispanic population, you’ll need to combine the functions `group_by()`, `summarize()` and `mutate()` using %>%.
+We usually summarize categorical variables by examining a frequency table.  To get the percent of tracts that have a majority Hispanic population, you’ll need to combine the functions `group_by()`, `summarize()` and `mutate()` using `%>%`.
 
 
 ```r
@@ -664,9 +685,9 @@ sub.tracts %>%
 
 The code `group_by(mhisp)` separates the neighborhoods by the categories of *mhisp* (Majority, Not Majority - there are two tracts with missing values).  We then used `summarize()` to count the number of neighborhoods that are Majority and Not Majority. The function to get a count is `n()`, and we saved this count in a variable named *n*.
 
-Next, we used `mutate()` on this table to get the proportion of all neighborhoods by Majority Hispanic designation. The code sum(n) adds the values of n. We then divide the value of each *n* by this sum. That yields the final frequency table.
+Next, we used `mutate()` on this table to get the proportion of neighborhoods by Majority Hispanic designation. The code `sum(n)` adds the values of n. We then divide the value of each *n* by this sum. That yields the final frequency table.
 
-We can add city to the group_by() function to disaggregate by County. Let's remove tracts with a missing value for *mhisp* using the `filter()` command
+We can add city to the `group_by()` function to disaggregate by County. Let's remove tracts with a missing value for *mhisp* using the `filter()` command
 
 
 ```r
@@ -690,7 +711,7 @@ sub.tracts %>%
 ## 6 Yolo County          Not Majority    33 0.805
 ```
 
-
+See any interesting contrasts?
 
 <div style="margin-bottom:25px;">
 </div>
@@ -709,12 +730,11 @@ ggplot(data = <DATA>) +
 * Each unique function has its unique set of mapping arguments which you specify using the `mapping = aes()` argument.  Charts and graphs have an x-axis, y-axis, or both.  
 
 
-A typical visual for summarizing a numeric variable is a histogram. To create a histogram, use `geom_histogram()` for `<GEOM_FUNCTION()>`. Let’s create a histogram of median household income.
+A typical visual for summarizing a numeric variable is a [histogram](https://en.wikipedia.org/wiki/Histogram). To create a histogram, use `geom_histogram()` for `<GEOM_FUNCTION()>`. Let’s create a histogram of median household income.
 
 
 ```r
-sub.tracts %>% 
-  ggplot() + 
+ggplot(sub.tracts) + 
   geom_histogram(mapping = aes(x=medincome), na.rm = TRUE)
 ```
 
@@ -722,19 +742,19 @@ sub.tracts %>%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](lab1_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
+![](lab1_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
+The message tells us that we can use the `bins =` argument to change the number of bins used to produce the histogram.  You can increase the number of bins to make the bins narrower and thus get a finer grain of detail. Or you can decrease the number of bins to get a broader visual summary of the shape of the variable's distribution.  Compare `bins = 10` to `bins = 50`.
 
-We can use a boxplot to visually summarize the distribution of a single variable or the relationship between a categorical and numeric variable. Use geom_boxplot() for <GEOM_FUNCTION()> to create a boxplot. Let’s examine median household income.
+We can use a [boxplot](https://en.wikipedia.org/wiki/Box_plot) to visually summarize the distribution of a single variable or the relationship between a categorical and numeric variable. Use `geom_boxplot()` for `<GEOM_FUNCTION()>` to create a boxplot. Let’s examine median household income.
 
 
 ```r
-sub.tracts %>%
-  ggplot() +
-     geom_boxplot(mapping = aes(y = medincome), na.rm = TRUE)
+ggplot(sub.tracts) +
+    geom_boxplot(mapping = aes(y = medincome), na.rm = TRUE)
 ```
 
-![](lab1_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
+![](lab1_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
      
 
 Let's check the distribution of median income by *mhisp*. Because we are examining the association between two variables, we need to specify x and y variables. The `geom_boxplot()` won't eliminate the NA values from *mhisp*, so we'll have to use the `filter()` command to remove them manually 
@@ -747,7 +767,9 @@ sub.tracts %>%
     geom_boxplot(mapping = aes(x = mhisp, y = medincome), na.rm = TRUE)
 ```
 
-![](lab1_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
+![](lab1_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
+
+Points oustide the whiskers represent outliers. Outliers are defined as having values that are either larger than the 75th percentile plus 1.5 times the IQR or smaller than the 25th percentile minus 1.5 times the IQR.  
 
 The boxplot is for all neighborhoods combined. Use the `facet_wrap()` function to separate by County
 
@@ -756,13 +778,13 @@ The boxplot is for all neighborhoods combined. Use the `facet_wrap()` function t
 sub.tracts %>%
   filter(is.na(mhisp) == FALSE) %>%
   ggplot() +
-  geom_boxplot(mapping = aes(x = mhisp, y = medincome), na.rm = TRUE) +
+    geom_boxplot(mapping = aes(x = mhisp, y = medincome), na.rm = TRUE) +
   facet_wrap(~County) 
 ```
 
-![](lab1_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
+![](lab1_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
 
-`ggplot()` is a powerful function, and you can make a lot of really visually captivating graphs. You can also make maps with the function, which we'll cover in next week's lab.  We have just scratched the surface of its functions and features.  The list of all possible plots for `<GEOM_FUNCTION>()` can be found [here](https://ggplot2.tidyverse.org/reference/).  You can also make your graphs really "pretty" and professional looking by altering graphing features, including colors, labels, titles and axes.  For a list of `ggplot()` functions that alter various features of a graph, check out [Chapter 22 in RDS](http://r4ds.had.co.nz/graphics-for-communication.html). 
+`ggplot()` is a powerful function, and you can make a lot of visually captivating graphs. We have just scratched the surface of its functions and features.  The list of all possible plots for `<GEOM_FUNCTION>()` can be found [here](https://ggplot2.tidyverse.org/reference/).  You can also make your graphs really "pretty" and professional looking by altering graphing features, including colors, labels, titles and axes.  For a list of `ggplot()` functions that alter various features of a graph, check out [Chapter 22 in RDS](http://r4ds.had.co.nz/graphics-for-communication.html). You can also make maps with the function, which we'll cover in next week's lab.  
 
 
 ***

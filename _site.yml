@@ -13,6 +13,8 @@ navbar:
       menu: 
         - text: "Lab 0"
           href: lab0.html
+        - text: "Lab 1"
+          href: lab1.html
     - text: "Mini Labs"
       menu: 
         - text: "Download data from NHGIS"
