@@ -28,7 +28,7 @@ navbar:
         - text: "Data Sources"
           href: ndata.html  
         - text: "Census Geographies"
-          href:   
+          href: censusgeography.html  
 output:
   html_document:
     theme: cosmo

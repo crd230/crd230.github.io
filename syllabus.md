@@ -198,14 +198,14 @@ The schedule is subject to revision throughout the quarter.  Please see the full
    <td style="text-align:left;"> Lecture </td>
    <td style="text-align:left;"> Opportunity Mapping </td>
    <td style="text-align:left;width: 13em; "> Knaap (2017); James et al. Ch. 10.3; ROI methods </td>
-   <td style="text-align:left;"> HW 1 </td>
+   <td style="text-align:left;">  </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 30-Jan </td>
    <td style="text-align:left;"> Lab </td>
    <td style="text-align:left;"> Opportunity Mapping in R </td>
    <td style="text-align:left;width: 13em; ">  </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> HW 1 </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 4-Feb </td>
@@ -226,6 +226,13 @@ The schedule is subject to revision throughout the quarter.  Please see the full
    <td style="text-align:left;"> Lecture </td>
    <td style="text-align:left;"> Spatial Regression Models </td>
    <td style="text-align:left;width: 13em; "> Handout; Chi &amp; Zhu (2008); Voss et al. (2006) </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 5em; "> 13-Feb </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;width: 13em; ">  </td>
    <td style="text-align:left;"> HW 2 </td>
   </tr>
   <tr>
@@ -254,14 +261,14 @@ The schedule is subject to revision throughout the quarter.  Please see the full
    <td style="text-align:left;"> Lecture </td>
    <td style="text-align:left;"> Multilevel models </td>
    <td style="text-align:left;width: 13em; "> Handout; O'Brien &amp; Winship (2017) </td>
-   <td style="text-align:left;"> HW 3 </td>
+   <td style="text-align:left;">  </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 27-Feb </td>
    <td style="text-align:left;"> Lab </td>
    <td style="text-align:left;"> Multilevel models in R </td>
    <td style="text-align:left;width: 13em; ">  </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> HW 3 </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 4-Mar </td>
@@ -282,14 +289,14 @@ The schedule is subject to revision throughout the quarter.  Please see the full
    <td style="text-align:left;"> Lecture </td>
    <td style="text-align:left;"> Presentations </td>
    <td style="text-align:left;width: 13em; ">  </td>
-   <td style="text-align:left;"> HW 4 </td>
+   <td style="text-align:left;">  </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 13-Mar </td>
    <td style="text-align:left;"> Lab </td>
    <td style="text-align:left;"> Presentations </td>
    <td style="text-align:left;width: 13em; ">  </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> HW 4 </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 20-Mar </td>

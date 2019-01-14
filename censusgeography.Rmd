@@ -1,0 +1,341 @@
+---
+title: "Comparing Census Geographies"
+subtitle: <h4 style="font-style:normal">CRD 298 - Spatial Methods in Community Research</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    code_folding: show
+---
+
+<h4 style="font-style:normal">Winter 2019</h4>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 50px;
+   margin-bottom: 100px;
+}
+
+.html-widget {
+    margin: auto;
+}
+
+h1.title {
+  font-weight: bold;
+}
+
+</style>
+
+\
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+What is the spatial extent of commonly used large-scale geographies and how do they compare in size and area?  Below is a map comparing the Sacramento Metropolitan Area (Grey), Sacramento City (Red), and Sacramento County (Blue).  You can hide and add  layers to see how the geographies compare.   
+
+How do smaller scale geographies typically used to measure neighborhood boundaries compare?  Below is a map comparing Davis [zip codes](https://www.census.gov/geo/reference/zctas.html) (Grey), [tracts](https://www.census.gov/geo/reference/gtc/gtc_ct.html) (blue), and [blocks](https://www.census.gov/geo/reference/gtc/gtc_block.html) (red). Can you find the tract you  currently live in? What about the block?
+
+One thing you'll have to be careful about if you're interested in comparing tracts over time - [boundaries change](https://www.census.gov/geo/reference/gtc/gtc_boundarychange.html).  The final map compares Davis tracts in 2000 (red) and 2010 (black). You'll notice that some tracts in 2000 get split up.  Why?  Because there were enough significant population changes within the tract from 2000 to 2010 to warrant a split.  If you are curious, for example, why the tract in East Davis got split up into 3 tracts, check out this side-by-side [Social Explorer map](https://www.socialexplorer.com/65d3c9db2b/view) showing changes in population size in the 3 tracts from 2000 to 2010. I also embedded that map below. Can you tell what happened?
+
+The code producing each map is shown after the map. 
+
+<div style="margin-bottom:25px;">
+</div>
+## **Sacramento metro, county and city**
+<div style="margin-bottom:100px;">
+</div>
+
+```{r include = FALSE, warning = FALSE, message = FALSE}
+library(sf)
+library(tidycensus)
+census_api_key("b81d373d6e785ecbc489de1fc862aef424d0a63a")
+library(tigris)
+options(tigris_class = "sf")
+library(tidyverse)
+library(rmapshaper)
+
+          
+cb <- core_based_statistical_areas(cb = TRUE)
+pl <- places(state = "CA", cb = TRUE)
+cnty <- counties(state ="CA", cb = TRUE)
+ca.tracts <- tracts(state ="CA", cb = TRUE)
+yolo.blocks <-blocks(state="CA", county = "Yolo")
+yolo.block.groups <-block_groups(state="CA", county = "Yolo", cb = TRUE)
+zips <- zctas(cb=TRUE, state = "CA")
+ca.tracts.2000 <- tracts(state ="CA", cb = TRUE, year = 2000)
+ca.tracts.2000<-st_transform(ca.tracts.2000, crs=st_crs(ca.tracts))
+
+sac.metro <- filter(cb, NAME =="Sacramento--Roseville--Arden-Arcade, CA")
+sac.city <- filter(pl, NAME == "Sacramento")
+sac.county <- filter(cnty, NAME == "Sacramento")
+davis.city <- filter(pl, NAME == "Davis")
+
+sac.metro <- st_transform(sac.metro, crs = 4326)
+sac.city <- st_transform(sac.city, crs = 4326)
+sac.county <- st_transform(sac.county, crs = 4326)
+
+davis.tracts <- ms_clip(ca.tracts, davis.city, remove_slivers = TRUE) 
+davis.blocks <- ms_clip(yolo.blocks, davis.city, remove_slivers = TRUE) 
+davis.block.groups <- ms_clip(yolo.block.groups, davis.city, remove_slivers = TRUE) 
+davis.zip <- ms_clip(zips, davis.city, remove_slivers = TRUE) 
+davis.tracts.2000 <- ms_clip(ca.tracts.2000, davis.city, remove_slivers = TRUE) 
+
+davis.tracts <- st_transform(davis.tracts, crs = 4326)
+davis.blocks <- st_transform(davis.blocks, crs = 4326)
+davis.block.groups <- st_transform(davis.block.groups, crs = 4326)
+davis.zip <- st_transform(davis.zip, crs = 4326)
+davis.tracts.2000 <- st_transform(davis.tracts.2000, crs = 4326)
+
+```
+
+
+```{r leaflet, fig.align="center", echo = FALSE, warning = FALSE, message = FALSE}
+library(leaflet)
+
+sac.map <- leaflet(sac.metro) %>%
+  # Base groups
+  addTiles(urlTemplate = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png") %>%
+  # Overlay groups
+  addPolygons(color="grey", group = "Metro", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = sac.county, color = "blue", group = "County", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = sac.city, color = "red", group = "City", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  # Layers control
+  addLayersControl(
+    overlayGroups = c("Metro", "City", "County"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+sac.map
+```
+
+<div style="margin-bottom:100px;">
+</div>
+
+
+
+```{r eval = FALSE, warning = FALSE, message = FALSE}
+#Load in required packages
+library(tigris)
+options(tigris_class = "sf")
+library(tidyverse)
+library(rmapshaper)
+
+#extract metro, counties and cities          
+cb <- core_based_statistical_areas(cb = TRUE)
+pl <- places(state = "CA", cb = TRUE)
+cnty <- counties(state ="CA", cb = TRUE)
+
+#subset to Sacramento metro, county, and city
+sac.metro <- filter(cb, NAME =="Sacramento--Roseville--Arden-Arcade, CA")
+sac.city <- filter(pl, NAME == "Sacramento")
+sac.county <- filter(cnty, NAME == "Sacramento")
+```
+
+```{r eval = FALSE, warning = FALSE, message = FALSE}
+library(leaflet)
+
+sac.map <- leaflet(sac.metro) %>%
+  # Base groups
+  addTiles(group = "OSM (default)") %>%
+  # Overlay groups
+  addPolygons(color="grey", group = "Metro", weight = 1, smoothFactor = 0.5, 
+              opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = sac.city, color = "red", group = "City", weight = 1, 
+              smoothFactor = 0.5, opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = sac.county, color = "blue", group = "County", weight = 1, 
+              smoothFactor = 0.5, opacity = 1.0, fillOpacity = 0.5) %>%
+  # Layers control
+  addLayersControl(
+    overlayGroups = c("Metro", "City", "County"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+sac.map
+```
+
+<div style="margin-bottom:25px;">
+</div>
+## **Davis ZCTAs, tracts, block groups, and blocks**
+<div style="margin-bottom:100px;">
+</div>
+
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+
+davis.map <- leaflet(davis.zip) %>%
+  # Base groups
+  addTiles(urlTemplate = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png") %>%
+  # Overlay groups
+  addPolygons(color="black", group = "Zipcode", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = davis.tracts, color = "blue", group = "Tract", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = davis.block.groups, color = "green", group = "Block group", weight = 1, smoothFactor = 0.5, opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = davis.blocks, color = "red", group = "Block", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  # Layers control
+  addLayersControl(
+    overlayGroups = c("Zipcode", "Tract", "Block group", "Block"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+davis.map
+```
+
+<div style="margin-bottom:100px;">
+</div>
+
+
+```{r eval = FALSE, warning = FALSE, message = FALSE}
+#Load required packages
+library(tidycensus)
+census_api_key("INSERT YOUR KEY HERE")
+library(tigris)
+options(tigris_class = "sf")
+library(tidyverse)
+library(rmapshaper)
+
+#Get cities, tracts, blocks, and ZCTAs
+pl <- places(state = "CA", cb = TRUE)
+ca.tracts <- tracts(state ="CA", cb = TRUE)
+yolo.block.groups <-block_groups(state="CA", county = "Yolo", cb = TRUE)
+yolo.blocks <-blocks(state="CA", county = "Yolo")
+zips <- zctas(cb=TRUE, state = "CA")
+
+#Davis city
+davis.city <- filter(pl, NAME == "Davis")
+
+#Clip tracts, blocks and ZCTAs to Davis city boundary
+davis.tracts <- ms_clip(ca.tracts, davis.city, remove_slivers = TRUE) 
+davis.block.groups <- ms_clip(yolo.block.groups, davis.city, remove_slivers = TRUE) 
+davis.blocks <- ms_clip(yolo.blocks, davis.city, remove_slivers = TRUE) 
+davis.zip <- ms_clip(zips, davis.city, remove_slivers = TRUE) 
+```
+
+```{r eval = FALSE, warning = FALSE, message = FALSE}
+library(leaflet)
+
+davis.map <- leaflet(davis.zip) %>%
+  # Base groups
+  addTiles(urlTemplate = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png") %>%
+  # Overlay groups
+  addPolygons(color="black", group = "Zipcode", weight = 1, smoothFactor = 0.5, 
+              opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = davis.tracts, color = "blue", group = "Tract", weight = 1, 
+              smoothFactor = 0.5, opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = davis.block.groups, color = "green", group = "Block group", 
+              weight = 1, smoothFactor = 0.5, opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = davis.blocks, color = "red", group = "Block", weight = 1, 
+              smoothFactor = 0.5, opacity = 1.0, fillOpacity = 0.5) %>%
+  # Layers control
+  addLayersControl(
+    overlayGroups = c("Zipcode", "Tract", "Block group", "Block"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+davis.map
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Davis tracts in 2000 and 2010**
+<div style="margin-bottom:100px;">
+</div>
+
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+
+davis.map2 <- leaflet(davis.tracts) %>%
+  # Base groups
+  addTiles(urlTemplate = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png") %>%
+  # Overlay groups
+  addPolygons(color="black", group = "2010", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = davis.tracts.2000, color = "red", group = "2000", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  # Layers control
+  addLayersControl(
+    overlayGroups = c("2010", "2000"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+davis.map2
+```
+
+<div style="margin-bottom:100px;">
+</div>
+
+Why were there changes? The following map from Social Explorer shows total population sizes in Davis tracts in 2010 boundaries in 2000 and 2010.  Toggle between 2000 to 2010 by selecting Map 1 and Map 2.
+
+<div style="margin-bottom:100px;">
+</div>
+
+<p align="center"><iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.socialexplorer.com/65d3c9db2b/embed" width="800" height="600" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></iframe></p>
+
+<div style="margin-bottom:100px;">
+</div>
+
+```{r eval = FALSE, warning = FALSE, message = FALSE}
+#Load in required packages
+library(tidycensus)
+census_api_key("b81d373d6e785ecbc489de1fc862aef424d0a63a")
+library(tigris)
+options(tigris_class = "sf")
+library(tidyverse)
+library(rmapshaper)
+
+#Bring in cities, tracts in 2000, and tracts in 2010
+pl <- places(state = "CA", cb = TRUE)
+ca.tracts.2010 <- tracts(state ="CA", cb = TRUE)
+ca.tracts.2000 <- tracts(state ="CA", cb = TRUE, year = 2000)
+# Need to reproject 2000 tracts to 2010 tract CRS
+ca.tracts.2000<-st_transform(ca.tracts.2000, crs=st_crs(ca.tracts))
+
+#Get City of Davis
+davis.city <- filter(pl, NAME == "Davis")
+
+#Clip tracts to Davis boundaries
+davis.tracts.2010 <- ms_clip(ca.tracts.2010, davis.city, remove_slivers = TRUE) 
+davis.tracts.2000 <- ms_clip(ca.tracts.2000, davis.city, remove_slivers = TRUE) 
+
+```
+
+```{r eval = FALSE, warning = FALSE, message = FALSE}
+library(leaflet)
+
+davis.map2 <- leaflet(davis.tracts.2010) %>%
+  # Base groups
+  addTiles(urlTemplate = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png") %>%
+  # Overlay groups
+  addPolygons(color="black", group = "2010", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>%
+  addPolygons(data = davis.tracts.2000, color = "red", group = "2000", weight = 1, 
+              smoothFactor = 0.5, opacity = 1.0, fillOpacity = 0.5) %>%
+  # Layers control
+  addLayersControl(
+    overlayGroups = c("2010", "2000"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+davis.map2
+```
+
+
+***
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
+
