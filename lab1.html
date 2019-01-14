@@ -697,9 +697,9 @@ Subsetting or filtering means selecting rows/obsevervations based on their value
 </div>
 </center>
 <p>The first argument in the parentheses of this command is the name of the data frame. The second and any subsequent arguments (separated by commas) are the expressions that filter the data frame. For example, we can select Sacramento county using its <a href="https://www.nrcs.usda.gov/wps/portal/nrcs/detail/ca/home/?cid=nrcs143_013697">FIPS code</a></p>
-<pre class="r"><code>filter(catracts, COUNTYA == &quot;06067&quot;)</code></pre>
+<pre class="r"><code>filter(catracts, COUNTYA == &quot;067&quot;)</code></pre>
 <p>The double equal operator <code>==</code> means equal to. We can also explicitly exclude cases and keep everything else by using the not equal operator <code>!=</code>. The following code <em>excludes</em> Sacramento county.</p>
-<pre class="r"><code>filter(catracts, COUNTYA != &quot;06067&quot;)</code></pre>
+<pre class="r"><code>filter(catracts, COUNTYA != &quot;067&quot;)</code></pre>
 <p>What about filtering if a county has a value greater than a specified value? For example, counties with a percent white greater than 0.5 (50%).</p>
 <pre class="r"><code>filter(catracts, pnhwhite &gt; 0.50)</code></pre>
 <p>What about less than 0.5 (50%)?</p>

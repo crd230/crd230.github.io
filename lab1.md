@@ -511,14 +511,14 @@ The first argument in the parentheses of this command is the name of the data fr
 
 
 ```r
-filter(catracts, COUNTYA == "06067")
+filter(catracts, COUNTYA == "067")
 ```
 
 The double equal operator `==` means equal to.  We can also explicitly exclude cases and keep everything else by using the not equal operator `!=`.  The following code *excludes* Sacramento county.
 
 
 ```r
-filter(catracts, COUNTYA != "06067")
+filter(catracts, COUNTYA != "067")
 ```
 
 
