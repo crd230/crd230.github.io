@@ -322,9 +322,6 @@ One way of dealing with this is to clip the portion of the tract that is inside 
 
 
 ```{r warning=FALSE, message=FALSE}
-#calcuate the area of the tracts.  I promise I will explain why were doing this a little later. 
-ca.tracts <- mutate(ca.tracts, tarea = as.numeric(st_area(ca.tracts)))
-
 sac.city.tracts.c <- ms_clip(target = ca.tracts, clip = sac.city, remove_slivers = TRUE)
 ggplot() + 
   geom_sf(data = sac.city.tracts.c, fill = "blue") +
@@ -369,6 +366,8 @@ In order to proceed, we need to have the *ca.tracts* and *cdist* data sets in th
 ca.tracts <- st_transform(ca.tracts, crs = "+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80")
 cdist <- st_transform(cdist, crs = "+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80")
 ```
+
+Note that the only spaces allowed when specifying the `crs` is in between each argument.  For example, there should be no space in between `+` and `datum` or `datum` and `=` or `=` and `NAD83`.  They should be all together.  On the other hand, there should be a space between `NAD83` and `+ellps=GRS80`.
 
 Next we need to transform medians, ratios, rates, and any other non count variables. We do so by multiplying median income by the total number of households (`tothhs*medincome`) to get an aggregate income measure - think of it as the total amount of income dollars in the tract.
 
