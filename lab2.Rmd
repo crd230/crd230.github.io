@@ -270,7 +270,7 @@ Don't get stuck on what the code is doing because we'll go through mapping with 
 Do you see an issue with the tracts?  `st_intersects` returns all tracts that touch *sac.metro*, which include those that touch the metro's boundary. So, we have tracts that are not actually inside the metro area boundaries (but touch them). Not good. We can instead use  `st_within` to return tracts that are completely *within* the metro. 
 
 ```{r warning=FALSE, message=FALSE}
-# subset bay.tracts to those in sf.metro
+# subset ca.tracts to those in sac.metro
 sac.metro.tracts.w <- st_join(ca.tracts, sac.metro, join = st_within, left=FALSE)
 ggplot() + 
     geom_sf(data = sac.metro.tracts.w, fill = "blue") +
@@ -438,20 +438,26 @@ ca.mhval <- get_acs(geography = "tract",
             rename(medhval = estimate)
 ```              
 
-If we use `left_join()` to merge *medhval* from *ca.mhval* into *sac.city.tracts.c*, we get an error
+Then clip it to Sacramento city boundaries using `ms_clip()`
+
+```{r warning = FALSE, message = FALSE}
+sac.city.mhval <- ms_clip(ca.mhval, sac.city, remove_slivers = TRUE)
+```
+
+If we use `left_join()` to merge *medhval* from *sac.city.mhval* into *sac.city.tracts.c*, we get an error
 
 ```{r error=TRUE}
 sac.city.tracts.c <- sac.city.tracts.c %>%
-  left_join(ca.mhval, by = "GEOID")
+  left_join(sac.city.mhval, by = "GEOID")
 ```
 
 The error tells us to use `st_join()`.  Fine, let's use it then
 
 ```{r warning = FALSE, message = FALSE, results = "hide"}
 sac.city.tracts.c <- sac.city.tracts.c %>%
-  st_join(ca.mhval, join = st_equals) %>%
+  st_join(sac.city.mhval, join = st_equals) %>%
   select(-(GEOID.y))
-sac.city.tracts.c
+sac.city.tracts.c 
 ```
 
 
