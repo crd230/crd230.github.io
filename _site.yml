@@ -17,12 +17,16 @@ navbar:
           href: lab1.html
         - text: "Lab 2"
           href: lab2.html
+        - text: "Lab 3"
+          href: lab2.html
     - text: "Mini Labs"
       menu: 
         - text: "Download data from NHGIS"
           href: nhgis.html
         - text: "Dealing with missing data"
-          href: missingdata.html      
+          href: missingdata.html     
+        - text: "Geocoding"
+          href: geocoding.html   
         - text: "Introduction to QGIS"
           href:
     - text: "Other"
