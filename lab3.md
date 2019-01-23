@@ -261,7 +261,7 @@ To fix the tilt, let's change the *la.city.nhgis* CRS to the *la.city.tigris* CR
 la.city.nhgis.tr <-st_transform(la.city.nhgis, crs = st_crs(la.city.tigris)) 
 ```
 
-Now, no more tilt!
+Now, no more tilt!!
 
 
 ```r

@@ -533,7 +533,7 @@ tmap_arrange(lacity1, lacity2)</code></pre>
 <p>You’ll see that under Albers Equal Area, California tilts. Hence, Los Angeles will tilt. In this case, AEA may be better for maps of the entire U.S. or for certain parts of the country (e.g. Midwest).</p>
 <p>To fix the tilt, let’s change the <em>la.city.nhgis</em> CRS to the <em>la.city.tigris</em> CRS, which has a PCS of <code>longlat</code>. We use the function <code>st_transform()</code> to accomplish this task. I extract the CRS of <em>la.city.tigris</em> using <code>st_crs()</code> and specify that directly into the <code>crs</code> argument.</p>
 <pre class="r"><code>la.city.nhgis.tr &lt;-st_transform(la.city.nhgis, crs = st_crs(la.city.tigris)) </code></pre>
-<p>Now, no more tilt!</p>
+<p>Now, no more tilt!!</p>
 <pre class="r"><code>lacity1 &lt;- tm_shape(la.city.tigris) +
   tm_polygons() 
 lacity2 &lt;- tm_shape(la.city.nhgis.tr) +
