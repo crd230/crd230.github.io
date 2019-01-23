@@ -697,7 +697,7 @@ dim(homeless.sf.utm)</code></pre>
 <pre class="r"><code>#694 by 25621
 dim(school.dist)</code></pre>
 <pre><code>## [1]   694 25621</code></pre>
-<p>So, we have a distance matrix. That is we have each tract’s distance to each encampment. What is the distance to the <em>closest</em> encampment. We can use the function <code>rowMins()</code> in the package <strong>matrixStats</strong> to accomplish this.</p>
+<p>So, we have a distance matrix. That is we have each school’s distance to each encampment. What is the distance to the <em>closest</em> encampment. We can use the function <code>rowMins()</code> in the package <strong>matrixStats</strong> to accomplish this.</p>
 <p>The function <code>rowMins()</code> does exactly what you think it would do - get the minimum value across columns for each row. For <em>school.dist</em>, this means we get the minimum distance to an encampment for each neighborhood. Run this function within <code>mutate()</code> to save the resulting value in our main data set <em>schools.utm</em></p>
 <pre class="r"><code>schools.utm &lt;- mutate(schools.utm, hcampmin = rowMins(school.dist))</code></pre>
 <p>We can then use <code>summarize()</code> to find the mean minimum distance to encampments.</p>

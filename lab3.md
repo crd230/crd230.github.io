@@ -562,7 +562,7 @@ dim(school.dist)
 ## [1]   694 25621
 ```
 
-So, we have a distance matrix.  That is we have each tract's distance to each encampment. What is the distance to the *closest* encampment.  We can use the function `rowMins()` in the package **matrixStats** to accomplish this.  
+So, we have a distance matrix.  That is we have each school's distance to each encampment. What is the distance to the *closest* encampment.  We can use the function `rowMins()` in the package **matrixStats** to accomplish this.  
 
 The function `rowMins()` does exactly what you think it would do - get the minimum value across columns for each row.  For *school.dist*, this means we get the minimum distance to an encampment for each neighborhood.  Run this function within `mutate()` to save the resulting value in our main data set *schools.utm*
 
