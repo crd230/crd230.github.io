@@ -304,6 +304,7 @@ We can map the count of encampments by census tract, but counts do not take into
 To calculate the number of encampments per area, we'll need to get the area of each polygon, which we do by using the function `st_area()`.  The default area metric is kilometers squared, but we can use the function `set_units()` from the **units** package to set the unit of measure to (the U.S. friendly) miles squared `value = mi2`. Use these functions within `mutate()` to create a new column containing each tract's area.
 
 ```{r warning=FALSE, message=FALSE}
+library(units)
 la.city.tigris.utm<-mutate(la.city.tigris.utm,area=set_units(st_area(la.city.tigris.utm), value = mi2))
 ```
 

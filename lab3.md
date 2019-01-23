@@ -381,6 +381,7 @@ To calculate the number of encampments per area, we'll need to get the area of e
 
 
 ```r
+library(units)
 la.city.tigris.utm<-mutate(la.city.tigris.utm,area=set_units(st_area(la.city.tigris.utm), value = mi2))
 ```
 

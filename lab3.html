@@ -600,7 +600,8 @@ View(la.city.tigris.utm.sum)</code></pre>
     rename(hcamps = srnumber)</code></pre>
 <p>We can map the count of encampments by census tract, but counts do not take into consideration exposure. In this case, tracts that are larger in size will likely have more encampments. Let’s calculate the number of encampments per area.</p>
 <p>To calculate the number of encampments per area, we’ll need to get the area of each polygon, which we do by using the function <code>st_area()</code>. The default area metric is kilometers squared, but we can use the function <code>set_units()</code> from the <strong>units</strong> package to set the unit of measure to (the U.S. friendly) miles squared <code>value = mi2</code>. Use these functions within <code>mutate()</code> to create a new column containing each tract’s area.</p>
-<pre class="r"><code>la.city.tigris.utm&lt;-mutate(la.city.tigris.utm,area=set_units(st_area(la.city.tigris.utm), value = mi2))</code></pre>
+<pre class="r"><code>library(units)
+la.city.tigris.utm&lt;-mutate(la.city.tigris.utm,area=set_units(st_area(la.city.tigris.utm), value = mi2))</code></pre>
 <p>Then calculate the number of homeless encampments per area.</p>
 <pre class="r"><code>la.city.tigris.utm&lt;-mutate(la.city.tigris.utm,harea=hcamps/area)</code></pre>
 <p>Let’s create a choropleth map of encampments per area.</p>
