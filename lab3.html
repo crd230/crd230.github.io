@@ -499,7 +499,7 @@ The above section deals with a situation where you are establishing the CRS for 
 <li>Many geometric functions require certain CRS.</li>
 </ol>
 <p>Reason 1: When you are working with two or more spatial data sets (i.e. doing analyses that connect the two data sets), you need to make sure their CRS are the same. This is similar to making sure that units are the same when measuring volume or distances. R is (semi) smart, so when you map two spatial data sets with different CRS, it will convert one to the other for mapping purposes, so everything looks peachy keen. But, don’t be fooled - they still have different CRS. When you try to do spatial operations and analyses that require connecting the two objects, such as finding the distance between two objects, R will either blow up or give you incorrect results.</p>
-<p>Reason 2: Another reason why you may need to change the CRS is when you need to correct distortions or produce maps that are “visually correct”. To illustrate this point, let’s bring in the files <em>la.city.nhgis.shp</em> and <em>la.city.tigris.shp</em>, which provide Los Angeles City boundaries downloaded from different sources - one from the package <strong>tigris</strong> and the other downloaded from the <a href="https://crd150.github.io/nhgis.html#download_shapefiles">National Historical Geographic Information System</a> (NHGIS). For your convenience, I uploaded these shapefiles into a zip file on GitHub. Set your working directory to a folder you want to work out of. Download the file and unzip it using the following code.</p>
+<p>Reason 2: Another reason why you may need to change the CRS is when you need to correct distortions or produce maps that are “visually correct”. To illustrate this point, let’s bring in the files <em>la.city.nhgis.shp</em> and <em>la.city.tigris.shp</em>, which provide Los Angeles City boundaries downloaded from different sources - one from the package <strong>tigris</strong> and the other downloaded from the <a href="https://crd230.github.io/nhgis.html#download_shapefiles">National Historical Geographic Information System</a> (NHGIS). For your convenience, I uploaded these shapefiles into a zip file on GitHub. Set your working directory to a folder you want to work out of. Download the file and unzip it using the following code.</p>
 <pre class="r"><code>setwd(&quot;insert your pathway here&quot;)
 download.file(url = &quot;https://raw.githubusercontent.com/crd230/data/master/lab3.zip&quot;, destfile = &quot;lab3.zip&quot;)
 unzip(zipfile = &quot;lab3.zip&quot;)</code></pre>
@@ -526,7 +526,7 @@ tmap_arrange(lacity1, lacity2)</code></pre>
 <p>You see a tilt for the NHGIS boundary map on the right. That tilt is not due to our bad eyesight or anything wrong in our code. It’s due to the projection system that NHGIS uses for their shapefiles, which is Albers Equal Area (<code>aea</code>). Figure 1 shows maps of the United States by different projection systems, including Albers Equal Area (top left)</p>
 <center>
 <div class="figure">
-<img src="/Users/noli/Documents/UCD/teaching/CRD150/Lab/crd150.github.io/projections.jpg" alt="Figure 1: U.S. Projection Coordinate Systems" />
+<img src="projections.jpg" alt="Figure 1: U.S. Projection Coordinate Systems" />
 <p class="caption">Figure 1: U.S. Projection Coordinate Systems</p>
 </div>
 </center>
@@ -549,7 +549,7 @@ tmap_arrange(lacity1, lacity2)</code></pre>
 <p>Not good. We can reproject the encampments and Los Angeles City boundaries to a CRS that handles standard distance measures such as meters or kilometers. The <a href="http://desktop.arcgis.com/en/arcmap/latest/map/projections/universal-transverse-mercator.htm">Universal Transverse Mercator</a> (UTM) coordinate system works in meters. It splits the country into zones so that you can get appropriate (non titling) maps of your specific region. The zones are shown in Figure 2</p>
 <center>
 <div class="figure">
-<img src="/Users/noli/Documents/UCD/teaching/CRD150/Lab/crd150.github.io/utm.png" alt="Figure 2: UTM Zones" />
+<img src="utm.png" alt="Figure 2: UTM Zones" />
 <p class="caption">Figure 2: UTM Zones</p>
 </div>
 </center>

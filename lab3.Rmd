@@ -161,7 +161,7 @@ The above section deals with a situation where you are establishing the CRS for 
 
 Reason 1: When you are working with two or more spatial data sets (i.e. doing analyses that connect the two data sets), you need to make sure their CRS are the same. This is similar to making sure that units are the same when measuring volume or distances.  R is (semi) smart, so when you map two spatial data sets with different CRS, it will convert one to the other for mapping purposes, so everything looks peachy keen.  But, don't be fooled - they  still have different CRS. When you try to do spatial operations and analyses that require connecting the two objects, such as finding the distance between two objects, R will either blow up or give you incorrect results. 
 
-Reason 2: Another reason why you may need to change the CRS is when you need to correct distortions or produce maps that are "visually correct".  To illustrate this point, let's bring in the files *la.city.nhgis.shp* and *la.city.tigris.shp*, which provide Los Angeles City boundaries downloaded from different sources - one from the package **tigris** and the other downloaded from the [National Historical Geographic Information System](https://crd150.github.io/nhgis.html#download_shapefiles) (NHGIS). For your convenience, I uploaded these shapefiles into a zip file on GitHub. Set your working directory to a folder you want to work out of.  Download the file and unzip it using the following code.
+Reason 2: Another reason why you may need to change the CRS is when you need to correct distortions or produce maps that are "visually correct".  To illustrate this point, let's bring in the files *la.city.nhgis.shp* and *la.city.tigris.shp*, which provide Los Angeles City boundaries downloaded from different sources - one from the package **tigris** and the other downloaded from the [National Historical Geographic Information System](https://crd230.github.io/nhgis.html#download_shapefiles) (NHGIS). For your convenience, I uploaded these shapefiles into a zip file on GitHub. Set your working directory to a folder you want to work out of.  Download the file and unzip it using the following code.
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 setwd("insert your pathway here")
@@ -203,7 +203,7 @@ You see a tilt for the NHGIS boundary map on the right.  That tilt is not due to
 
 
 <center>
-![Figure 1: U.S. Projection Coordinate Systems](/Users/noli/Documents/UCD/teaching/CRD150/Lab/crd150.github.io/projections.jpg)
+![Figure 1: U.S. Projection Coordinate Systems](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io//projections.jpg)
 
 </center>
 
@@ -237,7 +237,7 @@ Not good. We can reproject the encampments and Los Angeles City boundaries to a 
 
 
 <center>
-![Figure 2: UTM Zones](/Users/noli/Documents/UCD/teaching/CRD150/Lab/crd150.github.io/utm.png)
+![Figure 2: UTM Zones](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/utm.png)
 
 </center>
 
