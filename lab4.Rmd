@@ -215,13 +215,12 @@ To be clear, `quantile()` extracts the 0, 20th, ... 80th, and 100th percentile v
 
 Now let's map the overall opportunity index with the labels.  Note that if you're comparing your map with the CRC's map, it won't match because we made some different decisions with the data (imputing for missing data, calculating the z-score, etc.).
 
-```{r warning = FALSE, message = FALSE}
+```{r warning = FALSE, message = FALSE, eval = FALSE}
 ca.map.ind.ec <- tm_shape(ca.tracts.z) +
   tm_polygons(col = "OverallQ",  palette = "BrBG",
               border.alpha = 0, title = "Overall Opportunity", midpoint = NA)
 ca.map.ind.ec + tm_view(basemaps="Hydda.Full")
 ```
-
 
 <div style="margin-bottom:25px;">
 </div>
