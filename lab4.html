@@ -424,7 +424,7 @@ We’ll be introducing four new packages in this lab: <strong>factoextra</strong
 install.packages(&quot;plotrix&quot;)
 install.packages(&quot;NbClust&quot;)
 install.packages(&quot;dendextend&quot;)</code></pre>
-<p>We’ll also be using the <strong>tidyimpute</strong> package to impute for missingness. If you have not gone through the missing data <a href="https://crd230.github.io/missingdata.html">mini lab</a>, you’ll need to install <strong>tidyimpute</strong>.</p>
+<p>We’ll also be using the <strong>tidyimpute</strong> and <strong>VIM</strong> packages to impute for missingness. If you have not gone through the missing data <a href="https://crd230.github.io/missingdata.html">mini lab</a>, you’ll need to install those packages.</p>
 <p>Load in the following packages</p>
 <pre class="r"><code>library(tidyverse)
 library(sf)
@@ -616,7 +616,7 @@ ggplot(data=bss, aes(x= k, y=bss)) + geom_path() + geom_point() + scale_x_contin
 <p>If you’re not satisfied with the above exploratory method, you can employ the <code>NbClust()</code> command found in the <strong>NbClust</strong> package. The command tests 30 indices for determining the number of clusters. All of these indices are similar to the wss or bss in that it is examining best fit across different values of k. As the package’s creators describe in their <a href="https://cran.r-project.org/web/packages/NbClust/NbClust.pdf">documentation</a>, the function “enables the user to simultaneously evaluate several clustering schemes while varying the number of clusters, to help determining the most appropriate number of clusters for the data set of interest.”</p>
 <p>The function <code>NbClust()</code> will take a <em>long</em> time to run because it’s computing 30 indices on a data set of over 8,000 observations for a range of k values. Run the code on your own time when you have the patience and time. For now, I present the code</p>
 <pre class="r"><code>library(NbClust)
-nb &lt;- NbClust(subset.data, min.nc=1, max.nc=12, method = &quot;kmeans&quot;)</code></pre>
+nb &lt;- NbClust(subset.data, min.nc=2, max.nc=12, method = &quot;kmeans&quot;)</code></pre>
 <p>The arguments <code>min.nc=1</code> and <code>max.nc=12</code> tells the function to calculate the indices for k =1 to k=12. The argument <code>method = &quot;kmeans&quot;</code> gives the kind of clustering method you want to test, in our case kmeans.</p>
 <p>The results of running the <code>NbClust()</code> function will tell you the number of indices that show the best fit by k.</p>
 <p>Based on the wss and bss plots, let’s run the k-means algorithm for k = 6. As the James et al. chapter states, testing the robustness of your findings is very important, so we choose k = 6 with the understanding that we’ll select other k values later to see how results change.</p>
@@ -640,7 +640,7 @@ ggtheme = theme_classic())</code></pre>
 <pre class="r"><code>table(cluster_6$cluster)</code></pre>
 <pre><code>## 
 ##    1    2    3    4    5    6 
-## 2328  999 1333 1439  614 1322</code></pre>
+## 2328 1332 1324  995  614 1442</code></pre>
 <p>Remember one of the major aims of cluster analysis: the groups should be as evenly sized as possible. You might consider dropping the number of clusters down to 5 given the presence of the cluster with 614 tracts. Set k = 5 in <code>kmeans()</code>. Or examine the characteristics of that cluster and see if it can be combined with another cluster.</p>
 <div style="margin-bottom:25px;">
 
@@ -709,7 +709,7 @@ hcd &lt;- as.dendrogram(hfit)</code></pre>
 <p>We then plot the dendrogram using the basic <code>plot()</code> function</p>
 <pre class="r"><code>plot(hcd, ylab = &quot;Height&quot;,  leaflab = &quot;none&quot;)</code></pre>
 <p><img src="lab4_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
-<p>By defauly, <code>plot()</code> will provide the tract IDs on the x-axis. That’s fine if you’ve got a small number of observations, but we’ve got 8,000+. The argument <code>leaflab = &quot;none&quot;</code> drops the labels on the x-axis.</p>
+<p>By default, <code>plot()</code> will provide the tract IDs on the x-axis. That’s fine if you’ve got a small number of observations, but we’ve got 8,000+. The argument <code>leaflab = &quot;none&quot;</code> drops the labels on the x-axis.</p>
 <p>As the James et a. chapter mentions, there is no standardized way for determining where to cut the dendrogram. They state “people often look at the dendrogram and select by eye a sensible number of clusters, based on the heights of the fusion and the number of clusters desired.” What does your eyes tell you?</p>
 <p>Let’s say we cut the dendrogram such that we get 6 clusters. We can use the following code to color the branches based on the 6 clusters</p>
 <pre class="r"><code>hcd %&gt;% set(&quot;branches_k_color&quot;,  k = 6) %&gt;% 

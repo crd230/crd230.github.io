@@ -56,7 +56,7 @@ install.packages("NbClust")
 install.packages("dendextend")
 ```
 
-We'll also be using the **tidyimpute** package to impute for missingness.  If you have not gone through the missing data [mini lab](https://crd230.github.io/missingdata.html), you'll need to install **tidyimpute**.
+We'll also be using the **tidyimpute** and **VIM** packages to impute for missingness.  If you have not gone through the missing data [mini lab](https://crd230.github.io/missingdata.html), you'll need to install those packages.
 
 Load in the following packages
 
@@ -356,7 +356,7 @@ The function `NbClust()` will take a *long* time to run because it's computing 3
 
 ```r
 library(NbClust)
-nb <- NbClust(subset.data, min.nc=1, max.nc=12, method = "kmeans")
+nb <- NbClust(subset.data, min.nc=2, max.nc=12, method = "kmeans")
 ```
 
 The arguments `min.nc=1` and `max.nc=12` tells the function to calculate the indices for k =1 to k=12.  The argument `method = "kmeans"` gives the kind of clustering method you want to test, in our case kmeans.  
@@ -408,7 +408,7 @@ table(cluster_6$cluster)
 ```
 ## 
 ##    1    2    3    4    5    6 
-## 2328  999 1333 1439  614 1322
+## 2328 1332 1324  995  614 1442
 ```
 
 Remember one of the major aims of cluster analysis:  the groups should be as evenly sized as possible. You might consider dropping the number of clusters down to 5 given the presence of the cluster with 614 tracts.  Set k = 5 in `kmeans()`. Or examine the characteristics of that cluster and see if it can be combined with another cluster. 
@@ -539,7 +539,7 @@ plot(hcd, ylab = "Height",  leaflab = "none")
 
 ![](lab4_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
-By defauly, `plot()` will provide the tract IDs on the x-axis.  That's fine if you've got a small number of observations, but we've got 8,000+.  The argument `leaflab = "none"` drops the labels on the x-axis.
+By default, `plot()` will provide the tract IDs on the x-axis.  That's fine if you've got a small number of observations, but we've got 8,000+.  The argument `leaflab = "none"` drops the labels on the x-axis.
 
 As the James et a. chapter mentions, there is no standardized way for determining where to cut the dendrogram.  They state "people often look at the dendrogram and select by eye a sensible number of clusters, based on the heights of the fusion and the number of clusters desired."  What does your eyes tell you?
 

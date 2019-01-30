@@ -57,7 +57,7 @@ install.packages("NbClust")
 install.packages("dendextend")
 ```
 
-We'll also be using the **tidyimpute** package to impute for missingness.  If you have not gone through the missing data [mini lab](https://crd230.github.io/missingdata.html), you'll need to install **tidyimpute**.
+We'll also be using the **tidyimpute** and **VIM** packages to impute for missingness.  If you have not gone through the missing data [mini lab](https://crd230.github.io/missingdata.html), you'll need to install those packages.
 
 Load in the following packages
 
@@ -334,7 +334,7 @@ The function `NbClust()` will take a *long* time to run because it's computing 3
 
 ```{r eval = FALSE}
 library(NbClust)
-nb <- NbClust(subset.data, min.nc=1, max.nc=12, method = "kmeans")
+nb <- NbClust(subset.data, min.nc=2, max.nc=12, method = "kmeans")
 ```
 
 The arguments `min.nc=1` and `max.nc=12` tells the function to calculate the indices for k =1 to k=12.  The argument `method = "kmeans"` gives the kind of clustering method you want to test, in our case kmeans.  
@@ -488,7 +488,7 @@ We then plot the dendrogram using the basic `plot()` function
 plot(hcd, ylab = "Height",  leaflab = "none")
 ```
 
-By defauly, `plot()` will provide the tract IDs on the x-axis.  That's fine if you've got a small number of observations, but we've got 8,000+.  The argument `leaflab = "none"` drops the labels on the x-axis.
+By default, `plot()` will provide the tract IDs on the x-axis.  That's fine if you've got a small number of observations, but we've got 8,000+.  The argument `leaflab = "none"` drops the labels on the x-axis.
 
 As the James et a. chapter mentions, there is no standardized way for determining where to cut the dendrogram.  They state "people often look at the dendrogram and select by eye a sensible number of clusters, based on the heights of the fusion and the number of clusters desired."  What does your eyes tell you?
 
