@@ -350,7 +350,7 @@ Let's use Sacramento Council Districts, the main local governing body in the cit
 3. Multiply the count characteristics by the areal interpolation weight.  
     + If tract 1's total black population is 1,000, you would multiply 1,000 by 0.5.  You are allocating 500 of tract 1's black population to district 1 and the other 500 to district 2. 
 4. Sum up each tract's contribution to the district to get the areal weighted estimated count for that district.
-    + If district 1 also contains tract 2, and tract 2's total black population is 500 and its areal weight is 0.25, then the black population from tract 2 that is allocated to district 1 is 500 x 0.25 = 125.  District 1's total black population is then 500 + 250 = 750.
+    + If district 1 also contains tract 2, and tract 2's total black population is 500 and its areal weight is 0.25, then the black population from tract 2 that is allocated to district 1 is 500 x 0.25 = 125.  District 1's total black population is then 500 + 125 = 625.
 
 We already downloaded and brought into R a council district shapefile. Map it to see if we've got the goods.
 
