@@ -223,7 +223,7 @@ Another common method for defining neighbors is k-nearest neighbors. This will f
 </center>
 
 
-You create a k-nearest neighbor object using the commands `knearneigh()`and `knn2b()`.  Try creating a 3 nearest neighbor object.
+You create a k-nearest neighbor object using the commands `knearneigh()`and `knn2nb()`.  Try creating a 3 nearest neighbor object.
 
 
 <div style="margin-bottom:25px;">
