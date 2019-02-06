@@ -1,0 +1,553 @@
+---
+title: "Lab 5: Spatial Autocorrelation"
+subtitle: <h4 style="font-style:normal">CRD 298 - Spatial Methods in Community Research</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">February 6, 2019</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+h1.title {
+  font-weight: bold;
+}
+
+</style>
+\
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+[Tobler's First Law of Geography](https://en.wikipedia.org/wiki/Tobler%27s_first_law_of_geography) states that "Everything is related to everything else, but near things are more related than distant things."  The law is capturing the concept of spatial autocorrelation. The objectives of the guide are as follows 
+
+
+1. Learn how to transition from **sf** to **sp** spatial objects
+2. Learn how to create a spatial weights matrix
+2. Calculate global spatial autocorrelation
+3. Detect clusters using local spatial autocorrelation
+
+<div style="margin-bottom:25px;">
+</div>
+## **Load necessary packages**
+\
+
+We'll be introducing two new packages in this lab: **sp** and **spdep**.  
+
+```{r eval = FALSE}
+install.packages("sp")
+install.packages("spdep")
+```
+
+The other packages we need should be pretty familiar to you at this point.
+
+```{r warning = FALSE, message = FALSE}
+library(tidyverse)
+library(sf)
+library(tmap)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Bringing spatial data into R**
+\
+
+Our goal is to determine whether eviction rates cluster in Sacramento. Let's bring in our main dataset for the lab, a shapefile named *sacmetrotracts.shp*, which contains 2016 court-ordered [housing eviction rates](http://evictionlab.org/) for census tracts in the Sacramento Metropolitan Area. If you would like to more about how these data were put together, check out the Eviction Lab's [Methodology Report](https://evictionlab.org/docs/Eviction%20Lab%20Methodology%20Report.pdf). I zipped up the file and uploaded it onto Github.  Set your working directory to an appropriate folder and use the following code to download and unzip the file.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+setwd("insert your pathway here")
+download.file(url = "https://raw.githubusercontent.com/crd230/data/master/sacmetrotracts.zip", destfile = "sacmetrotracts.zip")
+unzip(zipfile = "sacmetrotracts.zip")
+```
+
+```{r warning = FALSE, message = FALSE, include = FALSE}
+download.file(url = "https://raw.githubusercontent.com/crd230/data/master/sacmetrotracts.zip", destfile = "sacmetrotracts.zip")
+unzip(zipfile = "sacmetrotracts.zip")
+```
+
+You should see the *sacmetrotracts* files in your folder. Bring in the file using `st_read()`. 
+
+```{r warning = FALSE, message = FALSE, results = "hide"}
+sac.tracts.sf <- st_read("sacmetrotracts.shp")
+```
+
+Consider the data set clean. We'll need to reproject the file into a CRS that uses meters as the units of distance. Let's use our good friend UTM Zone 10.
+
+```{r warning = FALSE, message = FALSE}
+sac.tracts.sf <-st_transform(sac.tracts.sf, 
+                             crs = "+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80") 
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **sf and sp spatial objects**
+\
+
+In the last three labs, we've used the versatile package **sf** to handle spatial data in R.  The traditional way of handling spatial data in R is to use the **sp** package. We prefer **sf** over **sp** because it adheres to the tidy principles outlined in RDS, but because it is relatively new, **sf** is not wholly compatible with all of R's spatial functions, particularly those that perform spatial data analysis, including calculating global and local measures of spatial correlation. In contrast, **sp** is compatible with most spatial functions. As such, we'll need to convert **sf** objects to **sp** objects.  
+
+Load in the **sp** package
+
+```{r message = FALSE}
+library(sp)
+```
+
+Use the `as()` function to convert *sac.tracts.sf* to an **sp** compatible object
+
+```{r warning=FALSE, message=FALSE}
+#this function to R to convert the sf object to an sp, using "Spatial" to designate sp
+sac.tracts.sp <- as(sac.tracts.sf, "Spatial")
+class(sac.tracts.sp)
+```
+
+
+We find out that *sac.tracts.sp* is a SpatialPolygonsDataFrame object. SpatialPolygonsDataFrame objects are almost like regular R data frames. However, unlike an **sf** spatial object, the attribute and feature data in an **sp** object are stored separately in what are known as [data slots](https://stat.ethz.ch/R-manual/R-devel/library/methods/html/slot.html). To see the complexity of data slots, do a `View()` of the data set
+
+```{r results ="hide", message=FALSE, warning=FALSE}
+View(sac.tracts.sp)
+```
+
+Delving into the feature data slot reveals a series of nested lists and S4 objects, which can be confusing to work with directly.  We won't go into the messy details of **sp** objects and how they differ from **sf** objects.  We'll stick with our **sf** object *sac.tracts.sf* when possible, but shift to *sac.tracts.sp* when needed, dancing around the details as much as possible and only talking about them when necessary. If you are interested, you can learn more about the **sp** package [here](https://cran.r-project.org/web/packages/sp/vignettes/intro_sp.pdf), [here](https://cran.r-project.org/web/packages/sp/vignettes/over.pdf) and [here](http://www.nickeubank.com/gis-in-r/).
+
+<div style="margin-bottom:25px;">
+</div>
+## **Exploratory mapping**
+\
+
+Before computing spatial autocorrelation, you should first map your variable to see if it *looks* like it clusters across space.  Using the function `tm_shape()`, let's make a nice map of eviction rates in the Sacramento metro area.  
+
+```{r warning=FALSE, message=FALSE}
+library(tmap)
+tm_shape(sac.tracts.sf, unit = "mi") +
+  tm_polygons(col = "evrate", style = "quantile",palette = "Reds", 
+              border.alpha = 0, title = "") +
+  tm_scale_bar(breaks = c(0, 10, 20), size = 1) +
+  tm_compass(type = "4star", position = c("left", "bottom")) + 
+  tm_layout(main.title = "Eviction Rate in Sacramento Metropolitan Area Tracts",  
+            main.title.size = 0.95, frame = FALSE)
+```  
+  
+It does look like eviction rates cluster.  In particular, there appears to be a concentration of high eviction rate neighborhoods in the downtown and northeast portions of the metro area. 
+
+<div style="margin-bottom:25px;">
+</div>
+## **Spatial weights matrix**
+\
+
+Before we can formally model the dependency shown in the above map, we must first cover how neighborhoods are spatially connected to one another.  That is, what does "near" mean when we say "near things are more related than distant things"?   You need to define
+
+1. Neighbor connectivity (who is you neighbor?)
+2. Neighbor weights (how much does your neighbor matter?)
+
+<div style="margin-bottom:25px;">
+</div>
+### **Neighbor connectivity: Contiguity**
+\
+
+A common way of defining neighbors is to see who shares a border.  The two most common ways of defining contiguity is Rook and Queen adjacency (Figure 1).  Rook adjacency refers to neighbors that share a line segment.  Queen adjacency refers to neighbors that share a line segment (or border) or a point (or vertex).
+
+
+<center>
+![Figure 1: Geographic contiguity](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/fig1.png)
+
+</center>
+
+Neighbor relationships in R are represented by neighbor *nb* objects.  An *nb* object identifies the neighbors for each feature in the dataset.  We use the command `poly2nb()` from the **spdep** package to create a contiguity-based neighbor object.  
+
+```{r message=FALSE}
+library(spdep)
+```
+
+Let's specify Queen connectivity.  The function `poly2nb()` only takes in **sp** objects, so we'll need to use *sac.tracts.sp* here.
+
+```{r warning=FALSE, message=FALSE}
+sacb<-poly2nb(sac.tracts.sp, queen=T)
+```
+
+You plug the object *sac.tracts.sp* into the first argument of `poly2nb()` and then specify Queen contiguity using the argument `queen=T`. To get Rook adjacency, change the argument to `queen=F`. 
+
+The function `summary()` tells us something about the neighborhood. 
+
+```{r}
+summary(sacb)
+```
+
+The average number of neighbors (adjacent polygons) is 6.3, 1 polygon has 1 neighbor and 1 has 18 neighbors.
+
+For each neighborhood in the Sacramento metropolitan area, *sacb* lists all neighboring tracts. For
+example, to see the neighbors for the first tract:
+
+```{r}
+sacb[[1]]
+```
+
+Tract 1 has 3 neighbors with row numbers 92, 386 and 387. Tract 1 has tract number
+
+```{r}
+sac.tracts.sp$NAME[1]
+```
+
+and its neighboring tracts are
+
+```{r}
+sac.tracts.sp$NAME[c(92,386, 387)]
+```
+
+<div style="margin-bottom:25px;">
+</div>
+### **Neighbor connectivity: k-nearest neighbors**
+\
+
+Another common method for defining neighbors is k-nearest neighbors. This will find the k closest observations for each observation of interest, where k is some integer. For instance, if we find the k=3 nearest neighbors, then each observation will have 3 neighbors, which are the 3 closest observations to it, regardless of the distance between them. Using the k-nearest neighbor rule, two observations could potentially be very far apart and still be considered neighbors.
+
+<center>
+![Figure 2: k-nearest neighbors: k = 3](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/fig2.png)
+
+</center>
+
+
+You create a k-nearest neighbor object using the commands `knearneigh()`and `knn2b()`.  Try creating a 3 nearest neighbor object.
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Neighbor connectivity: Distance**
+\
+
+In distance based connectivity, features within a given radius are considered to be neighbors. The length of the radius is left up to the researcher to decide. For example, Weisburd, Groff and Yang (2012) use a quarter mile (approximately 3-4 city blocks) in their study of crime clusters in Seattle. Often studies test different distances to test the robustness of the findings (e.g. Poulsen et al. 2011). When dealing with polygons, x and y are the coordinates of their centroids (the center of the polygon). You create a radius of distance *d2* around the observation of interest - other polygons whose centroids fall inside this radius are tagged as neighbors. 
+
+<center>
+![Figure 2: Distance based](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/fig3.png)
+
+</center>
+
+
+Other distance metrics besides Euclidean are possible depending on the context and area of your subject. For example, Manhattan distance, which uses the road network rather than the straight line measure of Euclidean distance, is often used in city planning and transportation research.
+
+You create a distance based neighbor object using using the function `dnearneigh()`. The `dnearneigh()` function tells R to designate as neighbors the units falling within the distance specified between `d1` (lower distance bound) and `d2` (upper distance bound). Note that `d1` and `d2` can be any distance value as long as they reflect the distance units that our shapefile is projected in (meters for UTM). The option `x` gives the geographic coordinates of each feature in your shapefile which allows R to calculate distances between each feature to every other feature in the dataset. You get the coordinates using, what else, the function `coordinates()`.  The function does not take in **sf** objects, so you'll have to hold hands again with **sp**.
+
+```{r include = FALSE}
+sac.city.coords <- coordinates(sac.tracts.sp)
+```
+
+Try creating two neighbor objects - one where `d2` is 20 miles (32186.9 meters) and another where it is 5 miles (8046.7).  
+
+```{r include =FALSE}
+Sacnb_dist1 <- dnearneigh(sac.city.coords, d1 = 0, d2 = 32186.9, 
+                          row.names = sac.tracts.sp$GEOID)
+
+Sacnb_dist2 <- dnearneigh(sac.city.coords, d1 = 0, d2 = 8046.72, 
+                          row.names = sac.tracts.sp$GEOID)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Neighbor weights**
+\
+
+We've established who our neighbors are by creating an *nb* object.  The next step is to assign weights to each neighbor relationship. The weight determines *how much* each neighbor counts.  You will need to employ the `nb2listw()` command. Let's create weights for our Queen contiguity defined neighbor object *sacb*  
+
+```{r}
+sacw<-nb2listw(sacb, style="W")
+```
+
+In the command, you first put in your neighbor *nb* object (*sacb*) and then define the weights `style = "W"`. Here, `style = "W"` indicates that the weights for each spatial unit are standardized to sum to 1 (this is known as row standardization).  For example, if census tract 1 has 3 neighbors, each of those neighbors will have weights of 1/3. 
+
+```{r}
+sacw$weights[[1]]
+```
+
+This allows for comparability between areas with different numbers of neighbors.
+
+```{r include = FALSE}
+Sacw_dist1<-nb2listw(Sacnb_dist1, style="W")
+```
+
+We can visualize the neighbor connections between tracts using the weight matrix
+
+```{r}
+plot(sac.tracts.sp, border = "grey60")
+plot(sacw, coords = coordinates(sac.tracts.sp), add=T, col=2)
+```
+
+If you created the 20 mile distance based neighbor object and weights matrix, you'll get a plot of connections that should look like
+
+```{r echo=FALSE}
+plot(sac.tracts.sp, border = "grey60")
+plot(Sacw_dist1, coords = sac.city.coords, add = T, col = 2)
+```
+
+Constructing the spatial weights matrix for the 5 mile distance based neighbor object will yield an error that looks like
+
+`````r ''`
+Error in nb2listw(sac5mb, style = "W") : Empty neighbour sets found
+````
+
+The error above tells you that when you use a much smaller radius (5 miles) at least one tract has zero neighbors. This is an important error message as you may want to have at least one neighbor for every unit in your study area. The `zero.policy` option lets you determine how you want to deal with polygons with no neighbors. The default is `zero.policy=FALSE` which means weights for the zero neighbor polygons are NA. This will lead to an error for many commands like `nb2listw()`. Setting the argument to TRUE allows for the creation of the spatial weights object with zero weights. You can also subset your data (using `filter()`) to remove incomplete cases from the beginning.
+
+If you use `zero.policy=TRUE` option for the 5 mile definition and plot the connections, you'll get the the following plot
+
+```{r echo=FALSE}
+Sacw_dist2<-nb2listw(Sacnb_dist2, style="W", zero.policy = TRUE)
+plot(sac.tracts.sp, border = "grey60")
+plot(Sacw_dist2, coords = sac.city.coords, col = 2, add = T)
+```
+
+You can see a number of census tracts without a neighbor.
+
+You can create your own specialized weights by specifying them in the `glist` option in the `nb2listw()` command. For example, rather than equal weights, what if you wanted to specify distance decay weights (i.e. 1 / distance from neighbor) for the 5 mile distance based weights matrix? The first thing to do is get the distance between each tract and its neighbors by using the `nbdists()` command.
+
+Next, you want to get the inverse of these distances. `nbdists()` yields an object that is a list (see pages 302-307 in RDS for an explanation of list objects), so you can use the command `lapply()` to go through each element of the object, which is a vector containing distances to neighbors, and take the inverse. Save your result in an object and specify it in the `glist` option of `nb2listw()`. We can still specify `style="W"` to make the weights row standardized.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Moran Scatterplot**
+\
+
+We've now defined what we mean by neighbor by creating an *nb* object and the influence of each neighbor by creating a spatial weights matrix.  The first map above showed that neighborhood eviction rates appear to be clustered in Sacramento. We can visually explore this a little more by plotting standardized eviction rates on the x-axis and the standardized average eviction rate of one's neighbors (also known as the spatial lag) on the y-axis.  This plot is known as a Moran scatterplot.  Let's create one using the Queen based spatial weights matrix.
+
+```{r}
+moran.plot(sac.tracts.sp$evrate, listw=sacw, xlab="Standardized Eviction Rate", ylab="Standardized Lagged Eviction Rate",
+main=c("Moran Scatterplot for Eviction Rate", "in Sacramento I=.0.425") )
+```
+
+Looks like a fairly strong positive association - the higher your neighbors' eviction rate, the higher your eviction rate.  
+
+<div style="margin-bottom:25px;">
+</div>
+## **Global spatial autocorrelation**
+\
+
+The map and Moran scatterplot provide descriptive visualizations of clustering (autocorrelation) in eviction rates.  But, rather than eyeballing the correlation, we need a quantitative and objective approach to quantifying the degree to which similar features cluster.  This is where global measures of spatial autocorrelation step in.  A global index of spatial autocorrelation provides a summary over the entire study area of the level of spatial similarity observed among neighboring observations.  
+
+<div style="margin-bottom:25px;">
+</div>
+### **Moran's I**
+\
+
+The most popular test of spatial autocorrelation is the Global Moran’s I test.  Use the command `moran.test()` in the **spdep** package to calculate the Moran's I.  You specify the **sp** object and the spatial weights matrix.
+
+```{r}
+moran.test(sac.tracts.sp$evrate, sacw)    
+```  
+
+We find that the Moran's I is positive (0.57) and statistically significant (p-value < 0.01). Remember from lecture that the Moran's I is simply a correlation, and correlations go from -1 to 1.  A 0.54 correlation is fairly high (O'Sullivan and Unwin (2014) use a rule of thumb of correlations higher than 0.3 and lower than -0.3 as meaningful), indicating strong positive clustering.  Moreover, we find that this correlation is statistically significant (p-value basically at 0).
+
+We can compute a p-value from a Monte Carlo simulation as was discussed in lecture using the `moran.mc()` function.  
+
+```{r}
+moran.mc(sac.tracts.sp$evrate, sacw, nsim=999)
+```
+
+The only difference between `moran.test()` and `moran.mc()` is that we need to set `nsim=` in the latter, which specifies the number of random simulations to run.  We end up with a p-value of 0.001.
+
+<div style="margin-bottom:25px;">
+</div>
+### **Geary's c**
+\
+
+Another popular index of global spatial autocorrelation is Geary's c which is a cousin to the Moran's I. Similar to Moran's I, it is best to test the statistical significance of Geary's c using a Monte Carlo simulation. Let's calculate c for Sacramento metro eviction rates using queen contiguity
+
+```{r}
+#Test under randomization assumption
+geary.test(sac.tracts.sp$evrate, sacw)
+#Test nonparametrically
+geary.mc(sac.tracts.sp$evrate, sacw, nsim=999)
+```
+
+Geary's c ranges from 0 to 2, with 0 indicating perfect positive correlation
+
+<div style="margin-bottom:25px;">
+</div>
+## **Local spatial autocorrelation**
+\
+
+The Moran's I tells us whether clustering exists in the area.  It does not tell us, however, *where* clusters are located.  These issues led spatial scholars to consider local forms of the global indices, known as Local Indicators of Spatial Association (LISAs).
+
+LISAs have the primary goal of providing a local measure of similarity between each unit's value (in our case, eviction rates) and those of nearby cases.  That is, rather than one single summary measure of spatial association (Moran's I), we have a measure for every single unit in the study area.  We can then map each tract's LISA value to provide insight into the location of neighborhoods with comparatively high or low associations with neighboring values (i.e. hot or cold spots).
+
+<div style="margin-bottom:25px;">
+</div>
+### **Getis-Ord**
+\
+
+A popular local measure of spatial autocorrelation is Getis-Ord.  There are two versions of the Getis-Ord, $G_i$ and $G_i^*$.  Let's go through each.
+
+We calculate $G_i$ for each tract using the function `localG()` which is part of the **spdep** package.
+
+```{r}
+localg <-localG(sac.tracts.sp$evrate,  sacw)
+```
+
+The command returns a *localG* object containing the Z-scores for the $G_i$ statistic.  The interpretation of the Z-score is straightforward: a large positive value suggests a cluster of high eviction rates (*hot spot*) and a large negative value indicates a cluster of low eviction rates (*cold spot*). 
+
+In order to plot the results, you'll need to coerce the object *localg* to be numeric.  Let's do that and save this numeric vector into our **sf** object *sac.tracts.sf*.
+
+```{r}
+sac.tracts.sf <- mutate(sac.tracts.sf, localg = as.numeric(localg))
+```
+
+We then create a vector named *breaks* to designate the cutoff points at the different significance levels (1% (or 99%), 5% (or 95%), and 10% (or 99%)) using the appropriate Z-scores. Set the minimum and maximum $G_i$ as the floor and ceiling, respectively.
+
+```{r warning=FALSE, message=FALSE}
+breaks <- c(min(sac.tracts.sf$localg), -2.58, -1.96, -1.65, 1.65, 1.96, 2.58, max(sac.tracts.sf$localg))
+```
+
+Then map the clusters using `tm_shape()` using *breaks* for the `breaks =` argument.
+
+```{r warning=FALSE, message=FALSE}
+tm_shape(sac.tracts.sf, unit = "mi") +
+  tm_polygons(col = "localg", title = "Gi value", palette = "-RdBu",
+              breaks = breaks) +
+  tm_scale_bar(breaks = c(0, 10, 20), size = 1) +
+  tm_compass(type = "4star", position = c("left", "bottom")) + 
+  tm_layout(frame = F, main.title = "Sacramento eviction clusters",
+            legend.outside = T) 
+```
+
+Notice the argument `palette = "-RdBu"`.  Use the argument `palette = "RdBu"` in the above code to figure out what the negative sign is doing.
+
+$G_i$ only uses neighbors to calculate hot and cold spots.  To incorporate the location itself in the calculation, we need to use $G_i^*$.  To do this, we need to use the `include.self()` function. We use this function on *sacb* to create an *nb* object that includes the location itself as one of the neighbors.  
+
+```{r}
+sacb.self <- include.self(sacb)
+```
+
+We then plug this new self-included *nb* object into `nb2listw()` to create a self-included spatial weights object
+
+```{r}
+sac.w.self <- nb2listw(sacb.self, style="W")
+```
+
+We then rerun `localG()` using `sac.w.self()`
+
+```{r}
+localgstar<-localG(sac.tracts.sp$evrate,sac.w.self)
+```
+
+Save the result in *sac.tracts.sf*
+
+```{r}
+sac.tracts.sf <- mutate(sac.tracts.sf, localgstar = as.numeric(localgstar))
+```
+
+And create a hot and cold spot map like we did above for $G_i$
+
+```{r warning=FALSE, message=FALSE}
+breaks <- c(min(sac.tracts.sf$localgstar), -2.58, -1.96, -1.65, 1.65, 1.96, 2.58, max(sac.tracts.sf$localgstar))
+tm_shape(sac.tracts.sf, unit = "mi") +
+  tm_polygons(col = "localgstar", title = "Gi* value", palette = "-RdBu",
+              breaks = breaks) +
+  tm_scale_bar(breaks = c(0, 10, 20), size = 1) +
+  tm_compass(type = "4star", position = c("left", "bottom")) + 
+  tm_layout(frame = F, main.title = "Sacramento eviction clusters",
+            legend.outside = T) 
+```
+
+
+We can create a categorical variable within *sac.tracts.sf* that designates tracts as cold, hot and not significant by using the `cut()` function inside `mutate()`.  
+
+```{r}
+sac.tracts.sf<-  mutate(sac.tracts.sf, gcluster = cut(localgstar, breaks=breaks, include.lowest = TRUE, labels=c("Cold spot: 99% confidence", "Cold spot: 95% confidence", "Cold spot: 90% confidence", "Not significant","Hot spot: 90% confidence", "Hot spot: 95% confidence", "Hot spot: 99% confidence"))) 
+```
+
+We can then map that variable. We get the same map as above, but it is a little cleaner to create the variable directly and save it in our data frame.
+
+```{r}
+tm_shape(sac.tracts.sf, unit = "mi") +
+  tm_polygons(col = "gcluster", title = "", palette = "-RdBu",
+              breaks = breaks) +
+  tm_scale_bar(breaks = c(0, 10, 20), size = 1) +
+  tm_compass(type = "4star", position = c("left", "bottom")) + 
+  tm_layout(frame = F, main.title = "Sacramento eviction clusters",
+            legend.outside = T) 
+```
+
+We can also eliminate the different significance levels and simply designate hot and cold spots as tracts with Z-scores above 1.96 and below -1.96 (5% significance level).
+
+```{r}
+breaks <- c(min(sac.tracts.sf$localgstar), -1.96, 1.96, max(sac.tracts.sf$localgstar))
+sac.tracts.sf<-  mutate(sac.tracts.sf, gcluster = cut(localgstar, breaks=breaks, include.lowest = TRUE, labels=c("Cold spot", "None", "Hot spot"))) 
+```
+
+And then map
+
+```{r}
+sac.ev.map.g <- tm_shape(sac.tracts.sf, unit = "mi") +
+  tm_polygons(col = "gcluster", title = "", palette = "-RdBu",
+              breaks = breaks) +
+  tm_scale_bar(breaks = c(0, 10, 20), size = 1) +
+  tm_compass(type = "4star", position = c("left", "bottom")) + 
+  tm_layout(frame = F, main.title = "Sacramento eviction clusters",
+            legend.outside = T) 
+sac.ev.map.g
+```
+
+Let's put it into an interactive map.  Where do high eviction rate neighborhoods cluster? Zoom in and find out.
+
+```{r message = FALSE, warning = FALSE}
+tmap_mode("view")
+sac.ev.map.g + tm_view(basemaps="OpenStreetMap")
+```
+
+<div style="margin-bottom:25px;">
+</div>
+### **Local Moran's I**
+\
+
+Another popular measure of local spatial autocorrelation is the local Moran's I.  We can calculate the local Moran's I using the command `localmoran()` found in the **spdep** package. 
+
+```{r}
+locali<-localmoran(sac.tracts.sp$evrate, sacw)
+```
+
+The resulting object is a matrix with 5 columns - the local statistic, the expectation of the local statistic, the variance, the Z score (deviation of the local statistic from the expectation divided by the standard deviation), and the p-value. Save the local statistic and the Z-score into our sf object *sac.tracts.sf* for mapping purposes
+
+```{r}
+sac.tracts.sf <- mutate(sac.tracts.sf, localmi = locali[,1], localz = locali[,4])
+```
+
+We have to make our own identifiers for statistically significant clusters. Let's designate any areas with Z-scores greater than 1.96 or less than -1.96 as high and low clusters, respectively. 
+
+```{r}
+sac.tracts.sf <- mutate(sac.tracts.sf, mcluster = cut(localz, breaks = c(min(localz),-1.96, 1.96, max(localz)), include.lowest = TRUE, labels = c("Negative Correlation", "Not Significant", "Positive Correlation")))
+```
+
+Now we map!
+
+```{r}
+sac.ev.map.mi <- tm_shape(sac.tracts.sf, unit = "mi") +
+  tm_polygons(col = "mcluster", title = "", palette = "-RdBu",
+              breaks = breaks) +
+  tm_scale_bar(breaks = c(0, 10, 20), size = 1) +
+  tm_compass(type = "4star", position = c("left", "bottom")) + 
+  tm_layout(frame = F, main.title = "Sacramento eviction clusters",
+            legend.outside = T) 
+sac.ev.map.mi +  tm_view(basemaps="OpenStreetMap")
+```
+
+Recall that positive values indicate similarity between neighbors while negative values indicate
+dissimilarity. This means that high values of I indicate that similar values are being clustered. In contrast, low values of $I_i$ indicate that dissimilar (high and low) values are clustered. In this case, the local Moran's I can capture spatial outliers. The map produced in the above code does not distinguish between High-High, Low-Low, High-Low, and Low-High clusters. I will leave it up to you to figure out how to do this in R (remember that the local Moran maps onto the Moran scatterplot).
+
+***
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
