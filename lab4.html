@@ -322,6 +322,9 @@ div.tocify {
     <li>
       <a href="lab5.html">Lab 5</a>
     </li>
+    <li>
+      <a href="lab5.html">Lab 6</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -643,7 +646,7 @@ ggtheme = theme_classic())</code></pre>
 <pre class="r"><code>table(cluster_6$cluster)</code></pre>
 <pre><code>## 
 ##    1    2    3    4    5    6 
-##  614 1332 1442 2328 1324  995</code></pre>
+## 2332 1439  614 1317 1334  999</code></pre>
 <p>Remember one of the major aims of cluster analysis: the groups should be as evenly sized as possible. You might consider dropping the number of clusters down to 5 given the presence of the cluster with 614 tracts. Set k = 5 in <code>kmeans()</code>. Or examine the characteristics of that cluster and see if it can be combined with another cluster.</p>
 <div style="margin-bottom:25px;">
 
