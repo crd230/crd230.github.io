@@ -451,7 +451,7 @@ library(spdep)</code></pre>
 We will be using the shape file seattle_census_tracts_2010.shp. This file contains violent crime rates between 2014 and 2017 by census tract. It also contains demographic and socioeconomic data from the 2012-16 American Community Survey. The record layout for the shapefile’s attribute table is located <a href="https://raw.githubusercontent.com/crd230/data/master/seattle_record_layout.txt">here</a>.</p>
 <p>I zipped up the files associated with the shapefile onto Github. Download the file, unzip it, and bring it into R using the following code.</p>
 <pre class="r"><code>setwd(&quot;insert your pathway here&quot;)
-download.file(url = &quot;https://raw.githubusercontent.com/crd230/data/master/seattle_tracts_crime.zip&quot;, destfile = &quot;seattle_census_tracts_2010.zip&quot;)
+download.file(url = &quot;https://raw.githubusercontent.com/crd230/data/master/seattle_census_tracts_2010.zip&quot;, destfile = &quot;seattle_census_tracts_2010.zip&quot;)
 unzip(zipfile = &quot;seattle_census_tracts_2010.zip&quot;)
 
 sea.tracts &lt;- st_read(&quot;seattle_census_tracts_2010.shp&quot;)</code></pre>
@@ -791,7 +791,7 @@ summary(fit.lag)</code></pre>
 ## weights: seaw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.027722, observed rank = 361, p-value = 0.639
+## statistic = -0.027722, observed rank = 366, p-value = 0.634
 ## alternative hypothesis: greater</code></pre>
 <div style="margin-bottom:25px;">
 
@@ -844,7 +844,7 @@ summary(fit.err)</code></pre>
 ## weights: seaw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.020788, observed rank = 413, p-value = 0.587
+## statistic = -0.020788, observed rank = 380, p-value = 0.62
 ## alternative hypothesis: greater</code></pre>
 <div style="margin-bottom:25px;">
 

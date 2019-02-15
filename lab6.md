@@ -85,7 +85,7 @@ I zipped up the files associated with the shapefile onto Github.  Download the f
 
 ```r
 setwd("insert your pathway here")
-download.file(url = "https://raw.githubusercontent.com/crd230/data/master/seattle_tracts_crime.zip", destfile = "seattle_census_tracts_2010.zip")
+download.file(url = "https://raw.githubusercontent.com/crd230/data/master/seattle_census_tracts_2010.zip", destfile = "seattle_census_tracts_2010.zip")
 unzip(zipfile = "seattle_census_tracts_2010.zip")
 
 sea.tracts <- st_read("seattle_census_tracts_2010.shp")
@@ -612,7 +612,7 @@ moran.mc(resid(fit.lag), seaw, nsim=999)
 ## weights: seaw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.027722, observed rank = 361, p-value = 0.639
+## statistic = -0.027722, observed rank = 366, p-value = 0.634
 ## alternative hypothesis: greater
 ```
 
@@ -681,7 +681,7 @@ moran.mc(resid(fit.err), seaw, nsim=999)
 ## weights: seaw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.020788, observed rank = 413, p-value = 0.587
+## statistic = -0.020788, observed rank = 380, p-value = 0.62
 ## alternative hypothesis: greater
 ```
 
