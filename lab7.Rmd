@@ -105,7 +105,7 @@ sea.tracts.std <-sea.tracts.df %>%
   mutate(mean = mean(value), sd = sd(value), z = (value-mean)/sd) %>%
   select(-(c(value, mean, sd))) %>%
   spread(variable, z) %>%
-  mutate(concd = (ppov+unemp+pnhblack+pund18+pwelfare)/3, immc = (pfb+phisp)/2) %>%
+  mutate(concd = (ppov+unemp+pnhblack+pund18+pwelfare)/5, immc = (pfb+phisp)/2) %>%
   select(GEOID10, concd, immc)
 
 sea.tracts <- left_join(sea.tracts, sea.tracts.std, by = "GEOID10")
