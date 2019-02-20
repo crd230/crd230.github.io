@@ -325,6 +325,9 @@ div.tocify {
     <li>
       <a href="lab6.html">Lab 6</a>
     </li>
+    <li>
+      <a href="lab7.html">Lab 7</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -485,19 +488,19 @@ View(v16)</code></pre>
 <p>Type in <code>? get_acs()</code> to see the full list of options. If you type in <em>ca</em> in your console, you should see a tibble pop up with the variables we selected. Cool, right?</p>
 <pre class="r"><code>ca</code></pre>
 <pre><code>## # A tibble: 40,285 x 5
-##    GEOID      NAME                                 variable estimate   moe
-##    &lt;chr&gt;      &lt;chr&gt;                                &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
-##  1 060014001… Census Tract 4001, Alameda County, … tpopr        3018   195
-##  2 060014001… Census Tract 4001, Alameda County, … nhwhite      2145   192
-##  3 060014001… Census Tract 4001, Alameda County, … nhblk          92    54
-##  4 060014001… Census Tract 4001, Alameda County, … nhasn         491   144
-##  5 060014001… Census Tract 4001, Alameda County, … hisp           83    57
-##  6 060014002… Census Tract 4002, Alameda County, … tpopr        1960    94
-##  7 060014002… Census Tract 4002, Alameda County, … nhwhite      1426   131
-##  8 060014002… Census Tract 4002, Alameda County, … nhblk          11    12
-##  9 060014002… Census Tract 4002, Alameda County, … nhasn         165    54
-## 10 060014002… Census Tract 4002, Alameda County, … hisp          211    67
-## # ... with 40,275 more rows</code></pre>
+##    GEOID      NAME                                  variable estimate   moe
+##    &lt;chr&gt;      &lt;chr&gt;                                 &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+##  1 060014001… Census Tract 4001, Alameda County, C… tpopr        3018   195
+##  2 060014001… Census Tract 4001, Alameda County, C… nhwhite      2145   192
+##  3 060014001… Census Tract 4001, Alameda County, C… nhblk          92    54
+##  4 060014001… Census Tract 4001, Alameda County, C… nhasn         491   144
+##  5 060014001… Census Tract 4001, Alameda County, C… hisp           83    57
+##  6 060014002… Census Tract 4002, Alameda County, C… tpopr        1960    94
+##  7 060014002… Census Tract 4002, Alameda County, C… nhwhite      1426   131
+##  8 060014002… Census Tract 4002, Alameda County, C… nhblk          11    12
+##  9 060014002… Census Tract 4002, Alameda County, C… nhasn         165    54
+## 10 060014002… Census Tract 4002, Alameda County, C… hisp          211    67
+## # … with 40,275 more rows</code></pre>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -555,35 +558,35 @@ In practice, most of the data files you will download will contain variables you
 <p>Let’s keep <em>GEOID</em>, <em>NAME</em>, <em>variable</em>, and <em>estimate</em> from the <em>ca</em> dataset.</p>
 <pre class="r"><code>select(ca, GEOID, NAME, variable, estimate)</code></pre>
 <pre><code>## # A tibble: 40,285 x 4
-##    GEOID       NAME                                      variable estimate
-##    &lt;chr&gt;       &lt;chr&gt;                                     &lt;chr&gt;       &lt;dbl&gt;
-##  1 06001400100 Census Tract 4001, Alameda County, Calif… tpopr        3018
-##  2 06001400100 Census Tract 4001, Alameda County, Calif… nhwhite      2145
-##  3 06001400100 Census Tract 4001, Alameda County, Calif… nhblk          92
-##  4 06001400100 Census Tract 4001, Alameda County, Calif… nhasn         491
-##  5 06001400100 Census Tract 4001, Alameda County, Calif… hisp           83
-##  6 06001400200 Census Tract 4002, Alameda County, Calif… tpopr        1960
-##  7 06001400200 Census Tract 4002, Alameda County, Calif… nhwhite      1426
-##  8 06001400200 Census Tract 4002, Alameda County, Calif… nhblk          11
-##  9 06001400200 Census Tract 4002, Alameda County, Calif… nhasn         165
-## 10 06001400200 Census Tract 4002, Alameda County, Calif… hisp          211
-## # ... with 40,275 more rows</code></pre>
+##    GEOID       NAME                                       variable estimate
+##    &lt;chr&gt;       &lt;chr&gt;                                      &lt;chr&gt;       &lt;dbl&gt;
+##  1 06001400100 Census Tract 4001, Alameda County, Califo… tpopr        3018
+##  2 06001400100 Census Tract 4001, Alameda County, Califo… nhwhite      2145
+##  3 06001400100 Census Tract 4001, Alameda County, Califo… nhblk          92
+##  4 06001400100 Census Tract 4001, Alameda County, Califo… nhasn         491
+##  5 06001400100 Census Tract 4001, Alameda County, Califo… hisp           83
+##  6 06001400200 Census Tract 4002, Alameda County, Califo… tpopr        1960
+##  7 06001400200 Census Tract 4002, Alameda County, Califo… nhwhite      1426
+##  8 06001400200 Census Tract 4002, Alameda County, Califo… nhblk          11
+##  9 06001400200 Census Tract 4002, Alameda County, Califo… nhasn         165
+## 10 06001400200 Census Tract 4002, Alameda County, Califo… hisp          211
+## # … with 40,275 more rows</code></pre>
 <p>A shortcut way of doing this is to use the <code>:</code> operator.</p>
 <pre class="r"><code>select(ca, GEOID:estimate)</code></pre>
 <pre><code>## # A tibble: 40,285 x 4
-##    GEOID       NAME                                      variable estimate
-##    &lt;chr&gt;       &lt;chr&gt;                                     &lt;chr&gt;       &lt;dbl&gt;
-##  1 06001400100 Census Tract 4001, Alameda County, Calif… tpopr        3018
-##  2 06001400100 Census Tract 4001, Alameda County, Calif… nhwhite      2145
-##  3 06001400100 Census Tract 4001, Alameda County, Calif… nhblk          92
-##  4 06001400100 Census Tract 4001, Alameda County, Calif… nhasn         491
-##  5 06001400100 Census Tract 4001, Alameda County, Calif… hisp           83
-##  6 06001400200 Census Tract 4002, Alameda County, Calif… tpopr        1960
-##  7 06001400200 Census Tract 4002, Alameda County, Calif… nhwhite      1426
-##  8 06001400200 Census Tract 4002, Alameda County, Calif… nhblk          11
-##  9 06001400200 Census Tract 4002, Alameda County, Calif… nhasn         165
-## 10 06001400200 Census Tract 4002, Alameda County, Calif… hisp          211
-## # ... with 40,275 more rows</code></pre>
+##    GEOID       NAME                                       variable estimate
+##    &lt;chr&gt;       &lt;chr&gt;                                      &lt;chr&gt;       &lt;dbl&gt;
+##  1 06001400100 Census Tract 4001, Alameda County, Califo… tpopr        3018
+##  2 06001400100 Census Tract 4001, Alameda County, Califo… nhwhite      2145
+##  3 06001400100 Census Tract 4001, Alameda County, Califo… nhblk          92
+##  4 06001400100 Census Tract 4001, Alameda County, Califo… nhasn         491
+##  5 06001400100 Census Tract 4001, Alameda County, Califo… hisp           83
+##  6 06001400200 Census Tract 4002, Alameda County, Califo… tpopr        1960
+##  7 06001400200 Census Tract 4002, Alameda County, Califo… nhwhite      1426
+##  8 06001400200 Census Tract 4002, Alameda County, Califo… nhblk          11
+##  9 06001400200 Census Tract 4002, Alameda County, Califo… nhasn         165
+## 10 06001400200 Census Tract 4002, Alameda County, Califo… hisp          211
+## # … with 40,275 more rows</code></pre>
 <p>The <code>:</code> operator tells R to select all the variables from <em>GEOID</em> to <em>estimate</em>. This operator is useful when you’ve got a lot of variables to keep and they all happen to be ordered sequentially.</p>
 <p>You can use also use <code>select()</code> command to keep variables <em>except</em> for the ones you designate. For example, to keep all variables in <em>ca</em> except <em>moe</em> and save this into a new tibble called <em>ca1</em>, type in</p>
 <pre class="r"><code>ca1 &lt;- select(ca, -(moe))</code></pre>
@@ -612,19 +615,19 @@ Tidying up a dataset means following the rules outlined on page 149 of RDS: (1) 
 <pre class="r"><code>ca1 &lt;- spread(ca1, key = variable, value = estimate)
 ca1</code></pre>
 <pre><code>## # A tibble: 8,057 x 7
-##    GEOID     NAME                           hisp nhasn nhblk nhwhite tpopr
-##    &lt;chr&gt;     &lt;chr&gt;                         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
-##  1 06001400… Census Tract 4001, Alameda C…    83   491    92    2145  3018
-##  2 06001400… Census Tract 4002, Alameda C…   211   165    11    1426  1960
-##  3 06001400… Census Tract 4003, Alameda C…   386   599   606    3346  5236
-##  4 06001400… Census Tract 4004, Alameda C…   266   458   410    2758  4171
-##  5 06001400… Census Tract 4005, Alameda C…   486   140   944    1972  3748
-##  6 06001400… Census Tract 4006, Alameda C…   158   116   584     636  1661
-##  7 06001400… Census Tract 4007, Alameda C…   752   119  1691    1700  4552
-##  8 06001400… Census Tract 4008, Alameda C…   421   436  1093    1390  3506
-##  9 06001400… Census Tract 4009, Alameda C…   264   188   734     899  2262
-## 10 06001401… Census Tract 4010, Alameda C…  1380   194  2057    1914  6193
-## # ... with 8,047 more rows</code></pre>
+##    GEOID     NAME                            hisp nhasn nhblk nhwhite tpopr
+##    &lt;chr&gt;     &lt;chr&gt;                          &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+##  1 06001400… Census Tract 4001, Alameda Co…    83   491    92    2145  3018
+##  2 06001400… Census Tract 4002, Alameda Co…   211   165    11    1426  1960
+##  3 06001400… Census Tract 4003, Alameda Co…   386   599   606    3346  5236
+##  4 06001400… Census Tract 4004, Alameda Co…   266   458   410    2758  4171
+##  5 06001400… Census Tract 4005, Alameda Co…   486   140   944    1972  3748
+##  6 06001400… Census Tract 4006, Alameda Co…   158   116   584     636  1661
+##  7 06001400… Census Tract 4007, Alameda Co…   752   119  1691    1700  4552
+##  8 06001400… Census Tract 4008, Alameda Co…   421   436  1093    1390  3506
+##  9 06001400… Census Tract 4009, Alameda Co…   264   188   734     899  2262
+## 10 06001401… Census Tract 4010, Alameda Co…  1380   194  2057    1914  6193
+## # … with 8,047 more rows</code></pre>
 <p>Compare <em>ca1</em> and <em>ca</em>. <em>ca</em> is a tract by variable level dataset whereas <em>ca</em> is a tract level dataset. Check the dimensions</p>
 <pre class="r"><code>dim(ca)</code></pre>
 <pre><code>## [1] 40285     5</code></pre>
@@ -804,9 +807,9 @@ We now move from functions that help bring in and clean your data set to those t
 <pre><code>## # A tibble: 3 x 3
 ##   mhisp            n    freq
 ##   &lt;chr&gt;        &lt;int&gt;   &lt;dbl&gt;
-## 1 Majority        20 0.0360 
-## 2 Not Majority   533 0.960  
-## 3 &lt;NA&gt;             2 0.00360</code></pre>
+## 1 &lt;NA&gt;             2 0.00360
+## 2 Majority        20 0.0360 
+## 3 Not Majority   533 0.960</code></pre>
 <p>The code <code>group_by(mhisp)</code> separates the neighborhoods by the categories of <em>mhisp</em> (Majority, Not Majority - there are two tracts with missing values). We then used <code>summarize()</code> to count the number of neighborhoods that are Majority and Not Majority. The function to get a count is <code>n()</code>, and we saved this count in a variable named <em>n</em>.</p>
 <p>Next, we used <code>mutate()</code> on this table to get the proportion of neighborhoods by Majority Hispanic designation. The code <code>sum(n)</code> adds the values of n. We then divide the value of each <em>n</em> by this sum. That yields the final frequency table.</p>
 <p>We can add city to the <code>group_by()</code> function to disaggregate by County. Let’s remove tracts with a missing value for <em>mhisp</em> using the <code>filter()</code> command</p>

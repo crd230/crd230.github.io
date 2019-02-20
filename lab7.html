@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Lab 7: Spatial Regression II</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 298: Winter 2019</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab0.html">Lab 0</a>
+    </li>
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+    <li>
+      <a href="lab2.html">Lab 2</a>
+    </li>
+    <li>
+      <a href="lab3.html">Lab 3</a>
+    </li>
+    <li>
+      <a href="lab4.html">Lab 4</a>
+    </li>
+    <li>
+      <a href="lab5.html">Lab 5</a>
+    </li>
+    <li>
+      <a href="lab6.html">Lab 6</a>
+    </li>
+    <li>
+      <a href="lab7.html">Lab 7</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Mini Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="nhgis.html">Download data from NHGIS</a>
+    </li>
+    <li>
+      <a href="missingdata.html">Dealing with missing data</a>
+    </li>
+    <li>
+      <a href="geocoding.html">Geocoding</a>
+    </li>
+    <li class="dropdown-header">Introduction to QGIS</li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+    <li>
+      <a href="censusgeography.html">Census Geographies</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Lab 7: Spatial Regression II</h1>
+<h3 class="subtitle"><em><h4 style="font-style:normal">
+CRD 298 - Spatial Methods in Community Research
+</h4></em></h3>
+<h4 class="author"><em><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></em></h4>
+<h4 class="date"><em><h4 style="font-style:normal">
+February 20, 2019
+</h4></em></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+h1.title {
+  font-weight: bold;
+}
+
+</style>
+<p><br />
+</p>
+<p>This lab guide builds on the spatial regression concepts, methods and R commands we covered in [Lab 6](<a href="https://crd230.github.io/lab6.html" class="uri">https://crd230.github.io/lab6.html</a>. We’ll expand on last week’s methods in the following ways</p>
+<ol style="list-style-type: decimal">
+<li>Interpret the coefficients of a spatial lag regression model</li>
+<li>Run models that capture spatial dependence in the independent variables</li>
+<li>Other methods for selecting the appropriate model</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will use the same data from last week’s lab to examine the association between neighborhood characteristics and violent crime rates in the City of Seattle, WA.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="load-necessary-packages" class="section level2">
+<h2><strong>Load necessary packages</strong></h2>
+<p><br />
+Load in the following packages, all of which we’ve covered in previous labs</p>
+<pre class="r"><code>library(sf)
+library(tidyverse)
+library(sp)
+library(tmap)
+library(spdep)
+library(car)
+library(knitr)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bring-in-data" class="section level2">
+<h2><strong>Bring in data</strong></h2>
+<p><br />
+We will be using the shapefile seattle_census_tracts_2010.shp. This file contains violent crime counts and rates between 2014 and 2017 by census tracts. It also contains demographic and socioeconomic data from the 2012-16 American Community Survey. The record layout for the shapefile’s attribute table is located <a href="https://raw.githubusercontent.com/crd230/data/master/seattle_record_layout.txt">here</a>.</p>
+<p>I zipped up the files associated with the shapefile onto Github. Download the file, unzip it, and bring it into R using the following code.</p>
+<pre class="r"><code>setwd(&quot;insert your pathway here&quot;)
+download.file(url = &quot;https://raw.githubusercontent.com/crd230/data/master/sseattle_census_tracts_2010.zip&quot;, destfile = &quot;seattle_census_tracts_2010.zip&quot;)
+unzip(zipfile = &quot;seattle_census_tracts_2010.zip&quot;)
+
+sea.tracts &lt;- st_read(&quot;seattle_census_tracts_2010.shp&quot;)
+sea.tracts.df &lt;- sea.tracts
+st_geometry(sea.tracts.df) &lt;- NULL</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="intepreting-coefficients" class="section level2">
+<h2><strong>Intepreting coefficients</strong></h2>
+<p><br />
+We’re going to examine the association between structural neighborhood characteristics and violent crime rates in the City of Seattle using a spatial lag model (SLM). Like we did <a href="https://crd230.github.io/lab6.html#standard_linear_regression">last lab</a>, create the concentrated disadvantage and immigrant concentration indices</p>
+<pre class="r"><code>sea.tracts.std &lt;-sea.tracts.df %&gt;%
+  select(GEOID10, ppov, unemp, pnhblack, pund18, pwelfare, pfb, phisp) %&gt;%
+  gather(variable, value, -c(GEOID10)) %&gt;%
+  group_by(variable) %&gt;%
+  mutate(mean = mean(value), sd = sd(value), z = (value-mean)/sd) %&gt;%
+  select(-(c(value, mean, sd))) %&gt;%
+  spread(variable, z) %&gt;%
+  mutate(concd = (ppov+unemp+pnhblack+pund18+pwelfare)/3, immc = (pfb+phisp)/2) %&gt;%
+  select(GEOID10, concd, immc)
+
+sea.tracts &lt;- left_join(sea.tracts, sea.tracts.std, by = &quot;GEOID10&quot;)
+#create sp version
+sea.tracts.sp &lt;- as(sea.tracts, &quot;Spatial&quot;)</code></pre>
+<p>Let’s create a Queen contiguity, row-standardized spatial weights matrix using the functions <code>poly2nb()</code> and <code>nb2listw()</code>.</p>
+<pre class="r"><code>seab&lt;-poly2nb(sea.tracts.sp, queen=T)
+seaw&lt;-nb2listw(seab, style=&quot;W&quot;, zero.policy = TRUE)</code></pre>
+<p>Use the <code>lagsarlm()</code> command to fit a spatial lag model</p>
+<pre class="r"><code>fit.lag&lt;-lagsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+     data = sea.tracts, listw = seaw) </code></pre>
+<p>The interpretation of the regression effects <span class="math inline"><em>β</em></span> for spatial lag models is complicated. In OLS, the <span class="math inline"><em>β</em></span> coefficient represents the change in <span class="math inline"><em>y</em></span> associated with a one-unit increase in <span class="math inline"><em>x</em></span>. In a spatial lag model, however, a unit change in a covariate cascades throughout the system. Each observation will have a direct effect of its covariates on the outcome, but it will also have feedback and indirect effects from its neighbors. Note that Spatial Error models do not have this issue.</p>
+<p>One way to understand the cascading effects embedded in a lag model is to ask a question like: What would happen to the violent crime rate in Seattle if residential mobility doubled in census tract <em>500</em>? We can answer this question by modifying the data and then examining how the changes affect the predicted values.</p>
+<p>First, copy the spatial data frame so we don’t mess up the original</p>
+<pre class="r"><code>sea.tracts.new &lt;- sea.tracts
+sea.tracts.new</code></pre>
+<p>You’ll see that residential mobility in tract <em>000500</em> is 0.0487336. The predicted values of violent crime rates using this value of residential mobility in tract <em>000500</em> can be obtained through the <code>predict()</code> function</p>
+<pre class="r"><code>orig.pred &lt;- as.data.frame(predict(fit.lag, pred.type = &quot;TC&quot;, listw=seaw, zero.policy = TRUE))</code></pre>
+<p>The argument <code>pred.type = &quot;TC&quot;</code> specifies how the prediction is calculated, in this case were doing an in-sample prediction (predicting crime rates for the tracts used to estimate the model) that incorporates the spatial trend captured by the spatial lag (TC stands for “trend corrected”). The purpose of this specific exercise is not to explore the various ways to predict values from a spatial regression model. If you are curious about the different ways you can estimate predictions from spatial models, type in <code>? predict.sarlm</code> and read <a href="https://www.tandfonline.com/doi/abs/10.1080/17421772.2017.1300679?casa_token=WummadaZiBsAAAAA:10gq9sQYNIKrR1oiFzxnQfSR7r0BYVqTP2pgKe5-bX0CeZqrMt_1yTtPK2kl1FXq8vEbQlKntWxWDQ">this article</a>.</p>
+<p>Let’s double tract <em>500</em>’s residential mobility from 0.0487336 to 0.0974672.</p>
+<pre class="r"><code>sea.tracts.new&lt;-mutate(sea.tracts.new, mob = ifelse(TRACTCE10 == &quot;000500&quot;, 0.0974672, mob))</code></pre>
+<p>and then get predicted values using this new residential mobility rate, plugging in <em>sea.tracts.new</em> into the <code>newdata =</code> argument.</p>
+<pre class="r"><code>new.pred &lt;- as.data.frame(predict(fit.lag, pred.type = &quot;TC&quot;,
+     newdata=sea.tracts.new , listw=seaw, zero.policy = TRUE))</code></pre>
+<p>The difference between the new and original predicted values shows the impact of doubling residential mobility in tract <em>500</em></p>
+<pre class="r"><code>sea.tracts.new &lt;- mutate(sea.tracts.new, effect = new.pred$fit-orig.pred$fit)</code></pre>
+<p>Without any spatial dependency, increasing residential mobility in tract <em>500</em> will only have an effect on tract <em>500</em>’s violent crime rate. However, because we’ve incorporated spatial dependency in the dependent variable, the increase will impact neighboring crime rates, which will then impact more distal communities. We can see this dependency by plotting the neighbor connections</p>
+<pre class="r"><code>plot(sea.tracts.sp)
+plot(seab, coords=coordinates(sea.tracts.sp), col = 2, add=T)
+plot(sea.tracts.sp[sea.tracts.sp$TRACTCE10 == &quot;000500&quot; ,], col=&quot;red&quot;, add=T)</code></pre>
+<p><img src="lab7_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
+<p>And how did increasing the mobility rate cascade throughout Seattle? Plot the difference between new and original predicted crime rate values (the variable <em>effect</em> we created above)</p>
+<pre class="r"><code>sea.tracts.new.500 &lt;- filter(sea.tracts.new, TRACTCE10 == &quot;000500&quot;)
+tm_shape(sea.tracts.new) + tm_polygons(col = &quot;effect&quot;, style = &quot;quantile&quot;, 
+                                       border.alpha = 0, title = &quot;&quot;) +
+  tm_shape(sea.tracts.new.500) + tm_polygons(col = &quot;red&quot;) + tm_layout(legend.format = list(digits = 3))</code></pre>
+<p><img src="lab7_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>We find that increasing rates in tract <em>500</em> has effects on its immediate neighbors, but we find the effects cascade outwards because these neighbors are connected to distal tracts. Note that the effects will not go beyond the body of water separating the north and south sections of the city because we established a Queen contiguity neighbor definition, which means neighborhoods will not connect across the river because they are not sharing a border or vertex.</p>
+<p>Cool, right? Ok, maybe not that thrilling, but the purpose of the above exercise is to show how changing the value of a covariate in one tract has a cascading effect on other tracts. The example was for just one tract, but we are interested in estimating the average effect. We can get estimates of the average direct and indirect effects of covariates in R using the command <code>impacts()</code> in the <strong>spdep</strong> package.</p>
+<pre class="r"><code>impacts(fit.lag, listw = seaw)</code></pre>
+<pre><code>## Impact measures (lag, exact):
+##                 Direct      Indirect        Total
+## concd    -0.0490823073 -0.0519153688 -0.100997676
+## mob       3.4413346293  3.6399706174  7.081305247
+## pocc      0.4625957059  0.4892970195  0.951892725
+## immc      0.1838696337  0.1944827040  0.378352338
+## popd     -0.0007190204 -0.0007605228 -0.001479543
+## div       0.2072590825  0.2192222065  0.426481289
+## pnhblack  0.9148099770  0.9676133813  1.882423358</code></pre>
+<p>The coefficients we get from <code>summary(fit.lag)</code> gives us direct effect (a) in Figure 1 in this week’s handout. The direct effects shown from the <code>impacts()</code> output shows (a) + (b). The indirect effect is (c).</p>
+<p>You’ll notice that we don’t have any p-values attached to these estimates. To do this, we can run a Monte Carlo simulation by specifying the number of simulations in the <code>R =</code> argument. Let’s save this simulation in an object we’ll call <em>imp1</em></p>
+<pre class="r"><code>imp1 &lt;- impacts(fit.lag, listw = seaw, R = 999)</code></pre>
+<p>We can then use the <code>summary()</code> function to get a succinct presentation of results. The <code>zstats = TRUE</code> option gives you pvalues and the <code>short = TRUE</code> argument spits out a concise summary of results.</p>
+<pre class="r"><code>summary(imp1, zstats=TRUE, short = TRUE)</code></pre>
+<pre><code>## Impact measures (lag, exact):
+##                 Direct      Indirect        Total
+## concd    -0.0490823073 -0.0519153688 -0.100997676
+## mob       3.4413346293  3.6399706174  7.081305247
+## pocc      0.4625957059  0.4892970195  0.951892725
+## immc      0.1838696337  0.1944827040  0.378352338
+## popd     -0.0007190204 -0.0007605228 -0.001479543
+## div       0.2072590825  0.2192222065  0.426481289
+## pnhblack  0.9148099770  0.9676133813  1.882423358
+## ========================================================
+## Simulation results (asymptotic variance matrix):
+## ========================================================
+## Simulated z-values:
+##               Direct    Indirect       Total
+## concd    -0.26501169 -0.25736481 -0.26466163
+## mob       2.21231253  1.67659043  2.02413275
+## pocc      0.07119775  0.07475747  0.07421636
+## immc      0.54118015  0.51419651  0.53656427
+## popd     -1.32845308 -1.07416929 -1.22507239
+## div       0.13130146  0.08837448  0.10941530
+## pnhblack  0.25763312  0.24702603  0.25554875
+## 
+## Simulated p-values:
+##          Direct   Indirect Total   
+## concd    0.791000 0.796897 0.791270
+## mob      0.026945 0.093623 0.042956
+## pocc     0.943240 0.940408 0.940838
+## immc     0.588383 0.607115 0.591569
+## popd     0.184028 0.282747 0.220548
+## div      0.895537 0.929579 0.912873
+## pnhblack 0.796690 0.804888 0.798299</code></pre>
+<p>Given our specification of the weights matrix, what is the interpretation of the statistically significant effects shown in the table?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="other-spatial-regression-models" class="section level2">
+<h2><strong>Other spatial regression models</strong></h2>
+<p>We went through the Spatial Lag Model (SLM) and the Spatial Error Model (SEM) in <a href="https://crd230.github.io/lab6.html">Lab 6</a>. But there are other spatial models, including those that account for spatial dependence in the independent variables. Let’s run through the suite of these models.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="spatial-autocorrelation-model" class="section level3">
+<h3><strong>Spatial Autocorrelation Model</strong></h3>
+<p><br />
+You can fit a model that incorporates spatial dependence in <em>both</em> the dependent variable and the error term. This model is known as a Spatial Autocorrelation Model (SAC). You use the command <code>sacsarlm()</code> with the <code>type=&quot;sac&quot;</code> argument to fit this model in R.</p>
+<pre class="r"><code>fit.sac&lt;-sacsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+     data = sea.tracts, listw=seaw, type=&quot;sac&quot;)
+summary(fit.sac)</code></pre>
+<pre><code>## 
+## Call:sacsarlm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + popd + 
+##     div + pnhblack, data = sea.tracts, listw = seaw, type = &quot;sac&quot;)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -4.40711 -0.54543  0.21744  0.91746  3.63776 
+## 
+## Type: sac 
+## Coefficients: (asymptotic standard errors) 
+##                Estimate  Std. Error z value Pr(&gt;|z|)
+## (Intercept) -1.57201270  4.26467798 -0.3686  0.71242
+## concd       -0.04723233  0.19454828 -0.2428  0.80818
+## mob          2.57845463  1.16598342  2.2114  0.02701
+## pocc         1.95248926  4.27712076  0.4565  0.64803
+## immc         0.04131425  0.27150436  0.1522  0.87905
+## popd        -0.00070662  0.00044063 -1.6037  0.10879
+## div          0.35457942  1.68110722  0.2109  0.83295
+## pnhblack     0.93301770  2.58138192  0.3614  0.71777
+## 
+## Rho: 0.78133
+## Asymptotic standard error: 0.084049
+##     z-value: 9.2962, p-value: &lt; 2.22e-16
+## Lambda: -0.52568
+## Asymptotic standard error: 0.21591
+##     z-value: -2.4347, p-value: 0.014903
+## 
+## LR test value: 30.146, p-value: 2.8444e-07
+## 
+## Log likelihood: -271.7487 for sac model
+## ML residual variance (sigma squared): 2.2691, (sigma: 1.5064)
+## Number of observations: 140 
+## Number of parameters estimated: 11 
+## AIC: 565.5, (AIC for lm: 591.64)</code></pre>
+<p>What does the Global Moran’s I tell us about spatial autocorrelation in the residuals?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spatial-lag-x-model" class="section level3">
+<h3><strong>Spatial Lag X Model</strong></h3>
+<p><br />
+The Spatial Lag X Model (SLX) is perhaps the simplest model that incorporates a lag on the independent variables. Unlike the other spatial regression models, we can use ordinary least squares to estimate spatial lag X models. We will need to construct the lag for each of the independent variables using the <code>lag.listw()</code> command</p>
+<pre class="r"><code>sea.tracts$lagconcd &lt;- lag.listw(seaw, sea.tracts$concd)
+sea.tracts$lagmob &lt;- lag.listw(seaw, sea.tracts$mob)
+sea.tracts$lagpocc &lt;- lag.listw(seaw, sea.tracts$pocc)
+sea.tracts$lagimmc &lt;- lag.listw(seaw, sea.tracts$immc)
+sea.tracts$lagpopd &lt;- lag.listw(seaw, sea.tracts$popd)
+sea.tracts$lagdiv &lt;- lag.listw(seaw, sea.tracts$div)
+sea.tracts$lagpnhblack &lt;- lag.listw(seaw, sea.tracts$pnhblack)</code></pre>
+<p>And then use the <code>lm()</code> command to fit the model</p>
+<pre class="r"><code>fit.slx1 &lt;- lm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div + pnhblack 
+     + lagconcd + lagmob + lagpocc + lagimmc  + lagpopd + lagdiv + lagpnhblack, 
+     data = sea.tracts)
+summary(fit.slx1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + popd + 
+##     div + pnhblack + lagconcd + lagmob + lagpocc + lagimmc + 
+##     lagpopd + lagdiv + lagpnhblack, data = sea.tracts)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5.6154 -0.6460  0.2758  1.0318  5.1337 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) -7.7655429 14.3016564  -0.543  0.58811   
+## concd       -0.0385877  0.3072589  -0.126  0.90026   
+## mob          0.7497885  2.2536933   0.333  0.73992   
+## pocc         3.2469421  5.5505879   0.585  0.55962   
+## immc         0.3946010  0.3879883   1.017  0.31110   
+## popd        -0.0016768  0.0005592  -2.999  0.00327 **
+## div          2.7215823  2.5598927   1.063  0.28976   
+## pnhblack    -0.0371775  3.9357110  -0.009  0.99248   
+## lagconcd    -0.5338100  0.5679060  -0.940  0.34905   
+## lagmob       7.9416317  3.6002108   2.206  0.02922 * 
+## lagpocc      7.3612046 12.7432193   0.578  0.56454   
+## lagimmc     -0.7792319  0.8413876  -0.926  0.35616   
+## lagpopd     -0.0043201  0.0016027  -2.696  0.00800 **
+## lagdiv      -2.4121862  5.2629656  -0.458  0.64751   
+## lagpnhblack 13.4792333  7.1608705   1.882  0.06211 . 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.836 on 125 degrees of freedom
+## Multiple R-squared:  0.2693, Adjusted R-squared:  0.1875 
+## F-statistic: 3.291 on 14 and 125 DF,  p-value: 0.0001757</code></pre>
+<p>There is a command in R, <code>lmSLX()</code>, that fits the above model without having to separately construct the lag <span class="math inline"><em>x</em></span> variables.</p>
+<pre class="r"><code>fit.slx2&lt;-lmSLX(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+     data = sea.tracts, listw = seaw) 
+summary(fit.slx2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = formula(paste(&quot;y ~ &quot;, paste(colnames(x)[-1], collapse = &quot;+&quot;))), 
+##     data = as.data.frame(x), weights = weights)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5.6154 -0.6460  0.2758  1.0318  5.1337 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  -7.7655429 14.3016564  -0.543  0.58811   
+## concd        -0.0385877  0.3072589  -0.126  0.90026   
+## mob           0.7497885  2.2536933   0.333  0.73992   
+## pocc          3.2469421  5.5505879   0.585  0.55962   
+## immc          0.3946010  0.3879883   1.017  0.31110   
+## popd         -0.0016768  0.0005592  -2.999  0.00327 **
+## div           2.7215823  2.5598927   1.063  0.28976   
+## pnhblack     -0.0371775  3.9357110  -0.009  0.99248   
+## lag.concd    -0.5338100  0.5679060  -0.940  0.34905   
+## lag.mob       7.9416317  3.6002108   2.206  0.02922 * 
+## lag.pocc      7.3612046 12.7432193   0.578  0.56454   
+## lag.immc     -0.7792319  0.8413876  -0.926  0.35616   
+## lag.popd     -0.0043201  0.0016027  -2.696  0.00800 **
+## lag.div      -2.4121862  5.2629656  -0.458  0.64751   
+## lag.pnhblack 13.4792333  7.1608705   1.882  0.06211 . 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.836 on 125 degrees of freedom
+## Multiple R-squared:  0.2693, Adjusted R-squared:  0.1875 
+## F-statistic: 3.291 on 14 and 125 DF,  p-value: 0.0001757</code></pre>
+<p>We can then use the <code>impacts()</code> command to estimate direct, indirect and total effects.</p>
+<pre class="r"><code>impacts(fit.slx2, listw = seaw)</code></pre>
+<pre><code>## Impact measures (SLX, estimable):
+##                Direct     Indirect        Total
+## concd    -0.038587679 -0.533809953 -0.572397633
+## mob       0.749788537  7.941631656  8.691420193
+## pocc      3.246942107  7.361204633 10.608146740
+## immc      0.394600980 -0.779231938 -0.384630958
+## popd     -0.001676811 -0.004320107 -0.005996918
+## div       2.721582283 -2.412186232  0.309396052
+## pnhblack -0.037177512 13.479233280 13.442055769</code></pre>
+<p>Because there is no lag effect on the dependent variable, the direct effects do not have feedback effects, hence the coefficients on <span class="math inline"><em>x</em></span> represent the direct effects. The indirect effects are the coefficients on the lag <span class="math inline"><em>x</em></span> variables.</p>
+<p>The downside of using <code>lmSLX()</code> is that it forces us to include lags on every variable. Calculating the lags by hand and then using <code>lm()</code> allows us to include lags on certain independent variables, like was done in the Crowder and South (2008) paper. We can also use different spatial weights matrices for the independent variables if we think the diffusion/interaction process differs (e.g. the dependency for variable <span class="math inline"><em>x</em><sub>1</sub></span> is best measured as Queen contiguity whereas dependency for variable <span class="math inline"><em>x</em><sub>2</sub></span> is distance based).</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spatial-durbin-model" class="section level3">
+<h3><strong>Spatial Durbin Model</strong></h3>
+<p><br />
+The Spatial Durbin Model (SDM) extends the SLM model by including lags on the independent variables. One issue that commonly occurs with the lag model is that we often have residual autocorrelation in the model. This autocorrelation could be attributable to spatial dependency in the covariates.</p>
+<p>We use the <code>lagsarlm()</code> command and specify <code>type = &quot;mixed&quot;</code> to estimate an SDM</p>
+<pre class="r"><code>fit.durb&lt;-lagsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+    data = sea.tracts, listw = seaw, type = &quot;mixed&quot;) 
+summary(fit.durb)</code></pre>
+<pre><code>## 
+## Call:lagsarlm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + popd + 
+##     div + pnhblack, data = sea.tracts, listw = seaw, type = &quot;mixed&quot;)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -4.85663 -0.64007  0.16789  0.97892  4.77285 
+## 
+## Type: mixed 
+## Coefficients: (asymptotic standard errors) 
+##                 Estimate  Std. Error z value Pr(&gt;|z|)
+## (Intercept)  -1.0291e+01  1.2287e+01 -0.8376  0.40228
+## concd        -3.5401e-02  2.6412e-01 -0.1340  0.89338
+## mob           6.6350e-01  1.9389e+00  0.3422  0.73219
+## pocc          3.0265e+00  4.7685e+00  0.6347  0.52564
+## immc          4.4092e-01  3.3323e-01  1.3232  0.18578
+## popd         -9.4472e-04  4.9475e-04 -1.9095  0.05620
+## div           2.1741e+00  2.1981e+00  0.9891  0.32262
+## pnhblack      2.3286e-01  3.3846e+00  0.0688  0.94515
+## lag.concd    -3.3602e-01  4.8911e-01 -0.6870  0.49208
+## lag.mob       4.4984e+00  3.1523e+00  1.4270  0.15358
+## lag.pocc      7.7615e+00  1.0953e+01  0.7086  0.47858
+## lag.immc     -1.0871e+00  7.2265e-01 -1.5043  0.13250
+## lag.popd     -2.7594e-03  1.3919e-03 -1.9824  0.04743
+## lag.div      -2.6562e-02  4.5197e+00 -0.0059  0.99531
+## lag.pnhblack  7.1341e+00  6.1866e+00  1.1531  0.24885
+## 
+## Rho: 0.49052, LR test value: 19.059, p-value: 1.2671e-05
+## Asymptotic standard error: 0.093548
+##     z-value: 5.2435, p-value: 1.5758e-07
+## Wald statistic: 27.494, p-value: 1.5758e-07
+## 
+## Log likelihood: -266.2691 for mixed model
+## ML residual variance (sigma squared): 2.486, (sigma: 1.5767)
+## Number of observations: 140 
+## Number of parameters estimated: 17 
+## AIC: 566.54, (AIC for lm: 583.6)
+## LM test for residual autocorrelation
+## test value: 0.78989, p-value: 0.37413</code></pre>
+<p>Do we still have spatial autocorrelation in the error term?</p>
+<p>Use <code>impacts()</code> to get direct, indirect and total effects. We’ll want to evaluate whether these effects are statistically significant from 0. Specify <code>R = 999</code> and save the results in an object <em>imp2</em>.</p>
+<pre class="r"><code>#Run a simulation 1000 times to get a distribution of direct, indirect and total effects
+imp2 &lt;- impacts(fit.durb, listw = seaw, R = 999)</code></pre>
+<pre class="r"><code>summary(imp2, zstats=TRUE, short = TRUE)</code></pre>
+<pre><code>## Impact measures (mixed, exact):
+##                Direct     Indirect        Total
+## concd    -0.080444292 -0.648574250 -0.729018542
+## mob       1.278355710  8.853237512 10.131593221
+## pocc      4.204967469 16.969298903 21.174266372
+## immc      0.329926538 -1.598203999 -1.268277461
+## popd     -0.001355505 -0.005914781 -0.007270287
+## div       2.306652986  1.908493919  4.215146905
+## pnhblack  1.156745549 13.302850715 14.459596264
+## ========================================================
+## Simulation results (asymptotic variance matrix):
+## ========================================================
+## Simulated z-values:
+##              Direct   Indirect      Total
+## concd    -0.2710667 -0.7334682 -0.7610785
+## mob       0.7188278  1.7317226  1.9566585
+## pocc      0.7509510  0.8068116  0.8616972
+## immc      0.9360627 -1.2385078 -0.9299371
+## popd     -2.2917898 -2.0624557 -2.2587682
+## div       1.0079994  0.2594697  0.4874072
+## pnhblack  0.3007722  1.2361787  1.2154841
+## 
+## Simulated p-values:
+##          Direct   Indirect Total   
+## concd    0.786340 0.463273 0.446610
+## mob      0.472247 0.083323 0.050388
+## pocc     0.452682 0.419775 0.388854
+## immc     0.349241 0.215528 0.352404
+## popd     0.021918 0.039164 0.023898
+## div      0.313455 0.795273 0.625970
+## pnhblack 0.763588 0.216392 0.224182</code></pre>
+<p>Because the SDM is nested within the SLM, we can use a likelihood ratio test to determine whether it is a <em>better</em> model. You can use the function <code>anova()</code> or <code>LR.sarlm()</code></p>
+<pre class="r"><code>LR.sarlm(fit.durb,fit.lag)</code></pre>
+<pre><code>## 
+##  Likelihood ratio for spatial linear models
+## 
+## data:  
+## Likelihood ratio = 13.827, df = 7, p-value = 0.05434
+## sample estimates:
+## Log likelihood of fit.durb  Log likelihood of fit.lag 
+##                  -266.2691                  -273.1829</code></pre>
+<p>What did you find?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spatial-durbin-error-model" class="section level3">
+<h3><strong>Spatial Durbin Error Model</strong></h3>
+<p><br />
+The Spatial Durbin Model (SDEM) extends the SEM model by including lags on the independent variables). We can estimate SDEM in R using the command <code>errorsarlm()</code> in the spdep package and specify <code>etype = &quot;mixed&quot;</code></p>
+<pre class="r"><code>fit.errdurb&lt;-errorsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+     data = sea.tracts, listw = seaw, etype = &quot;emixed&quot;)
+summary(fit.errdurb)</code></pre>
+<pre><code>## 
+## Call:errorsarlm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + 
+##     popd + div + pnhblack, data = sea.tracts, listw = seaw, etype = &quot;emixed&quot;)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -4.91525 -0.61418  0.13557  1.02196  4.65472 
+## 
+## Type: error 
+## Coefficients: (asymptotic standard errors) 
+##                 Estimate  Std. Error z value Pr(&gt;|z|)
+## (Intercept)  -1.1964e+01  1.6532e+01 -0.7237  0.46926
+## concd        -8.8828e-02  2.6083e-01 -0.3406  0.73344
+## mob           1.3676e+00  1.8448e+00  0.7413  0.45849
+## pocc          3.8728e+00  5.1902e+00  0.7462  0.45555
+## immc          3.6815e-01  3.3872e-01  1.0869  0.27708
+## popd         -1.4581e-03  5.7885e-04 -2.5189  0.01177
+## div           2.1539e+00  2.2260e+00  0.9676  0.33324
+## pnhblack      1.0165e+00  3.4017e+00  0.2988  0.76507
+## lag.concd    -6.5816e-01  6.1779e-01 -1.0653  0.28673
+## lag.mob       6.5736e+00  3.4882e+00  1.8845  0.05950
+## lag.pocc      9.1274e+00  1.3505e+01  0.6758  0.49914
+## lag.immc     -1.2350e+00  8.1688e-01 -1.5118  0.13057
+## lag.popd     -3.1589e-03  1.5180e-03 -2.0810  0.03743
+## lag.div       2.7579e+00  5.0899e+00  0.5418  0.58792
+## lag.pnhblack  8.0005e+00  8.0175e+00  0.9979  0.31834
+## 
+## Lambda: 0.50387, LR test value: 18.109, p-value: 2.0865e-05
+## Asymptotic standard error: 0.094141
+##     z-value: 5.3523, p-value: 8.6847e-08
+## Wald statistic: 28.647, p-value: 8.6847e-08
+## 
+## Log likelihood: -266.7445 for error model
+## ML residual variance (sigma squared): 2.4943, (sigma: 1.5793)
+## Number of observations: 140 
+## Number of parameters estimated: 17 
+## AIC: 567.49, (AIC for lm: 583.6)</code></pre>
+<p>We can use a likelihood ratio test to determine whether the SDEM is a <em>better</em> model compared to the SEM. We’ll need to fit an SEM first.</p>
+<pre class="r"><code>fit.err&lt;-errorsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+     data = sea.tracts, listw = seaw)</code></pre>
+<p>And then use <code>LR.sarlm()</code></p>
+<pre class="r"><code>LR.sarlm(fit.errdurb,fit.err)</code></pre>
+<pre><code>## 
+##  Likelihood ratio for spatial linear models
+## 
+## data:  
+## Likelihood ratio = 14.33, df = 7, p-value = 0.04561
+## sample estimates:
+## Log likelihood of fit.errdurb     Log likelihood of fit.err 
+##                     -266.7445                     -273.9097</code></pre>
+<p>We estimate direct, indirect and total effects using <code>impacts()</code> and get pvalues by specifying <code>R = 999</code></p>
+<pre class="r"><code>imp3 &lt;- impacts(fit.errdurb, listw = seaw, R = 999)
+summary(imp3, zstats=TRUE, short = TRUE)</code></pre>
+<pre><code>## Impact measures (SDEM, estimable, n):
+##                Direct     Indirect        Total
+## concd    -0.088828385 -0.658155406 -0.746983791
+## mob       1.367615890  6.573594493  7.941210384
+## pocc      3.872848264  9.127359683 13.000207947
+## immc      0.368150293 -1.234990711 -0.866840418
+## popd     -0.001458099 -0.003158928 -0.004617026
+## div       2.153915104  2.757918533  4.911833637
+## pnhblack  1.016528328  8.000456048  9.016984376
+## ========================================================
+## Standard errors:
+##                Direct     Indirect        Total
+## concd    0.2608341677  0.617793274  0.680042382
+## mob      1.8448060249  3.488245818  3.655015257
+## pocc     5.1901652436 13.505248510 16.587346464
+## immc     0.3387168310  0.816876253  0.926135255
+## popd     0.0005788523  0.001517983  0.001907574
+## div      2.2260410798  5.089852332  5.832197772
+## pnhblack 3.4016931221  8.017482280  9.075035610
+## ========================================================
+## Z-values:
+##              Direct   Indirect      Total
+## concd    -0.3405550 -1.0653327 -1.0984371
+## mob       0.7413332  1.8844986  2.1726887
+## pocc      0.7461898  0.6758380  0.7837425
+## immc      1.0868970 -1.5118455 -0.9359760
+## popd     -2.5189475 -2.0810038 -2.4203657
+## div       0.9675990  0.5418465  0.8421926
+## pnhblack  0.2988301  0.9978764  0.9936032
+## 
+## p-values:
+##          Direct   Indirect Total   
+## concd    0.733439 0.286725 0.272014
+## mob      0.458491 0.059498 0.029804
+## pocc     0.455553 0.499144 0.433191
+## immc     0.277082 0.130573 0.349286
+## popd     0.011771 0.037434 0.015505
+## div      0.333245 0.587924 0.399680
+## pnhblack 0.765070 0.318339 0.320416</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="general-nesting-spatial-model" class="section level3">
+<h3><strong>General Nesting Spatial Model</strong></h3>
+<p><br />
+We can fit a model that incorporates spatial dependence in the dependent variable, the error term and the independent variables (often called SACX). We use the command <code>sacsarlm()</code> with <code>type = &quot;sacmixed&quot;</code> to fit this model in R.</p>
+<pre class="r"><code>fit.sacx&lt;-sacsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+     data = sea.tracts, listw=seaw, type=&quot;sacmixed&quot;)
+summary(fit.sacx)</code></pre>
+<pre><code>## 
+## Call:sacsarlm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + popd + 
+##     div + pnhblack, data = sea.tracts, listw = seaw, type = &quot;sacmixed&quot;)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -4.48639 -0.65261  0.16496  0.93098  4.50682 
+## 
+## Type: sacmixed 
+## Coefficients: (asymptotic standard errors) 
+##                 Estimate  Std. Error z value Pr(&gt;|z|)
+## (Intercept)  -8.41401554  9.53260661 -0.8827  0.37742
+## concd        -0.03297772  0.26739259 -0.1233  0.90185
+## mob           0.42842700  1.99151659  0.2151  0.82967
+## pocc          2.06146433  4.63272911  0.4450  0.65634
+## immc          0.37195448  0.33531357  1.1093  0.26731
+## popd         -0.00056723  0.00053169 -1.0668  0.28604
+## div           2.68349234  2.20574848  1.2166  0.22376
+## pnhblack     -0.61058909  3.40134707 -0.1795  0.85753
+## lag.concd    -0.14441962  0.43652704 -0.3308  0.74077
+## lag.mob       3.43973955  3.08727597  1.1142  0.26521
+## lag.pocc      6.75180236  9.49165223  0.7113  0.47687
+## lag.immc     -0.80910940  0.67001313 -1.2076  0.22720
+## lag.popd     -0.00239355  0.00142495 -1.6797  0.09301
+## lag.div      -2.09774063  4.15227308 -0.5052  0.61342
+## lag.pnhblack  6.64494277  5.45928834  1.2172  0.22354
+## 
+## Rho: 0.70853
+## Asymptotic standard error: 0.11649
+##     z-value: 6.0822, p-value: 1.1858e-09
+## Lambda: -0.41501
+## Asymptotic standard error: 0.2489
+##     z-value: -1.6674, p-value: 0.095434
+## 
+## LR test value: 42.317, p-value: 2.876e-06
+## 
+## Log likelihood: -265.663 for sacmixed model
+## ML residual variance (sigma squared): 2.208, (sigma: 1.4859)
+## Number of observations: 140 
+## Number of parameters estimated: 18 
+## AIC: 567.33, (AIC for lm: 591.64)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="putting-it-all-together" class="section level2">
+<h2><strong>Putting it all together</strong></h2>
+<p><br />
+We’ve ran a lot of different models. Which one do we choose?</p>
+<p>One way of deciding which models are appropriate is to examine the Akaike Information Criterion (AIC). A lower value indicates a better fitting model. First, run a basic OLS</p>
+<pre class="r"><code>fit.ols &lt;- lm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+     data = sea.tracts)</code></pre>
+<p>You can extract the AIC from a model by using the function <code>AIC()</code></p>
+<pre class="r"><code>AIC(fit.ols)</code></pre>
+<pre><code>## [1] 591.6429</code></pre>
+<p>Let’s extract the AICs from each model and plot them</p>
+<pre class="r"><code>#Save AIC values
+AICs&lt;-c(AIC(fit.ols),AIC(fit.lag), AIC(fit.err), AIC(fit.sac), AIC(fit.durb), 
+     AIC(fit.errdurb),AIC(fit.sacx))
+
+#plot the AICs
+plot(AICs, type=&quot;l&quot;, lwd=1.5, xaxt=&quot;n&quot;, xlab=&quot;&quot;)
+axis(1, at=1:7,labels=F) #6= number of models
+labels&lt;-c(&quot;OLS&quot;, &quot;SLM&quot;,&quot;SEM&quot;, &quot;SAC&quot;,&quot;SDM&quot;, &quot;SDEM&quot;, &quot;SACX&quot; )
+text(1:7, par(&quot;usr&quot;)[3]-.25, srt=45, adj=1, labels=labels, xpd=T)
+mtext(side=1, text=&quot;Model Specification&quot;, line=3)
+#circle the model with the lowest AIC
+symbols(x= which.min(AICs), y=AICs[which.min(AICs)], circles=1, fg=2,lwd=2,add=T)</code></pre>
+<p><img src="lab7_files/figure-html/unnamed-chunk-33-1.png" /><!-- --></p>
+<p>We can also present the AICs in a table</p>
+<pre class="r"><code>kable(data.frame(Models=labels, AIC=round(AICs, 2)))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Models</th>
+<th align="right">AIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">OLS</td>
+<td align="right">591.64</td>
+</tr>
+<tr class="even">
+<td align="left">SLM</td>
+<td align="right">566.37</td>
+</tr>
+<tr class="odd">
+<td align="left">SEM</td>
+<td align="right">567.82</td>
+</tr>
+<tr class="even">
+<td align="left">SAC</td>
+<td align="right">565.50</td>
+</tr>
+<tr class="odd">
+<td align="left">SDM</td>
+<td align="right">566.54</td>
+</tr>
+<tr class="even">
+<td align="left">SDEM</td>
+<td align="right">567.49</td>
+</tr>
+<tr class="odd">
+<td align="left">SACX</td>
+<td align="right">567.33</td>
+</tr>
+</tbody>
+</table>
+<p>The results show that the Spatial Autocorrelation model (SAC) best fits the data, although the difference between it and the SLM model is small. A likelihood ratio test could be used to further eliminate models given that the SLM is a nested within SAC. We can use the <code>LR.sarlm()</code> or <code>anova()</code> command.</p>
+<pre class="r"><code>anova(fit.sac, fit.lag)</code></pre>
+<pre><code>##         Model df    AIC  logLik Test L.Ratio p-value
+## fit.sac     1 11 565.50 -271.75    1                
+## fit.lag     2 10 566.37 -273.18    2  2.8683 0.09034</code></pre>
+<p>What about comparisons between SAC and SDM, SACX, and SEM, the models with the next three lowest AIC?</p>
+<pre class="r"><code>anova(fit.sac, fit.durb)</code></pre>
+<pre><code>##          Model df    AIC  logLik Test L.Ratio  p-value
+## fit.sac      1 11 565.50 -271.75    1                 
+## fit.durb     2 17 566.54 -266.27    2  10.959 0.089646</code></pre>
+<pre class="r"><code>anova(fit.sac, fit.sacx)</code></pre>
+<pre><code>##          Model df    AIC  logLik Test L.Ratio  p-value
+## fit.sac      1 11 565.50 -271.75    1                 
+## fit.sacx     2 18 567.33 -265.66    2  12.171 0.095063</code></pre>
+<pre class="r"><code>anova(fit.sac, fit.err)</code></pre>
+<pre><code>##         Model df    AIC  logLik Test L.Ratio  p-value
+## fit.sac     1 11 565.50 -271.75    1                 
+## fit.err     2 10 567.82 -273.91    2  4.3221 0.037621</code></pre>
+<p>SAC does not reject SDM or SACX, but does reject SEM. All four models, SAC, SLM, SDM and SACX, incorporate a spatial lag on <span class="math inline"><em>y</em></span>. Is there a theoretical reason for including a spatial lag of the independent variable? If so, an SDM or SACX is the model to choose. If not, the simpler SLM or SAC is appropriate. In a study, report both for transparency and discuss any differences (in the current study, there are none, so I would go with the SLM and say results are robust to the inclusion of a spatial error).</p>
+<hr />
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>
