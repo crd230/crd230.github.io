@@ -557,7 +557,7 @@ corrMat</code></pre>
   mutate(mean = mean(value), sd = sd(value), z = (value-mean)/sd) %&gt;%
   select(-(c(value, mean, sd))) %&gt;%
   spread(variable, z) %&gt;%
-  mutate(concd = (ppov+unemp+pnhblack+pund18+pwelfare)/3, immc = (pfb+phisp)/2) %&gt;%
+  mutate(concd = (ppov+unemp+pnhblack+pund18+pwelfare)/5, immc = (pfb+phisp)/2) %&gt;%
   select(GEOID10, concd, immc)
 
 sea.tracts &lt;- left_join(sea.tracts, sea.tracts.std, by = &quot;GEOID10&quot;)</code></pre>
@@ -579,7 +579,7 @@ sea.tracts &lt;- left_join(sea.tracts, sea.tracts.std, by = &quot;GEOID10&quot;)
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(&gt;|t|)   
 ## (Intercept)  3.8351930  5.3963313   0.711  0.47851   
-## concd       -0.0410061  0.2359586  -0.174  0.86230   
+## concd       -0.0683434  0.3932643  -0.174  0.86230   
 ## mob          4.4693388  1.5950932   2.802  0.00584 **
 ## pocc        -0.2609372  5.5270811  -0.047  0.96242   
 ## immc         0.0507213  0.3649737   0.139  0.88968   
@@ -598,7 +598,7 @@ tidy(fit.ols)</code></pre>
 ##   term        estimate std.error statistic p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 (Intercept)  3.84     5.40        0.711  0.479  
-## 2 concd       -0.0410   0.236      -0.174  0.862  
+## 2 concd       -0.0683   0.393      -0.174  0.862  
 ## 3 mob          4.47     1.60        2.80   0.00584
 ## 4 pocc        -0.261    5.53       -0.0472 0.962  
 ## 5 immc         0.0507   0.365       0.139  0.890  
@@ -763,14 +763,14 @@ summary(fit.lag)</code></pre>
 ## Type: lag 
 ## Coefficients: (asymptotic standard errors) 
 ##                Estimate  Std. Error z value Pr(&gt;|z|)
-## (Intercept)  1.00383069  4.62917261  0.2168  0.82833
-## concd       -0.04525556  0.24413212 -0.1854  0.85294
-## mob          3.17302805  1.45574070  2.1797  0.02928
-## pocc         0.42652904  4.72143843  0.0903  0.92802
-## immc         0.16953408  0.32309874  0.5247  0.59978
+## (Intercept)  1.00383088  4.62917264  0.2168  0.82833
+## concd       -0.07542595  0.40688686 -0.1854  0.85294
+## mob          3.17302815  1.45574071  2.1797  0.02928
+## pocc         0.42652900  4.72143846  0.0903  0.92802
+## immc         0.16953408  0.32309875  0.5247  0.59978
 ## popd        -0.00066296  0.00048075 -1.3790  0.16789
-## div          0.19109995  1.98958373  0.0961  0.92348
-## pnhblack     0.84348604  3.19232136  0.2642  0.79161
+## div          0.19110001  1.98958374  0.0961  0.92348
+## pnhblack     0.84348609  3.19232138  0.2642  0.79161
 ## 
 ## Rho: 0.55191, LR test value: 27.277, p-value: 1.7628e-07
 ## Asymptotic standard error: 0.086442
@@ -794,7 +794,7 @@ summary(fit.lag)</code></pre>
 ## weights: seaw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.027722, observed rank = 349, p-value = 0.651
+## statistic = -0.027722, observed rank = 341, p-value = 0.659
 ## alternative hypothesis: greater</code></pre>
 <div style="margin-bottom:25px;">
 
@@ -819,14 +819,14 @@ summary(fit.err)</code></pre>
 ## Type: error 
 ## Coefficients: (asymptotic standard errors) 
 ##                Estimate  Std. Error z value Pr(&gt;|z|)
-## (Intercept)  4.01348888  4.37971210  0.9164   0.3595
-## concd        0.05070904  0.27062600  0.1874   0.8514
-## mob          2.48137983  1.83221253  1.3543   0.1756
-## pocc         0.11809724  4.58373077  0.0258   0.9794
-## immc         0.31587006  0.33957270  0.9302   0.3523
+## (Intercept)  4.01348889  4.37971215  0.9164   0.3595
+## concd        0.08451506  0.45104334  0.1874   0.8514
+## mob          2.48138004  1.83221252  1.3543   0.1756
+## pocc         0.11809722  4.58373082  0.0258   0.9794
+## immc         0.31587004  0.33957270  0.9302   0.3523
 ## popd        -0.00056011  0.00047213 -1.1863   0.2355
-## div          0.80469056  2.16560090  0.3716   0.7102
-## pnhblack    -0.77447717  3.45762069 -0.2240   0.8228
+## div          0.80469055  2.16560090  0.3716   0.7102
+## pnhblack    -0.77447714  3.45762071 -0.2240   0.8228
 ## 
 ## Lambda: 0.59098, LR test value: 25.823, p-value: 3.7412e-07
 ## Asymptotic standard error: 0.083722
@@ -847,7 +847,7 @@ summary(fit.err)</code></pre>
 ## weights: seaw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.020788, observed rank = 372, p-value = 0.628
+## statistic = -0.020788, observed rank = 425, p-value = 0.575
 ## alternative hypothesis: greater</code></pre>
 <div style="margin-bottom:25px;">
 
@@ -881,8 +881,8 @@ An organized table of results is an essential component not just in academic pap
 </tr>
 <tr class="even">
 <td align="left">concd</td>
-<td align="right">-0.0410061</td>
-<td align="right">0.2359586</td>
+<td align="right">-0.0683434</td>
+<td align="right">0.3932643</td>
 <td align="right">-0.1737850</td>
 <td align="right">0.8622986</td>
 </tr>
@@ -1004,26 +1004,26 @@ lvcmrt1417
 concd
 </td>
 <td>
--0.041
+-0.068
 </td>
 <td>
--0.045
+-0.075
 </td>
 <td>
-0.051
+0.085
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.236)
+(0.393)
 </td>
 <td>
-(0.244)
+(0.407)
 </td>
 <td>
-(0.271)
+(0.451)
 </td>
 </tr>
 <tr>
