@@ -192,7 +192,7 @@ tm_shape(sea.tracts.new) + tm_polygons(col = "effect", style = "quantile",
   
 We find that increasing rates in tract *500* has effects on its immediate neighbors, but we find the effects cascade outwards because these neighbors are connected to distal tracts.  Note that the effects will not go beyond the body of water separating the north and south sections of the city because we established a Queen contiguity neighbor definition, which means neighborhoods will not connect across the river because they are not sharing a border or vertex.
 
-Cool, right? Ok, maybe not that thrilling, but the purpose of the above exercise is to show how changing the value of a covariate in one tract has a cascading effect on other tracts.  The example was for just one tract, but we are interested in estimating the average effect.  We can get estimates of the average direct and indirect effects of covariates in R using the command `impacts()` in the **spdep** package.
+Cool, right? Ok, maybe not that thrilling, but the purpose of the above exercise is to show how changing the value of a covariate in one tract has a cascading effect on other tracts.  The example was for just one tract, but we are interested in estimating the average effect across all tracts.  We can get estimates of the average direct and indirect effects of covariates in R using the command `impacts()` in the **spdep** package.
 
 
 ```r
@@ -242,24 +242,24 @@ summary(imp1, zstats=TRUE, short = TRUE)
 ## Simulation results (asymptotic variance matrix):
 ## ========================================================
 ## Simulated z-values:
-##              Direct    Indirect      Total
-## concd    -0.1611832 -0.11476056 -0.1377447
-## mob       2.2505112  1.67888067  2.0439172
-## pocc      0.1187803  0.12692399  0.1257756
-## immc      0.5237722  0.45208847  0.4959808
-## popd     -1.4230354 -1.16653929 -1.3260669
-## div       0.1211326  0.09700201  0.1097218
-## pnhblack  0.2108335  0.17725578  0.1951642
+##               Direct    Indirect       Total
+## concd    -0.15140509 -0.12139414 -0.13669075
+## mob       2.38036745  1.78316424  2.15985902
+## pocc      0.07289015  0.09832105  0.08790298
+## immc      0.55775504  0.53706365  0.55524679
+## popd     -1.40138523 -1.20678357 -1.33437782
+## div       0.06005309  0.01297051  0.03468379
+## pnhblack  0.26692464  0.25568766  0.26452851
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.871949 0.908635 0.890442
-## mob      0.024417 0.093175 0.040962
-## pocc     0.905449 0.899001 0.899910
-## immc     0.600437 0.651205 0.619908
-## popd     0.154726 0.243396 0.184818
-## div      0.903586 0.922725 0.912630
-## pnhblack 0.833017 0.859307 0.845264
+## concd    0.879656 0.90338  0.891275
+## mob      0.017295 0.07456  0.030784
+## pocc     0.941894 0.92168  0.929954
+## immc     0.577012 0.59122  0.578726
+## popd     0.161099 0.22752  0.182080
+## div      0.952113 0.98965  0.972332
+## pnhblack 0.789527 0.79819  0.791373
 ```
 
 
@@ -546,23 +546,23 @@ summary(imp2, zstats=TRUE, short = TRUE)
 ## ========================================================
 ## Simulated z-values:
 ##              Direct   Indirect      Total
-## concd    -0.3039666 -0.7782800 -0.8135781
-## mob       0.6893969  1.7086412  1.8555576
-## pocc      0.8132658  0.8101694  0.8757432
-## immc      0.8799644 -1.2073104 -0.9007674
-## popd     -2.4467614 -2.2085171 -2.4266581
-## div       1.0320665  0.2664583  0.5005884
-## pnhblack  0.3013284  1.1917124  1.1925910
+## concd    -0.3521426 -0.8460283 -0.8932274
+## mob       0.6533429  1.7137648  1.9490218
+## pocc      0.8327071  0.7887378  0.8579439
+## immc      0.9710904 -1.2082812 -0.8927355
+## popd     -2.4463940 -2.2111040 -2.4456600
+## div       0.9609599  0.2931853  0.5096007
+## pnhblack  0.4028245  1.2196199  1.2162013
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.761153 0.436404 0.415887
-## mob      0.490574 0.087517 0.063517
-## pocc     0.416066 0.417843 0.381170
-## immc     0.378879 0.227313 0.367712
-## popd     0.014415 0.027208 0.015239
-## div      0.302041 0.789886 0.616661
-## pnhblack 0.763164 0.233374 0.233030
+## concd    0.724731 0.397537 0.371735
+## mob      0.513535 0.086572 0.051293
+## pocc     0.405010 0.430265 0.390923
+## immc     0.331503 0.226939 0.371999
+## popd     0.014429 0.027029 0.014459
+## div      0.336572 0.769381 0.610331
+## pnhblack 0.687077 0.222609 0.223908
 ```
 
 Because the SDM is nested within the SLM, we can use a likelihood ratio test to determine whether it is a *better* model. You can use the function `anova()` or `LR.sarlm()`

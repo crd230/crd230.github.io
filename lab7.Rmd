@@ -186,7 +186,7 @@ tm_shape(sea.tracts.new) + tm_polygons(col = "effect", style = "quantile",
   
 We find that increasing rates in tract *500* has effects on its immediate neighbors, but we find the effects cascade outwards because these neighbors are connected to distal tracts.  Note that the effects will not go beyond the body of water separating the north and south sections of the city because we established a Queen contiguity neighbor definition, which means neighborhoods will not connect across the river because they are not sharing a border or vertex.
 
-Cool, right? Ok, maybe not that thrilling, but the purpose of the above exercise is to show how changing the value of a covariate in one tract has a cascading effect on other tracts.  The example was for just one tract, but we are interested in estimating the average effect.  We can get estimates of the average direct and indirect effects of covariates in R using the command `impacts()` in the **spdep** package.
+Cool, right? Ok, maybe not that thrilling, but the purpose of the above exercise is to show how changing the value of a covariate in one tract has a cascading effect on other tracts.  The example was for just one tract, but we are interested in estimating the average effect across all tracts.  We can get estimates of the average direct and indirect effects of covariates in R using the command `impacts()` in the **spdep** package.
 
 ```{r}
 impacts(fit.lag, listw = seaw)
