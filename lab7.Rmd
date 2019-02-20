@@ -298,7 +298,7 @@ Do we still have spatial autocorrelation in the error term?
 Use `impacts()` to get direct, indirect and total effects.  We'll want to evaluate whether these effects are statistically significant from 0.  Specify `R = 999` and save the results in an object *imp2*.
 
 ```{r}
-#Run a simulation 1000 times to get a distribution of direct, indirect and total effects
+#Run a simulation 999 times to get a distribution of direct, indirect and total effects
 imp2 <- impacts(fit.durb, listw = seaw, R = 999)
 ```
 

@@ -536,23 +536,23 @@ tm_shape(sea.tracts.new) + tm_polygons(col = &quot;effect&quot;, style = &quot;q
 ## ========================================================
 ## Simulated z-values:
 ##               Direct    Indirect       Total
-## concd    -0.15140509 -0.12139414 -0.13669075
-## mob       2.38036745  1.78316424  2.15985902
-## pocc      0.07289015  0.09832105  0.08790298
-## immc      0.55775504  0.53706365  0.55524679
-## popd     -1.40138523 -1.20678357 -1.33437782
-## div       0.06005309  0.01297051  0.03468379
-## pnhblack  0.26692464  0.25568766  0.26452851
+## concd    -0.20955053 -0.18893499 -0.20093081
+## mob       2.09825286  1.63094564  1.92823180
+## pocc      0.02787103  0.03520990  0.03231601
+## immc      0.50821331  0.48112166  0.50160066
+## popd     -1.42944645 -1.19953898 -1.34689978
+## div       0.11201879  0.08025423  0.09614792
+## pnhblack  0.27922181  0.26921281  0.27764312
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.879656 0.90338  0.891275
-## mob      0.017295 0.07456  0.030784
-## pocc     0.941894 0.92168  0.929954
-## immc     0.577012 0.59122  0.578726
-## popd     0.161099 0.22752  0.182080
-## div      0.952113 0.98965  0.972332
-## pnhblack 0.789527 0.79819  0.791373</code></pre>
+## concd    0.834018 0.85014  0.840753
+## mob      0.035883 0.10290  0.053826
+## pocc     0.977765 0.97191  0.974220
+## immc     0.611304 0.63043  0.615948
+## popd     0.152876 0.23032  0.178013
+## div      0.910809 0.93604  0.923403
+## pnhblack 0.780075 0.78777  0.781286</code></pre>
 <p>Given our specification of the weights matrix, what is the interpretation of the statistically significant effects shown in the table?</p>
 <div style="margin-bottom:25px;">
 
@@ -761,7 +761,7 @@ summary(fit.durb)</code></pre>
 ## test value: 0.78989, p-value: 0.37413</code></pre>
 <p>Do we still have spatial autocorrelation in the error term?</p>
 <p>Use <code>impacts()</code> to get direct, indirect and total effects. We’ll want to evaluate whether these effects are statistically significant from 0. Specify <code>R = 999</code> and save the results in an object <em>imp2</em>.</p>
-<pre class="r"><code>#Run a simulation 1000 times to get a distribution of direct, indirect and total effects
+<pre class="r"><code>#Run a simulation 999 times to get a distribution of direct, indirect and total effects
 imp2 &lt;- impacts(fit.durb, listw = seaw, R = 999)</code></pre>
 <pre class="r"><code>summary(imp2, zstats=TRUE, short = TRUE)</code></pre>
 <pre><code>## Impact measures (mixed, exact):
@@ -778,23 +778,23 @@ imp2 &lt;- impacts(fit.durb, listw = seaw, R = 999)</code></pre>
 ## ========================================================
 ## Simulated z-values:
 ##              Direct   Indirect      Total
-## concd    -0.3521426 -0.8460283 -0.8932274
-## mob       0.6533429  1.7137648  1.9490218
-## pocc      0.8327071  0.7887378  0.8579439
-## immc      0.9710904 -1.2082812 -0.8927355
-## popd     -2.4463940 -2.2111040 -2.4456600
-## div       0.9609599  0.2931853  0.5096007
-## pnhblack  0.4028245  1.2196199  1.2162013
+## concd    -0.3173021 -0.7476231 -0.7838991
+## mob       0.6905776  1.7368438  1.9502542
+## pocc      0.7405815  0.7451432  0.8048400
+## immc      0.9833408 -1.1862915 -0.8713199
+## popd     -2.4053351 -2.1307182 -2.3455623
+## div       1.0027665  0.2103164  0.4318856
+## pnhblack  0.3722030  1.2744166  1.2471413
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.724731 0.397537 0.371735
-## mob      0.513535 0.086572 0.051293
-## pocc     0.405010 0.430265 0.390923
-## immc     0.331503 0.226939 0.371999
-## popd     0.014429 0.027029 0.014459
-## div      0.336572 0.769381 0.610331
-## pnhblack 0.687077 0.222609 0.223908</code></pre>
+## concd    0.751014 0.454688 0.433099
+## mob      0.489831 0.082415 0.051146
+## pocc     0.458947 0.456185 0.420912
+## immc     0.325440 0.235507 0.383579
+## popd     0.016158 0.033112 0.018998
+## div      0.315974 0.833421 0.665825
+## pnhblack 0.709742 0.202516 0.212346</code></pre>
 <p>Because the SDM is nested within the SLM, we can use a likelihood ratio test to determine whether it is a <em>better</em> model. You can use the function <code>anova()</code> or <code>LR.sarlm()</code></p>
 <pre class="r"><code>LR.sarlm(fit.durb,fit.lag)</code></pre>
 <pre><code>## 
