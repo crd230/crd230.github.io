@@ -32,7 +32,7 @@ h1.title {
 
 
 
-This lab guide builds on the spatial regression concepts, methods and R commands we covered in [Lab 6](https://crd230.github.io/lab6.html.  We'll expand on last week's methods in the following ways
+This lab guide builds on the spatial regression concepts, methods and R commands we covered in [Lab 6](https://crd230.github.io/lab6.html).  We'll expand on last week's methods in the following ways
 
 1. Interpret the coefficients of a spatial lag regression model
 2. Run models that capture spatial dependence in the independent variables
@@ -243,23 +243,23 @@ summary(imp1, zstats=TRUE, short = TRUE)
 ## ========================================================
 ## Simulated z-values:
 ##               Direct    Indirect       Total
-## concd    -0.26501169 -0.25736481 -0.26466163
-## mob       2.21231253  1.67659043  2.02413275
-## pocc      0.07119775  0.07475747  0.07421636
-## immc      0.54118015  0.51419651  0.53656427
-## popd     -1.32845308 -1.07416929 -1.22507239
-## div       0.13130146  0.08837448  0.10941530
-## pnhblack  0.25763312  0.24702603  0.25554875
+## concd    -0.20560959 -0.18405674 -0.19639055
+## mob       2.18792185  1.72315819  2.04225174
+## pocc      0.08928572  0.11197432  0.10286946
+## immc      0.53218848  0.47801553  0.51034070
+## popd     -1.36261420 -1.17531623 -1.30183074
+## div       0.08145291  0.08219348  0.08272915
+## pnhblack  0.30466220  0.28026500  0.29541347
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.791000 0.796897 0.791270
-## mob      0.026945 0.093623 0.042956
-## pocc     0.943240 0.940408 0.940838
-## immc     0.588383 0.607115 0.591569
-## popd     0.184028 0.282747 0.220548
-## div      0.895537 0.929579 0.912873
-## pnhblack 0.796690 0.804888 0.798299
+## concd    0.837096 0.85397  0.844304
+## mob      0.028675 0.08486  0.041127
+## pocc     0.928855 0.91084  0.918067
+## immc     0.594595 0.63264  0.609813
+## popd     0.173004 0.23987  0.192974
+## div      0.935082 0.93449  0.934067
+## pnhblack 0.760623 0.77927  0.767678
 ```
 
 
@@ -546,23 +546,23 @@ summary(imp2, zstats=TRUE, short = TRUE)
 ## ========================================================
 ## Simulated z-values:
 ##              Direct   Indirect      Total
-## concd    -0.2710667 -0.7334682 -0.7610785
-## mob       0.7188278  1.7317226  1.9566585
-## pocc      0.7509510  0.8068116  0.8616972
-## immc      0.9360627 -1.2385078 -0.9299371
-## popd     -2.2917898 -2.0624557 -2.2587682
-## div       1.0079994  0.2594697  0.4874072
-## pnhblack  0.3007722  1.2361787  1.2154841
+## concd    -0.3349513 -0.7286608 -0.7670206
+## mob       0.7075749  1.7519549  1.9473193
+## pocc      0.8098875  0.8125262  0.8880267
+## immc      0.9669521 -1.1881970 -0.8751884
+## popd     -2.5442048 -2.1857545 -2.4221837
+## div       1.0038674  0.2457034  0.4630242
+## pnhblack  0.3482669  1.1639141  1.1587707
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.786340 0.463273 0.446610
-## mob      0.472247 0.083323 0.050388
-## pocc     0.452682 0.419775 0.388854
-## immc     0.349241 0.215528 0.352404
-## popd     0.021918 0.039164 0.023898
-## div      0.313455 0.795273 0.625970
-## pnhblack 0.763588 0.216392 0.224182
+## concd    0.737662 0.466209 0.443069
+## mob      0.479209 0.079782 0.051496
+## pocc     0.418005 0.416490 0.374526
+## immc     0.333568 0.234756 0.381471
+## popd     0.010953 0.028834 0.015428
+## div      0.315443 0.805912 0.643347
+## pnhblack 0.727640 0.244459 0.246550
 ```
 
 Because the SDM is nested within the SLM, we can use a likelihood ratio test to determine whether it is a *better* model. You can use the function `anova()` or `LR.sarlm()`

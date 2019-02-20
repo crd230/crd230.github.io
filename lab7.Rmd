@@ -34,7 +34,7 @@ h1.title {
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This lab guide builds on the spatial regression concepts, methods and R commands we covered in [Lab 6](https://crd230.github.io/lab6.html.  We'll expand on last week's methods in the following ways
+This lab guide builds on the spatial regression concepts, methods and R commands we covered in [Lab 6](https://crd230.github.io/lab6.html).  We'll expand on last week's methods in the following ways
 
 1. Interpret the coefficients of a spatial lag regression model
 2. Run models that capture spatial dependence in the independent variables
