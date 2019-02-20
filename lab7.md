@@ -72,7 +72,7 @@ I zipped up the files associated with the shapefile onto Github.  Download the f
 
 ```r
 setwd("insert your pathway here")
-download.file(url = "https://raw.githubusercontent.com/crd230/data/master/sseattle_census_tracts_2010.zip", destfile = "seattle_census_tracts_2010.zip")
+download.file(url = "https://raw.githubusercontent.com/crd230/data/master/seattle_census_tracts_2010.zip", destfile = "seattle_census_tracts_2010.zip")
 unzip(zipfile = "seattle_census_tracts_2010.zip")
 
 sea.tracts <- st_read("seattle_census_tracts_2010.shp")
@@ -243,23 +243,23 @@ summary(imp1, zstats=TRUE, short = TRUE)
 ## ========================================================
 ## Simulated z-values:
 ##               Direct    Indirect       Total
-## concd    -0.20560959 -0.18405674 -0.19639055
-## mob       2.18792185  1.72315819  2.04225174
-## pocc      0.08928572  0.11197432  0.10286946
-## immc      0.53218848  0.47801553  0.51034070
-## popd     -1.36261420 -1.17531623 -1.30183074
-## div       0.08145291  0.08219348  0.08272915
-## pnhblack  0.30466220  0.28026500  0.29541347
+## concd    -0.14250637 -0.12863248 -0.13679213
+## mob       2.20770418  1.77533149  2.07012522
+## pocc      0.02881592  0.04540282  0.03836505
+## immc      0.51101224  0.47617146  0.49957708
+## popd     -1.43162893 -1.19148102 -1.33431292
+## div       0.09672454  0.09261584  0.09570972
+## pnhblack  0.20031493  0.18402092  0.19396391
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.837096 0.85397  0.844304
-## mob      0.028675 0.08486  0.041127
-## pocc     0.928855 0.91084  0.918067
-## immc     0.594595 0.63264  0.609813
-## popd     0.173004 0.23987  0.192974
-## div      0.935082 0.93449  0.934067
-## pnhblack 0.760623 0.77927  0.767678
+## concd    0.886680 0.897648 0.891195
+## mob      0.027265 0.075843 0.038441
+## pocc     0.977011 0.963786 0.969397
+## immc     0.609342 0.633952 0.617373
+## popd     0.152250 0.233465 0.182101
+## div      0.922945 0.926209 0.923751
+## pnhblack 0.841234 0.853997 0.846204
 ```
 
 
@@ -546,23 +546,23 @@ summary(imp2, zstats=TRUE, short = TRUE)
 ## ========================================================
 ## Simulated z-values:
 ##              Direct   Indirect      Total
-## concd    -0.3349513 -0.7286608 -0.7670206
-## mob       0.7075749  1.7519549  1.9473193
-## pocc      0.8098875  0.8125262  0.8880267
-## immc      0.9669521 -1.1881970 -0.8751884
-## popd     -2.5442048 -2.1857545 -2.4221837
-## div       1.0038674  0.2457034  0.4630242
-## pnhblack  0.3482669  1.1639141  1.1587707
+## concd    -0.2867490 -0.6931137 -0.7384703
+## mob       0.6781865  1.7698700  1.9766064
+## pocc      0.7419052  0.7910734  0.8481748
+## immc      0.9864378 -1.1516711 -0.8485276
+## popd     -2.4911766 -2.0752422 -2.3277292
+## div       0.9940890  0.1910284  0.4188446
+## pnhblack  0.3330387  1.1416379  1.1559261
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.737662 0.466209 0.443069
-## mob      0.479209 0.079782 0.051496
-## pocc     0.418005 0.416490 0.374526
-## immc     0.333568 0.234756 0.381471
-## popd     0.010953 0.028834 0.015428
-## div      0.315443 0.805912 0.643347
-## pnhblack 0.727640 0.244459 0.246550
+## concd    0.774305 0.488238 0.460229
+## mob      0.497653 0.076749 0.048086
+## pocc     0.458145 0.428901 0.396341
+## immc     0.323918 0.249456 0.396144
+## popd     0.012732 0.037964 0.019926
+## div      0.320180 0.848503 0.675330
+## pnhblack 0.739105 0.253605 0.247711
 ```
 
 Because the SDM is nested within the SLM, we can use a likelihood ratio test to determine whether it is a *better* model. You can use the function `anova()` or `LR.sarlm()`

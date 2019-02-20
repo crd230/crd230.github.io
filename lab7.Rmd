@@ -72,7 +72,7 @@ I zipped up the files associated with the shapefile onto Github.  Download the f
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 setwd("insert your pathway here")
-download.file(url = "https://raw.githubusercontent.com/crd230/data/master/sseattle_census_tracts_2010.zip", destfile = "seattle_census_tracts_2010.zip")
+download.file(url = "https://raw.githubusercontent.com/crd230/data/master/seattle_census_tracts_2010.zip", destfile = "seattle_census_tracts_2010.zip")
 unzip(zipfile = "seattle_census_tracts_2010.zip")
 
 sea.tracts <- st_read("seattle_census_tracts_2010.shp")
