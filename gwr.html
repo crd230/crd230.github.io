@@ -328,6 +328,9 @@ div.tocify {
     <li>
       <a href="lab7.html">Lab 7</a>
     </li>
+    <li>
+      <a href="lab8.html">Lab 8</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -345,6 +348,9 @@ div.tocify {
     </li>
     <li>
       <a href="geocoding.html">Geocoding</a>
+    </li>
+    <li>
+      <a href="gwr.html">Geographically Weighted Regression</a>
     </li>
     <li class="dropdown-header">Introduction to QGIS</li>
   </ul>
@@ -412,11 +418,11 @@ h1.title {
 </style>
 <p><br />
 </p>
-<p>If we are interested in the influence or effect of some variable <span class="math inline">\(x\)</span> on another variable <span class="math inline">\(y\)</span>, we run a regression model. If <span class="math inline">\(y\)</span> is continuous, this model typically takes on the following form</p>
-<p><span class="math display">\[y = \beta_0 + \beta_1 x + \varepsilon\]</span></p>
-<p>The coefficient <span class="math inline">\(\beta_1\)</span> represents the increase in <span class="math inline">\(y\)</span> due to a one-unit increase in <span class="math inline">\(x\)</span>. This equation represents a global model, and <span class="math inline">\(\beta_1\)</span> is applied to all spatial units in the study area.</p>
-<p>The assumption is that the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> is stationary. Stationarity is a general term in statistics, generally it means that something doesn’t change over time or space. In spatial statistics, stationarity equals the homogeneity of an effect, or, that a process works the same regardless of where you observe the process. This can can be a weak assumption, and we can ask, does <span class="math inline">\(x\)</span> affect <span class="math inline">\(y\)</span> differently at different geographic locations, or in terms of parameters: If we estimate that <span class="math inline">\(\beta_1\)</span> = <span class="math inline">\(\sigma\)</span>, are there locations in the data where <span class="math inline">\(\beta_1\)</span> does not equal <span class="math inline">\(\sigma\)</span>?</p>
-<p>In prior lab guides, we went through methods that explore and measure the unequal spatial distribution of a variable <span class="math inline">\(x\)</span>. For example, we used Moran’s I to measure global and local measures of spatial autocorrelation. In this lab guide, we will examine the unequal spatial distribution in the <em>relationship</em> between two variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>. The method we will cover in this guide that captures this spatial heterogeneity is Geographically Weighed Regression (GWR).</p>
+<p>If we are interested in the influence or effect of some variable <span class="math inline"><em>x</em></span> on another variable <span class="math inline"><em>y</em></span>, we run a regression model. If <span class="math inline"><em>y</em></span> is continuous, this model typically takes on the following form</p>
+<p><br /><span class="math display"><em>y</em> = <em>β</em><sub>0</sub> + <em>β</em><sub>1</sub><em>x</em> + <em>ε</em></span><br /></p>
+<p>The coefficient <span class="math inline"><em>β</em><sub>1</sub></span> represents the increase in <span class="math inline"><em>y</em></span> due to a one-unit increase in <span class="math inline"><em>x</em></span>. This equation represents a global model, and <span class="math inline"><em>β</em><sub>1</sub></span> is applied to all spatial units in the study area.</p>
+<p>The assumption is that the relationship between <span class="math inline"><em>x</em></span> and <span class="math inline"><em>y</em></span> is stationary. Stationarity is a general term in statistics, generally it means that something doesn’t change over time or space. In spatial statistics, stationarity equals the homogeneity of an effect, or, that a process works the same regardless of where you observe the process. This can can be a weak assumption, and we can ask, does <span class="math inline"><em>x</em></span> affect <span class="math inline"><em>y</em></span> differently at different geographic locations, or in terms of parameters: If we estimate that <span class="math inline"><em>β</em><sub>1</sub></span> = <span class="math inline"><em>σ</em></span>, are there locations in the data where <span class="math inline"><em>β</em><sub>1</sub></span> does not equal <span class="math inline"><em>σ</em></span>?</p>
+<p>In prior lab guides, we went through methods that explore and measure the unequal spatial distribution of a variable <span class="math inline"><em>x</em></span>. For example, we used Moran’s I to measure global and local measures of spatial autocorrelation. In this lab guide, we will examine the unequal spatial distribution in the <em>relationship</em> between two variables <span class="math inline"><em>x</em></span> and <span class="math inline"><em>y</em></span>. The method we will cover in this guide that captures this spatial heterogeneity is Geographically Weighed Regression (GWR).</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -494,31 +500,19 @@ summary(fit.ols)</code></pre>
 <div id="geographically-weighted-regression" class="section level2">
 <h2><strong>Geographically Weighted Regression</strong></h2>
 <p><br />
-First proposed by Brundson et al. (1996), the GWR estimates <span class="math inline">\(\beta_p\)</span> at each location <span class="math inline">\(i\)</span>, using the centroids for polygon data. The model takes on the following form</p>
-<p><span class="math display">\[y_i = \beta_{i0} + \beta_{i1} x_{i1} + ...  \beta_{ip} x_{ip}  + \varepsilon_{i}\]</span></p>
-<p>where <span class="math inline">\(\beta_{ip}\)</span> is the local realization of <span class="math inline">\(\beta_p\)</span> at location <span class="math inline">\(i\)</span>. This constructs a trend surface of parameter values for each independent variable and the model intercept.</p>
-<p>GWR is an outgrowth of ordinary least squares regression (OLS); and adds a level of modeling sophistication by allowing the relationships between the independent and dependent variables to vary by locality. Note that the basic OLS regression model above is just a special case of the GWR model where the coefficients are constant over space. The parameters in the GWR are estimated by weighted least squares. The weighting matrix is a diagonal matrix, with each diagonal element <span class="math inline">\(w_{ij}\)</span> being a function of the location of the observation. The role of the weight matrix is to give more value to observations that are close to <span class="math inline">\(i\)</span>, as it is assumed that observations that are close will influence each other more than those that are far away (Tobler’s Law).</p>
-<p>There are three major decisions to make when running a GWR: (1) the kernel density function assigning weights <span class="math inline">\(w_{ij}\)</span>, (2) the bandwidth <span class="math inline">\(h\)</span> of the function, which determines the degree of distance decay, and (3) who to count as neighbors.</p>
+First proposed by Brundson et al. (1996), the GWR estimates <span class="math inline"><em>β</em><sub><em>p</em></sub></span> at each location <span class="math inline"><em>i</em></span>, using the centroids for polygon data. The model takes on the following form</p>
+<p><br /><span class="math display"><em>y</em><sub><em>i</em></sub> = <em>β</em><sub><em>i</em>0</sub> + <em>β</em><sub><em>i</em>1</sub><em>x</em><sub><em>i</em>1</sub> + ...<em>β</em><sub><em>i</em><em>p</em></sub><em>x</em><sub><em>i</em><em>p</em></sub> + <em>ε</em><sub><em>i</em></sub></span><br /></p>
+<p>where <span class="math inline"><em>β</em><sub><em>i</em><em>p</em></sub></span> is the local realization of <span class="math inline"><em>β</em><sub><em>p</em></sub></span> at location <span class="math inline"><em>i</em></span>. This constructs a trend surface of parameter values for each independent variable and the model intercept.</p>
+<p>GWR is an outgrowth of ordinary least squares regression (OLS); and adds a level of modeling sophistication by allowing the relationships between the independent and dependent variables to vary by locality. Note that the basic OLS regression model above is just a special case of the GWR model where the coefficients are constant over space. The parameters in the GWR are estimated by weighted least squares. The weighting matrix is a diagonal matrix, with each diagonal element <span class="math inline"><em>w</em><sub><em>i</em><em>j</em></sub></span> being a function of the location of the observation. The role of the weight matrix is to give more value to observations that are close to <span class="math inline"><em>i</em></span>, as it is assumed that observations that are close will influence each other more than those that are far away (Tobler’s Law).</p>
+<p>There are three major decisions to make when running a GWR: (1) the kernel density function assigning weights <span class="math inline"><em>w</em><sub><em>i</em><em>j</em></sub></span>, (2) the bandwidth <span class="math inline"><em>h</em></span> of the function, which determines the degree of distance decay, and (3) who to count as neighbors.</p>
 <div style="margin-bottom:25px;">
 
 </div>
 <div id="kernel-density-function-and-bandwidth-h" class="section level3">
 <h3><strong>Kernel density function and bandwidth h</strong></h3>
 <p><br />
-The kernel density function determines the weight assigned to neighboring units. A common density function is a Gaussian weighting function</p>
-<p><span class="math display">\[
-w_{ij} = exp(-\frac{d_{ij}^2}{h^2})
-\]</span></p>
-<p>where <span class="math inline">\(d_{ij}\)</span> is the distance between location <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> and <span class="math inline">\(h\)</span> is the bandwidth.</p>
-<p>Other common density functions include an Exponential function</p>
-<p><span class="math display">\[w_{ij} = exp(-\frac{d_{ij}}{h})\]</span></p>
-<p>a bi-square function</p>
-<p><span class="math display">\[w_{ij} = 1-(\frac{d_{ij}^2}{h^2})^2\]</span></p>
-<p>and a tri-cube function</p>
-<p><span class="math display">\[w_{ij} = 1-(\frac{d_{ij}^3}{h^3})^3\]</span></p>
-<p>Choosing a weighting function also involves choosing a bandwidth <em>h</em>. There are several ways to do this. R uses two methods. The first uses a cross-validation method to choose the optimal kernel bandwidth. The cross validation method takes the form</p>
-<p><span class="math display">\[CV = \sum_i \left[y_i - \hat{y}_{\neq i}(\beta)\right]^2\]</span></p>
-<p>where <span class="math inline">\(\hat{y}_{\neq i}(\beta)\)</span> is the fitted value of <span class="math inline">\(y_i\)</span> with the observations for point <span class="math inline">\(i\)</span> omitted from the calibration process. Here, were trying to find the <span class="math inline">\(h\)</span> that minimizes <span class="math inline">\(CV\)</span>. This in effect minimizes the sum of squared errors at all locations <span class="math inline">\(i\)</span>, and arrives at an optimal bandwidth. The other method chooses a bandwidth the minimizes the Akaike Information Criterion (AIC).</p>
+The kernel density function determines the weight assigned to neighboring units. A common density function is a Gaussian weighting function. Other common density functions include an exponential, bi-square, and a tri-cube function.</p>
+<p>Choosing a weighting function also involves choosing a bandwidth <em>h</em>. There are several ways to do this. R uses two methods. The first uses a cross-validation method to choose the optimal kernel bandwidth. The cross validation method minimizes the sum of squared errors at all locations <span class="math inline"><em>i</em></span>, and arrives at an optimal bandwidth. The other method chooses a bandwidth the minimizes the Akaike Information Criterion (AIC).</p>
 <p>To run a GWR, you need to load in the packages <strong>spgwr</strong></p>
 <pre class="r"><code>library(spgwr)</code></pre>
 <p>You also need to turn <em>philly</em> into an sp object.</p>
@@ -529,7 +523,7 @@ w_{ij} = exp(-\frac{d_{ij}^2}{h^2})
 <p>Let’s see what the the estimated optimal bandwidth is.</p>
 <pre class="r"><code>gwr.b1</code></pre>
 <pre><code>## [1] 1322.708</code></pre>
-<p>This is the distance (in meters, because our data are projected in a system measured in meters), which the weighting function will search, and include all observations within this radius. This also represents your value <span class="math inline">\(h\)</span>. Look at the R help file for <code>gwr.sel()</code> to determine how to change the selection method from minimizing CV to minimizing AIC.`</p>
+<p>This is the distance (in meters, because our data are projected in a system measured in meters), which the weighting function will search, and include all observations within this radius. This also represents your value <span class="math inline"><em>h</em></span>. Look at the R help file for <code>gwr.sel()</code> to determine how to change the selection method from minimizing CV to minimizing AIC.`</p>
 <p>Plug the bandwidth into the function <code>gwr()</code>, which runs the GWR model, using the argument <code>bandwidth</code></p>
 <pre class="r"><code>gwr.fit1&lt;-gwr(usarea ~ lmhhinc   + lpop + pnhblk + punemp + pvac  + ph70 + lmhval + 
      phnew + phisp, data = philly.sp, bandwidth = gwr.b1, se.fit=T, hatmatrix=T)</code></pre>
@@ -714,8 +708,8 @@ tm_shape(philly, unit = &quot;mi&quot;) +
 <p>One item within the gwr object is called SDF and this is the spatial polygons data frame containing the 376 regression model estimates. Get the names of the objects within SDF</p>
 <pre><code>names(gwr.fit3$SDF)</code></pre>
 <p>The variables <em>X.Intercept.</em> to <em>phisp</em> give the regression coefficients. <em>X.Intercept.se</em> to <em>phisp_se</em> give the coefficient standard errors.</p>
-<p>In addition to mapping coefficient sizes, you should also map whether these coefficients are statistically significant. Unfortunately, R doesn’t have that information neatly compiled for you. But, you can use the coefficient size and standard error to get a t-statistic, which you can then map onto a t distribution to find the pvalue. Specifically, when testing <span class="math inline">\(H_0: \hat{\beta}_p = 0\)</span> against the alternative <span class="math inline">\(H_1: \hat{\beta}_p \neq 0\)</span>, one assesses the magnitude of the <span class="math inline">\(t\)</span> ratio</p>
-<p>Under the null hypothesis, the <span class="math inline">\(t\)</span> ratio follows a <span class="math inline">\(t\)</span> distribution, and hence one can calculate the probability. To do this in R, first get the degrees of freedom from the gwr results object</p>
+<p>In addition to mapping coefficient sizes, you should also map whether these coefficients are statistically significant. Unfortunately, R doesn’t have that information neatly compiled for you. But, you can use the coefficient size and standard error to get a t-statistic, which you can then map onto a t distribution to find the pvalue. Specifically, when testing the null that the coefficient is equal to 0 against the alternative that the coefficient is not, one assesses the magnitude of the <span class="math inline"><em>t</em></span> ratio</p>
+<p>Under the null hypothesis, the <em>t</em> ratio follows a <em>t</em> distribution, and hence one can calculate the probability. To do this in R, first get the degrees of freedom from the gwr results object</p>
 <pre class="r"><code>dfree&lt;-gwr.fit3$results$edf</code></pre>
 <p>Next, calculate the <em>t</em> ratio. Save this in your spatial data frame. Let’s do this for the variable <em>pnhblk</em></p>
 <pre class="r"><code>philly$pnhblk.t &lt;- gwr.fit3$SDF$pnhblk/gwr.fit3$SDF$pnhblk_se</code></pre>
@@ -871,15 +865,6 @@ $(document).ready(function () {
 
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "site_libs/mathjax-local/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 
 </body>
 </html>

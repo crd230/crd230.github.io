@@ -9,8 +9,6 @@ output:
     toc_float: true
     theme: cosmo
     code_folding: show
-    mathjax: local
-    self_contained: false
 ---
 
 
@@ -127,32 +125,9 @@ There are three major decisions to make when running a GWR: (1) the kernel densi
 ### **Kernel density function and bandwidth h**
 \
 
-The kernel density function determines the weight assigned to neighboring units.  A common density function is a Gaussian weighting function
+The kernel density function determines the weight assigned to neighboring units.  A common density function is a Gaussian weighting function. Other common density functions include an exponential, bi-square, and a tri-cube function.
 
-\[
-w_{ij} = exp(-\frac{d_{ij}^2}{h^2})
-\]
-
-
-where $d_{ij}$ is the distance between location $i$ and $j$ and $h$ is the bandwidth.
-
-Other common density functions include an Exponential function
-
-$$w_{ij} = exp(-\frac{d_{ij}}{h})$$
-
-a bi-square function
-
-$$w_{ij} = 1-(\frac{d_{ij}^2}{h^2})^2$$
-
-and a tri-cube function
-
-$$w_{ij} = 1-(\frac{d_{ij}^3}{h^3})^3$$
-
-Choosing a weighting function also involves choosing a bandwidth *h*.  There are several ways to do this.  R uses two methods.  The first uses a cross-validation method to choose the optimal kernel bandwidth. The cross validation method takes the form
-
-$$CV = \sum_i \left[y_i - \hat{y}_{\neq i}(\beta)\right]^2$$
-
-where $\hat{y}_{\neq i}(\beta)$ is the fitted value of $y_i$ with the observations for point $i$ omitted from the calibration process. Here, were trying to find the $h$ that minimizes $CV$.  This in effect minimizes the sum of squared errors at all locations $i$, and arrives at an optimal bandwidth.  The other method chooses a bandwidth the minimizes the Akaike Information Criterion (AIC).
+Choosing a weighting function also involves choosing a bandwidth *h*.  There are several ways to do this.  R uses two methods.  The first uses a cross-validation method to choose the optimal kernel bandwidth. The cross validation method minimizes the sum of squared errors at all locations $i$, and arrives at an optimal bandwidth.  The other method chooses a bandwidth the minimizes the Akaike Information Criterion (AIC).
 
 To run a GWR, you need to load in the packages **spgwr**
 
@@ -286,9 +261,9 @@ names(gwr.fit3$SDF)
 
 The variables *X.Intercept.* to *phisp* give the regression coefficients.  *X.Intercept.se* to *phisp_se* give the coefficient standard errors.  
 
-In addition to mapping coefficient sizes, you should also map whether these coefficients are statistically significant.  Unfortunately, R doesn't have that information neatly compiled for you.  But, you can use the coefficient size and standard error to get a t-statistic, which you can then map onto a t distribution to find the pvalue.  Specifically, when testing $H_0: \hat{\beta}_p = 0$ against the alternative $H_1: \hat{\beta}_p \neq 0$, one assesses the magnitude of the $t$ ratio
+In addition to mapping coefficient sizes, you should also map whether these coefficients are statistically significant.  Unfortunately, R doesn't have that information neatly compiled for you.  But, you can use the coefficient size and standard error to get a t-statistic, which you can then map onto a t distribution to find the pvalue.  Specifically, when testing the null that the coefficient is equal to 0 against the alternative that the coefficient is not, one assesses the magnitude of the $t$ ratio
 
-Under the null hypothesis, the $t$ ratio follows a $t$ distribution, and hence one can calculate the probability.  To do this in R, first get the degrees of freedom from the gwr results object
+Under the null hypothesis, the *t* ratio follows a *t* distribution, and hence one can calculate the probability.  To do this in R, first get the degrees of freedom from the gwr results object
 
 ```{r warning = FALSE, message = FALSE}
 dfree<-gwr.fit3$results$edf
