@@ -415,12 +415,12 @@ Yes! The statistically significant F statistic indicates that the means are not 
 ###**Variation explained**
 \
 
-Let's first run a null multilevel model.  Doing so will give us estimates of the amount and percent of variation explained at each level - tract and metropolitan area.  To run a multilevel model, we'll use the `lmer()` function, which is a part of the **lme4** package.  
-
+Let's first run a null multilevel model.  Doing so will give us estimates of the amount and percent of variation explained at each level - tract and metropolitan area.  To run a multilevel model, we'll use the `lmer()` function, which is a part of the **lme4** package. You'll also need to load in the package  **lmerTest** to attach p-value results to your coefficients.
 
 
 ```r
 library(lme4)
+library(lmerTest)
 ```
 
 Next, run an empty  random intercept model, which does not include any tract or metropolitan area level characteristics.
@@ -432,7 +432,8 @@ summary(re.int.model1, correlation = FALSE)
 ```
 
 ```
-## Linear mixed model fit by REML ['lmerMod']
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
 ## Formula: lhinc ~ (1 | GEOIDm)
 ##    Data: ca.metro.tracts
 ## 
@@ -449,8 +450,10 @@ summary(re.int.model1, correlation = FALSE)
 ## Number of obs: 7841, groups:  GEOIDm, 26
 ## 
 ## Fixed effects:
-##             Estimate Std. Error t value
-## (Intercept) 10.85216    0.03892   278.8
+##             Estimate Std. Error       df t value Pr(>|t|)    
+## (Intercept) 10.85216    0.03892 24.76941   278.8   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 I use `correlation = FALSE` in the `summary()` function to suppress the *Correlation of Fixed Effects* results, which frankly I have a hard time interpreting. The `lmer` function's arguments take on a similar form as `lm()` except the use of `(1|GEOIDm)`. The argument `(1|GEOIDm)` indicates the random effects of the equation, including the second level (metropolitan area) variation.  The following table shows how to specify the different multilevel models using this `( | )` format.  
@@ -540,7 +543,8 @@ summary(re.int.model2, correlation = FALSE)
 ```
 
 ```
-## Linear mixed model fit by REML ['lmerMod']
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
 ## Formula: lhinc ~ concd + pfb + phhown + phmov + phisp + (1 | GEOIDm)
 ##    Data: ca.metro.tracts
 ## 
@@ -557,13 +561,15 @@ summary(re.int.model2, correlation = FALSE)
 ## Number of obs: 7841, groups:  GEOIDm, 26
 ## 
 ## Fixed effects:
-##              Estimate Std. Error t value
-## (Intercept) 10.695049   0.032077 333.420
-## concd       -0.200106   0.006615 -30.250
-## pfb         -0.198233   0.033879  -5.851
-## phhown       0.712921   0.015280  46.657
-## phmov        0.032258   0.033087   0.975
-## phisp       -0.312943   0.020315 -15.405
+##               Estimate Std. Error         df t value Pr(>|t|)    
+## (Intercept)  1.070e+01  3.208e-02  3.850e+01 333.420  < 2e-16 ***
+## concd       -2.001e-01  6.615e-03  7.830e+03 -30.250  < 2e-16 ***
+## pfb         -1.982e-01  3.388e-02  7.828e+03  -5.851 5.08e-09 ***
+## phhown       7.129e-01  1.528e-02  7.829e+03  46.657  < 2e-16 ***
+## phmov        3.226e-02  3.309e-02  7.824e+03   0.975     0.33    
+## phisp       -3.129e-01  2.031e-02  7.828e+03 -15.405  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 If you are annoyed by the results shown in [scientific notation](https://en.wikipedia.org/wiki/Scientific_notation), use the `scipen=alpha` argument in the `options()` command, where `alpha`  is the maximum number of digits for the result to be still expressed in fixed notation.
@@ -575,7 +581,8 @@ summary(re.int.model2, correlation = FALSE)
 ```
 
 ```
-## Linear mixed model fit by REML ['lmerMod']
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
 ## Formula: lhinc ~ concd + pfb + phhown + phmov + phisp + (1 | GEOIDm)
 ##    Data: ca.metro.tracts
 ## 
@@ -592,13 +599,15 @@ summary(re.int.model2, correlation = FALSE)
 ## Number of obs: 7841, groups:  GEOIDm, 26
 ## 
 ## Fixed effects:
-##              Estimate Std. Error t value
-## (Intercept) 10.695049   0.032077 333.420
-## concd       -0.200106   0.006615 -30.250
-## pfb         -0.198233   0.033879  -5.851
-## phhown       0.712921   0.015280  46.657
-## phmov        0.032258   0.033087   0.975
-## phisp       -0.312943   0.020315 -15.405
+##                Estimate  Std. Error          df t value Pr(>|t|)    
+## (Intercept)   10.695049    0.032077   38.504450 333.420  < 2e-16 ***
+## concd         -0.200106    0.006615 7829.978831 -30.250  < 2e-16 ***
+## pfb           -0.198233    0.033879 7828.016643  -5.851 5.08e-09 ***
+## phhown         0.712921    0.015280 7828.541409  46.657  < 2e-16 ***
+## phmov          0.032258    0.033087 7824.487588   0.975     0.33    
+## phisp         -0.312943    0.020315 7827.847480 -15.405  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 Now include the metropolitan area characteristics.
@@ -611,7 +620,8 @@ summary(re.int.model3, correlation = FALSE)
 ```
 
 ```
-## Linear mixed model fit by REML ['lmerMod']
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
 ## Formula: 
 ## lhinc ~ concd + pfb + phhown + phmov + phisp + lhincm + punempm +  
 ##     hwdis + fbdis + (1 | GEOIDm)
@@ -630,17 +640,19 @@ summary(re.int.model3, correlation = FALSE)
 ## Number of obs: 7841, groups:  GEOIDm, 26
 ## 
 ## Fixed effects:
-##              Estimate Std. Error t value
-## (Intercept)  4.120523   1.058315   3.893
-## concd       -0.198102   0.006595 -30.040
-## pfb         -0.199801   0.033701  -5.929
-## phhown       0.712823   0.015254  46.729
-## phmov        0.034829   0.033045   1.054
-## phisp       -0.317133   0.020129 -15.755
-## lhincm       0.597442   0.090403   6.609
-## punempm      0.951119   0.623915   1.524
-## hwdis        0.821212   0.131610   6.240
-## fbdis       -1.104715   0.479702  -2.303
+##                Estimate  Std. Error          df t value Pr(>|t|)    
+## (Intercept)    4.120523    1.058315   22.705820   3.893 0.000746 ***
+## concd         -0.198102    0.006595 7674.989265 -30.040  < 2e-16 ***
+## pfb           -0.199801    0.033701 7252.978627  -5.929 3.20e-09 ***
+## phhown         0.712823    0.015254 7816.607378  46.729  < 2e-16 ***
+## phmov          0.034829    0.033045 7829.777800   1.054 0.291918    
+## phisp         -0.317133    0.020129 6700.120265 -15.755  < 2e-16 ***
+## lhincm         0.597442    0.090403   22.393774   6.609 1.10e-06 ***
+## punempm        0.951119    0.623915   27.377839   1.524 0.138869    
+## hwdis          0.821212    0.131610   19.236685   6.240 5.12e-06 ***
+## fbdis         -1.104715    0.479702   20.393726  -2.303 0.031931 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 The tract-level coefficients don't change much in terms of their effect sizes and statistical significance compared to the single and fixed effects regression results.  However, we do see significant changes in the metro-level characteristics compared to the single-level results.  The direction of the effects do not change, but foreign-born segregation is now significant at the 5 percent level.  Moreover, the effect sizes are much larger in the multilevel model.  How would you explain these changes?
@@ -660,7 +672,8 @@ summary(re.slope.model1, correlation = FALSE)
 ```
 
 ```
-## Linear mixed model fit by REML ['lmerMod']
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
 ## Formula: 
 ## lhinc ~ concd + pfb + phhown + phmov + phisp + lhincm + punempm +  
 ##     hwdis + fbdis + (0 + phhown | GEOIDm)
@@ -679,25 +692,23 @@ summary(re.slope.model1, correlation = FALSE)
 ## Number of obs: 7841, groups:  GEOIDm, 26
 ## 
 ## Fixed effects:
-##              Estimate Std. Error t value
-## (Intercept)  2.024789   0.797788   2.538
-## concd       -0.196485   0.006605 -29.746
-## pfb         -0.174621   0.033512  -5.211
-## phhown       0.712717   0.030367  23.470
-## phmov        0.030580   0.033068   0.925
-## phisp       -0.326575   0.019913 -16.400
-## lhincm       0.775635   0.067472  11.496
-## punempm      0.862818   0.546285   1.579
-## hwdis        0.597971   0.072915   8.201
-## fbdis       -0.003154   0.341459  -0.009
+##                Estimate  Std. Error          df t value Pr(>|t|)    
+## (Intercept)    2.024789    0.797788   84.080068   2.538    0.013 *  
+## concd         -0.196485    0.006605 7584.872024 -29.746  < 2e-16 ***
+## pfb           -0.174621    0.033512 7382.317601  -5.211 1.93e-07 ***
+## phhown         0.712717    0.030367   23.472909  23.470  < 2e-16 ***
+## phmov          0.030580    0.033068 7830.538848   0.925    0.355    
+## phisp         -0.326575    0.019913 7309.047110 -16.400  < 2e-16 ***
+## lhincm         0.775635    0.067472   88.671494  11.496  < 2e-16 ***
+## punempm        0.862818    0.546285   62.400916   1.579    0.119    
+## hwdis          0.597971    0.072915  263.198954   8.201 1.06e-14 ***
+## fbdis         -0.003154    0.341459   90.527014  -0.009    0.993    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-The results under the *Random effects* section tells us that the random slope for *phhown* has a variance of 0.01032 - that is, the amount of variability in the slope of *phhown* across metro areas is 0.01032.  How do we know whether this variability is statistically different from 0?  We can use the function `ranova()` in the **lmerTest** package, which uses a Chi-square test to test against the null of variance equal to 0.  First, load the package
+The results under the *Random effects* section tells us that the random slope for *phhown* has a variance of 0.01032 - that is, the amount of variability in the slope of *phhown* across metro areas is 0.01032.  How do we know whether this variability is statistically different from 0?  We can use the function `ranova()` in the **lmerTest** package, which uses a Chi-square test to test against the null of variance equal to 0.  
 
-
-```r
-library(lmerTest)
-```
 
 Plug in your saved random slope model above into `ranova()` 
 
@@ -858,7 +869,7 @@ ggplot(ca.metro.tracts) +
     theme_bw()
 ```
 
-![](lab8_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+![](lab8_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 Do the plots jibe with what you thought these models are doing?
 
@@ -875,7 +886,7 @@ ggplot(ca.metro.tracts) +
     theme_bw()
 ```
 
-![](lab8_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
+![](lab8_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
 Finally, the varying slope and intercept vs single level
 
@@ -890,7 +901,7 @@ ggplot(ca.metro.tracts) +
     theme_bw()
 ```
 
-![](lab8_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
+![](lab8_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
 Based on the random slope + intercept model, which metro areas exhibit a *phhown* slope that considerably deviates from the mean? Which metro areas do not?
 
@@ -1040,7 +1051,7 @@ mtext(side=1, text="Model Specification", line=3)
 symbols(x= which.min(AICs), y=AICs[which.min(AICs)], circles=1, fg=2,lwd=2,add=T)
 ```
 
-![](lab8_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
+![](lab8_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
 
 The random intercept and slope model seems to be the best fitting.  But, once again, what were trying to do with an FE model is very different with what we are trying to accomplish with a multilevel model. What is your hypothesis, what is your theoretical framework, what pathways are you interested in...
 

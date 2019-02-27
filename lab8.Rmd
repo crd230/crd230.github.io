@@ -246,11 +246,11 @@ Yes! The statistically significant F statistic indicates that the means are not 
 ###**Variation explained**
 \
 
-Let's first run a null multilevel model.  Doing so will give us estimates of the amount and percent of variation explained at each level - tract and metropolitan area.  To run a multilevel model, we'll use the `lmer()` function, which is a part of the **lme4** package.  
-
+Let's first run a null multilevel model.  Doing so will give us estimates of the amount and percent of variation explained at each level - tract and metropolitan area.  To run a multilevel model, we'll use the `lmer()` function, which is a part of the **lme4** package. You'll also need to load in the package  **lmerTest** to attach p-value results to your coefficients.
 
 ```{r, warning = FALSE, message = FALSE}
 library(lme4)
+library(lmerTest)
 ```
 
 Next, run an empty  random intercept model, which does not include any tract or metropolitan area level characteristics.
@@ -338,11 +338,8 @@ re.slope.model1 <- lmer(lhinc~ concd  +pfb + phhown   +phmov  + phisp
 summary(re.slope.model1, correlation = FALSE)
 ```
 
-The results under the *Random effects* section tells us that the random slope for *phhown* has a variance of 0.01032 - that is, the amount of variability in the slope of *phhown* across metro areas is 0.01032.  How do we know whether this variability is statistically different from 0?  We can use the function `ranova()` in the **lmerTest** package, which uses a Chi-square test to test against the null of variance equal to 0.  First, load the package
+The results under the *Random effects* section tells us that the random slope for *phhown* has a variance of 0.01032 - that is, the amount of variability in the slope of *phhown* across metro areas is 0.01032.  How do we know whether this variability is statistically different from 0?  We can use the function `ranova()` in the **lmerTest** package, which uses a Chi-square test to test against the null of variance equal to 0.  
 
-```{r warning = FALSE, message = FALSE}
-library(lmerTest)
-```
 
 Plug in your saved random slope model above into `ranova()` 
 
