@@ -263,7 +263,7 @@ summary(re.int.model1, correlation = FALSE)
 I use `correlation = FALSE` in the `summary()` function to suppress the *Correlation of Fixed Effects* results, which frankly I have a hard time interpreting. The `lmer` function's arguments take on a similar form as `lm()` except the use of `(1|GEOIDm)`. The argument `(1|GEOIDm)` indicates the random effects of the equation, including the second level (metropolitan area) variation.  The following table shows how to specify the different multilevel models using this `( | )` format.  
 
 ```{r include = FALSE, message = FALSE, warning = FALSE}
-dt1<-c("(1|group)", "(0+x|group)", "(-1+x|group)", "(x|group)", "(1|group1) + (1|group1:group2)")
+dt1<-c("(1|group)", "(0+x|group)", "(-1+x|group)", "(1+x|group)", "(1|group1) + (1|group1:group2)")
 dt2<-c("Random intercept", "Random slope", "Random slope", "Random int and slope", "Random int for group1 and group2")
 dt<-as_tibble(data.frame(Argument = dt1, Model = dt2))
 library(knitr)

@@ -481,7 +481,7 @@ I use `correlation = FALSE` in the `summary()` function to suppress the *Correla
    <td style="text-align:left;"> Random slope </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> (x|group) </td>
+   <td style="text-align:left;"> (1+x|group) </td>
    <td style="text-align:left;"> Random int and slope </td>
   </tr>
   <tr>
