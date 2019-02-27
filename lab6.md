@@ -612,7 +612,7 @@ moran.mc(resid(fit.lag), seaw, nsim=999)
 ## weights: seaw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.027722, observed rank = 341, p-value = 0.659
+## statistic = -0.027722, observed rank = 359, p-value = 0.641
 ## alternative hypothesis: greater
 ```
 
@@ -681,7 +681,7 @@ moran.mc(resid(fit.err), seaw, nsim=999)
 ## weights: seaw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.020788, observed rank = 425, p-value = 0.575
+## statistic = -0.020788, observed rank = 405, p-value = 0.595
 ## alternative hypothesis: greater
 ```
 

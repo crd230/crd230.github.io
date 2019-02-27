@@ -27,6 +27,8 @@ navbar:
           href: lab6.html
         - text: "Lab 7"
           href: lab7.html
+        - text: "Lab 8"
+          href: lab8.html
     - text: "Mini Labs"
       menu: 
         - text: "Download data from NHGIS"
@@ -34,7 +36,9 @@ navbar:
         - text: "Dealing with missing data"
           href: missingdata.html     
         - text: "Geocoding"
-          href: geocoding.html   
+          href: geocoding.html  
+        - text: "Geographically Weighted Regression"
+          href: gwr.html  
         - text: "Introduction to QGIS"
           href:
     - text: "Other"

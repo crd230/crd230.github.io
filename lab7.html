@@ -328,6 +328,9 @@ div.tocify {
     <li>
       <a href="lab7.html">Lab 7</a>
     </li>
+    <li>
+      <a href="lab8.html">Lab 8</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -345,6 +348,9 @@ div.tocify {
     </li>
     <li>
       <a href="geocoding.html">Geocoding</a>
+    </li>
+    <li>
+      <a href="gwr.html">Geographically Weighted Regression</a>
     </li>
     <li class="dropdown-header">Introduction to QGIS</li>
   </ul>
@@ -536,23 +542,23 @@ tm_shape(sea.tracts.new) + tm_polygons(col = &quot;effect&quot;, style = &quot;q
 ## ========================================================
 ## Simulated z-values:
 ##               Direct    Indirect       Total
-## concd    -0.20955053 -0.18893499 -0.20093081
-## mob       2.09825286  1.63094564  1.92823180
-## pocc      0.02787103  0.03520990  0.03231601
-## immc      0.50821331  0.48112166  0.50160066
-## popd     -1.42944645 -1.19953898 -1.34689978
-## div       0.11201879  0.08025423  0.09614792
-## pnhblack  0.27922181  0.26921281  0.27764312
+## concd    -0.16979474 -0.13819419 -0.15461746
+## mob       2.11669915  1.74883815  2.00908149
+## pocc      0.09898188  0.09231937  0.09660109
+## immc      0.50142641  0.47251578  0.49271625
+## popd     -1.45646283 -1.21559012 -1.36579230
+## div       0.12673403  0.10485057  0.11631694
+## pnhblack  0.24393116  0.22079052  0.23459938
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.834018 0.85014  0.840753
-## mob      0.035883 0.10290  0.053826
-## pocc     0.977765 0.97191  0.974220
-## immc     0.611304 0.63043  0.615948
-## popd     0.152876 0.23032  0.178013
-## div      0.910809 0.93604  0.923403
-## pnhblack 0.780075 0.78777  0.781286</code></pre>
+## concd    0.865172 0.890087 0.877123
+## mob      0.034285 0.080319 0.044528
+## pocc     0.921153 0.926444 0.923043
+## immc     0.616071 0.636559 0.622213
+## popd     0.145265 0.224141 0.172004
+## div      0.899151 0.916494 0.907401
+## pnhblack 0.807284 0.825256 0.814520</code></pre>
 <p>Given our specification of the weights matrix, what is the interpretation of the statistically significant effects shown in the table?</p>
 <div style="margin-bottom:25px;">
 
@@ -778,23 +784,23 @@ imp2 &lt;- impacts(fit.durb, listw = seaw, R = 999)</code></pre>
 ## ========================================================
 ## Simulated z-values:
 ##              Direct   Indirect      Total
-## concd    -0.3173021 -0.7476231 -0.7838991
-## mob       0.6905776  1.7368438  1.9502542
-## pocc      0.7405815  0.7451432  0.8048400
-## immc      0.9833408 -1.1862915 -0.8713199
-## popd     -2.4053351 -2.1307182 -2.3455623
-## div       1.0027665  0.2103164  0.4318856
-## pnhblack  0.3722030  1.2744166  1.2471413
+## concd    -0.2356275 -0.7882438 -0.8031379
+## mob       0.6994252  1.6482471  1.8470257
+## pocc      0.7294440  0.7557003  0.8055073
+## immc      0.9708361 -1.2572446 -0.9434648
+## popd     -2.5141365 -2.2452040 -2.4866324
+## div       1.0006510  0.2912784  0.5059732
+## pnhblack  0.2746336  1.1649194  1.1463011
 ## 
 ## Simulated p-values:
 ##          Direct   Indirect Total   
-## concd    0.751014 0.454688 0.433099
-## mob      0.489831 0.082415 0.051146
-## pocc     0.458947 0.456185 0.420912
-## immc     0.325440 0.235507 0.383579
-## popd     0.016158 0.033112 0.018998
-## div      0.315974 0.833421 0.665825
-## pnhblack 0.709742 0.202516 0.212346</code></pre>
+## concd    0.813722 0.430554 0.421895
+## mob      0.484286 0.099302 0.064743
+## pocc     0.465730 0.449829 0.420527
+## immc     0.331630 0.208665 0.345443
+## popd     0.011932 0.024755 0.012896
+## div      0.316996 0.770838 0.612875
+## pnhblack 0.783598 0.244052 0.251671</code></pre>
 <p>Because the SDM is nested within the SLM, we can use a likelihood ratio test to determine whether it is a <em>better</em> model. You can use the function <code>anova()</code> or <code>LR.sarlm()</code></p>
 <pre class="r"><code>LR.sarlm(fit.durb,fit.lag)</code></pre>
 <pre><code>## 

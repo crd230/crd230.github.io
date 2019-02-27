@@ -328,6 +328,9 @@ div.tocify {
     <li>
       <a href="lab7.html">Lab 7</a>
     </li>
+    <li>
+      <a href="lab8.html">Lab 8</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -345,6 +348,9 @@ div.tocify {
     </li>
     <li>
       <a href="geocoding.html">Geocoding</a>
+    </li>
+    <li>
+      <a href="gwr.html">Geographically Weighted Regression</a>
     </li>
     <li class="dropdown-header">Introduction to QGIS</li>
   </ul>
@@ -649,7 +655,7 @@ ggtheme = theme_classic())</code></pre>
 <pre class="r"><code>table(cluster_6$cluster)</code></pre>
 <pre><code>## 
 ##    1    2    3    4    5    6 
-## 2328  995 1442  614 1332 1324</code></pre>
+## 1442 1324  995 2328 1332  614</code></pre>
 <p>Remember one of the major aims of cluster analysis: the groups should be as evenly sized as possible. You might consider dropping the number of clusters down to 5 given the presence of the cluster with 614 tracts. Set k = 5 in <code>kmeans()</code>. Or examine the characteristics of that cluster and see if it can be combined with another cluster.</p>
 <div style="margin-bottom:25px;">
 
