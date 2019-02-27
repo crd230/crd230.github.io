@@ -536,7 +536,7 @@ Here, we separated counties into three poverty regimes: Low poverty (bottom 30%)
 poverty (Between the 30th and 60th percentiles), and high poverty (above the 60th percentile).
 Let's map these groups
 
-```{r}
+```{r eval = FALSE}
 tmap_mode("view")
 tm_shape(ca.metro.tracts) + tm_polygons(col = "pov_group", style = "cat", palette="Blues")
 ```
