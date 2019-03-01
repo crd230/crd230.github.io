@@ -34,7 +34,7 @@ h1.title {
 
 
 
-If we are interested in the influence or effect of some variable $x$ on another variable $y$, we run a regression model.  If $y$ is continuous, this model typically takes on the following form
+If we are interested in the influence or effect of some variable $x$ on another variable $y$, we run a regression model with the following form
 
 $$y = \beta_0 + \beta_1 x + \varepsilon$$
 
