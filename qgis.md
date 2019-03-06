@@ -239,7 +239,7 @@ Let's map percent poverty at the tract level for the county of Sacramento.  The 
 3. Leave Symbol alone. In Legend Format, reduce the precision down to 2 (this will show percent poverty in two decimal points in the legend)
 5. You can select whatever color scheme you would like using the pull down menu from Color ramp.  I kept it at the default - a graduated color scheme of white to dark red.
 6. The Mode tells QGIS how to break up the values.  Remember from Lecture that you can easily distort your data by choosing different break values.  Select Quantile (Equal Count) and keep Classes to 5. This will break up the values by quintile (bottom 20%, 20% to 40%, 40% to 60%, 60% to 80%, and top 20%).
-7. The final setup should look like Figure 14. Click OK
+7. The final setup should look like Figure 14. Click OK.
 
 <center>
 ![Figure 14: Symbology setup](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/Capture24.jpg)
