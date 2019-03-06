@@ -176,7 +176,7 @@ We got a shapefile into QGIS. Hooray! But, we need to map something.  Let's brin
 ## **Joining a csv to a shapefile**
 \
 
-We now want to attach (merge) the csv data to the shapefile.  To do this, follow the steps below
+We now want to attach (merge) the csv data to the shapefile.  To do this, follow the steps below.
 
 1. Right click on the Sacrament_County_Tracts file in the Layers panel.  You should get a menu like in Figure 9.
 
