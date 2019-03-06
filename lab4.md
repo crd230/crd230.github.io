@@ -408,7 +408,7 @@ table(cluster_6$cluster)
 ```
 ## 
 ##    1    2    3    4    5    6 
-## 1442 1324  995 2328 1332  614
+## 1320 1442  614  994 1333 2332
 ```
 
 Remember one of the major aims of cluster analysis:  the groups should be as evenly sized as possible. You might consider dropping the number of clusters down to 5 given the presence of the cluster with 614 tracts.  Set k = 5 in `kmeans()`. Or examine the characteristics of that cluster and see if it can be combined with another cluster. 

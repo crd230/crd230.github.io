@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Introduction to QGIS</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 298: Winter 2019</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab0.html">Lab 0</a>
+    </li>
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+    <li>
+      <a href="lab2.html">Lab 2</a>
+    </li>
+    <li>
+      <a href="lab3.html">Lab 3</a>
+    </li>
+    <li>
+      <a href="lab4.html">Lab 4</a>
+    </li>
+    <li>
+      <a href="lab5.html">Lab 5</a>
+    </li>
+    <li>
+      <a href="lab6.html">Lab 6</a>
+    </li>
+    <li>
+      <a href="lab7.html">Lab 7</a>
+    </li>
+    <li>
+      <a href="lab8.html">Lab 8</a>
+    </li>
+    <li>
+      <a href="lab9.html">Lab 9</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Mini Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="nhgis.html">Download data from NHGIS</a>
+    </li>
+    <li>
+      <a href="missingdata.html">Dealing with missing data</a>
+    </li>
+    <li>
+      <a href="geocoding.html">Geocoding</a>
+    </li>
+    <li>
+      <a href="gwr.html">Geographically Weighted Regression</a>
+    </li>
+    <li>
+      <a href="qgis.html">Introduction to QGIS</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+    <li>
+      <a href="censusgeography.html">Census Geographies</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Introduction to QGIS</h1>
+<h3 class="subtitle"><em><h4 style="font-style:normal">
+CRD 298 - Spatial Methods in Community Research
+</h4></em></h3>
+<h4 class="author"><em><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></em></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+}
+
+</style>
+<p><br />
+</p>
+<p>In this guide you will learn how to make a map in QGIS. The objectives of the guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Get familiar with the QGIS interface</li>
+<li>Load vector and text delimited data into QGIS</li>
+<li>Joining shapefile and attribute data</li>
+<li>Creating and saving maps</li>
+</ol>
+<p>This tutorial scratches the surface of what you can do with QGIS. You can get more practice by using the official QGIS training manual <a href="https://docs.qgis.org/2.18/en/docs/training_manual/index.html">here</a>. They also have a more <a href="https://docs.qgis.org/2.8/en/docs/gentle_gis_introduction/">Gentle Introduction to QGIS</a></p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="what-is-qgis" class="section level2">
+<h2><strong>What is QGIS?</strong></h2>
+<p><br />
+Geographic information systems (GIS) are used in a wide range of academic and applied fields. Simply put, GIS allows you to combine tabular data (e.g. spreadsheet sheet) with geographic boundaries (e.g. maps). QGIS (or Quantum GIS) is an open source geographic information system, meaning that it can be downloaded and installed on your desktop free of charge. It runs on Windows, Mac OS X, and Linux. If you have used ArcGIS before, QGIS is very similar, except it has less functionality but is free.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="downloading-qgis" class="section level2">
+<h2><strong>Downloading QGIS</strong></h2>
+<p><br />
+You can download QGIS at their <a href="https://qgis.org/en/site/forusers/download.html">website</a>. I generally recommend working with the most recent version of QGIS available or the most recent Long Term Release, which is designed to be maintained with bug-fixes and such for the next three release cycles. Long term releases might not have the most newest features found in the most recent version, but focus is broader stability across time. At the time of writing, the most recent version is 3.2.2; the long-term release is 2.18.9.</p>
+<p>This tutorial is based on 3.2.2 for Windows. Other than installation instructions, there should be no noticeable difference between Mac and PC versions</p>
+<p><strong>Windows users</strong>: You will need to choose between the 32-bit or 64-bit versions based on your particular operating system. If you don’t already know which one you have, you can <a href="https://support.microsoft.com/en-us/help/15056/windows-7-32-64-bit-faq#1TC=windows-7">figure it out</a>. Download the installer under <em>Standalone installers from OSGeo4W packages</em>.</p>
+<p><strong>Mac users</strong>: Before you run the installer, you’ll need to make sure you can add new software to your Mac. Go to your System Preferences (under the Apple menu), and click on “Security &amp; Privacy”. Click the lock icon in the bottom left to make changes. For the section titled “Allow apps downloaded from:”, Check the “Anywhere” radio button. Now you are ready to install. When you open the disk image that you downloaded, you’ll see the following files.</p>
+<center>
+<div class="figure">
+<img src="image1.png" alt="Figure 1: Mac QGIS Download package" />
+<p class="caption">Figure 1: Mac QGIS Download package</p>
+</div>
+</center>
+<p>First thing to do is to read the Read Me.rtf file. You must install Python, GDAL, and QGIS in that order. Installing separate components like this can seem a bit weird if you’re not used to installing open source software, but it’s actually a very common process.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="download-lab-files" class="section level2">
+<h2><strong>Download Lab Files</strong></h2>
+<p><br />
+Go to the Additional Labs -&gt; QGIS Canvas folder and download the zip file qgis onto your Desktop or a convenient place on your hard drive that you can readily access. Unzip the folder. The folder will contain shapfiles and csv files that we will be using in the lab.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="qgis-interface" class="section level2">
+<h2><strong>QGIS Interface</strong></h2>
+<p><br />
+Open up QGIS. You should see an interface similar to Figure 2.</p>
+<center>
+<div class="figure">
+<img src="Capture2.JPG" alt="Figure 2: QGIS Interface." />
+<p class="caption">Figure 2: QGIS Interface.</p>
+</div>
+</center>
+<p>The components of the interface are as follows</p>
+<ol style="list-style-type: decimal">
+<li><em>Main Menu</em>: Provides access and functions of the applications in a standard pull down menu format.<br />
+</li>
+<li><em>Toolbars</em>: Buttons that provide one click access to many of the features and functions found in the Main Menu. Toolbars are movable and can be docked or free floating. You can also customize what toolbars to show by right clicking (on a Windows machine) or Ctrl + clicking (on a Mac laptop) on one of the toolbars and selecting/deselecting from the menu.</li>
+<li><em>Browser Panel</em>: Shows a listing of files on your computer. You can drag and drop GIS files into the Layers Panel (4) to view them.<br />
+</li>
+<li><em>Layers Panel</em>: Shows a listing of map layers and data files that are in your current project. Layers can be turned off and on, change drawing order, etc. Think of this as a Table of Contents.</li>
+<li><em>Map Display Panel</em>: Shows a geographic display of GIS layers in the Layers panel.</li>
+<li><em>Status Bar</em>: Shows the current scale of the map display, coordinates of the current mouse cursor position, and the coordinate reference system (CRS) of the project. For now, we won’t worry too much about this bar.</li>
+</ol>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-a-shapefile" class="section level2">
+<h2><strong>Bringing in a shapefile</strong></h2>
+<p><br />
+Let’s bring in a shapefile. You can do this a number of ways.</p>
+<ol style="list-style-type: decimal">
+<li>Select Layer in the Main Menu panel and scroll over Add Layer. You’ll find the various types of files you can bring into QGIS.</li>
+<li>Select Layer in the Main Menu panel and select Data Source Manager. This will bring up a screen (Figure 3) that will allow you to add files.</li>
+<li>You can bring up the Data Source Manager by clicking on <img src="Capture3.JPG" /> typically located on the far left toolbar</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture4.JPG" alt="Figure 3: Data Source Manager" />
+<p class="caption">Figure 3: Data Source Manager</p>
+</div>
+</center>
+<p>Let’s use the Data Source Manager approach. We want to bring in a shapefile showing Census tracts in Sacramento county. As we discussed in Lecture, tracts are areal data, also known as Vector data. From the Data Source Manager window</p>
+<ol style="list-style-type: decimal">
+<li>Select <img src="Capture5.JPG" /> on the left panel. This should bring a screen shown in Figure 4.</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture6.JPG" alt="Figure 4: Adding Vector Data" />
+<p class="caption">Figure 4: Adding Vector Data</p>
+</div>
+</center>
+<ol start="2" style="list-style-type: decimal">
+<li>Under Source, click on <img src="Capture17.JPG" /> at the far right.<br />
+</li>
+<li>Navigate to the folder containing the files you downloaded from the Canvas. Select the file “Sacramento_County_Tracts.shp”. To be clear, you will see a bunch of files named “Sacramento_County_Tracts”. Double click on the one highlighted in red in Figure 5.<br />
+<br />
+</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture18.JPG" alt="Figure 5: Click on the shapefile" />
+<p class="caption">Figure 5: Click on the shapefile</p>
+</div>
+</center>
+<ol start="4" style="list-style-type: decimal">
+<li>Click on the Add button <img src="Capture7.JPG" /> and close the Data Source Manager. You should see tracts in Sacramento county pop up (Figure 6).</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture8.JPG" alt="Figure 6: Sacramento county tracts" />
+<p class="caption">Figure 6: Sacramento county tracts</p>
+</div>
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-a-data-file" class="section level2">
+<h2><strong>Bringing in a data file</strong></h2>
+<p><br />
+We got a shapefile into QGIS. Hooray! But, we need to map something. Let’s bring in some data to map. This will come in as a <code>.csv</code>. Go back to the Data Source Manager and follow the steps below.</p>
+<ol style="list-style-type: decimal">
+<li>Click on <img src="Capture9.JPG" /></li>
+<li>Click on <img src="Capture17.JPG" /> located at the far right next to the File Name box. We are going to bring in a csv (comma delimited) file containing tract-level percent Hispanic and percent poverty for the United States. This is contained in the file tracts_demographics.csv. Navigate to the folder containing that file and double click on it.<br />
+</li>
+<li>Leave all the default settings alone except for Geometry definition.<br />
+</li>
+<li>Click on the radio button next to No geometry (attribute only table). Your final setup should look like Figure 7.</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture10.jpg" alt="Figure 7: Bringing in a csv file" />
+<p class="caption">Figure 7: Bringing in a csv file</p>
+</div>
+</center>
+<ol start="5" style="list-style-type: decimal">
+<li>Click on Add and then Close. The file tract_demographics should pop up in your Layers panel above Sacramento_County_Tracts like in Figure 8.</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture11.JPG" alt="Figure 8: Layers panel" />
+<p class="caption">Figure 8: Layers panel</p>
+</div>
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="joining-a-csv-to-a-shapefile" class="section level2">
+<h2><strong>Joining a csv to a shapefile</strong></h2>
+<p><br />
+We now want to attach (merge) the csv data to the shapefile. To do this, follow the steps below</p>
+<ol style="list-style-type: decimal">
+<li>Right click on the Sacrament_County_Tracts file in the Layers panel. You should get a menu like in Figure 9.</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture12.JPG" alt="Figure 9: Right click on a layer" />
+<p class="caption">Figure 9: Right click on a layer</p>
+</div>
+</center>
+<ol start="2" style="list-style-type: decimal">
+<li>Click on Properties. A window should pop up that looks like Figure 10.</li>
+<li>Click on the Joins button <img src="Capture13.JPG" />. Click on <img src="Capture14.JPG" /> located at the bottom.</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture19.JPG" alt="Figure 10: Layer properties" />
+<p class="caption">Figure 10: Layer properties</p>
+</div>
+</center>
+<ol start="4" style="list-style-type: decimal">
+<li>From the Join layer pull down menu at the top, select tracts_demographics (if it isn’t already selected for you).<br />
+</li>
+<li>Under Join field, select GEOID</li>
+<li>Under Target field, select GEOID. We are joining the data from tracts_demographics to Sacramento_County_Tracts using a common ID field - named GEOID in tracts_demographics and GEOID in Sacramento_County_Tracts (this is similar to how we were merging data in R).<br />
+</li>
+<li>Check the Custom field name prefix box - a white box should pop up underneath - delete the text (tract_demographics_). If we did not do this, the variables phisp will be named tract_demographics_phisp in the Sacramento_County_Tracts file, which is far too long a name. By deleting it, we’ll keep the name to phisp.<br />
+</li>
+<li>The Add Vector Join window should look like Figure 11. Click OK. Click OK again in the next screen.</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture15.jpg" alt="Figure 11: Add Vector Join" />
+<p class="caption">Figure 11: Add Vector Join</p>
+</div>
+</center>
+<p>To verify that the join worked, you can open up the attribute table for the shapefile. An attribute table consists of rows representing spatial features (census tracts), and columns representing properties or characteristics of the spatial feature (e.g. percent Hispanic). It’s a nonspatial dataset attached to the spatial dataset. To bring up the attribute table, right click on Sacramento_County_Tracts from the Layers panel and select Open Attribute Table. The table should pop up and contain 317 rows corresponding to the 317 tracts we have displayed on the map screen. Scroll all the way right - you should see the variables we added from tracts_demographics: ppov (percent poverty) and phisp (percent Hispanic).</p>
+<center>
+<div class="figure">
+<img src="Capture16.jpg" alt="Figure 12: Attribute table" />
+<p class="caption">Figure 12: Attribute table</p>
+</div>
+</center>
+<p>Joining data to the shapefile is not permanent. If you close QGIS, reopen it, and bring in Sacramento_County_Tracts, you will find that phisp and ppov are no longer in the attribute table. You will need to save a new shapefile to make this join permanent. To do so, follow the steps below.</p>
+<ol style="list-style-type: decimal">
+<li>Right click on Sacramento_County_Tracts</li>
+<li>Select Export and then select Save Features As. A Save Vector Layer as… window should pop up.<br />
+</li>
+<li>For Format, keep it as an ESRI Shapefile.<br />
+</li>
+<li>For File name, select <img src="Capture17.JPG" /> and navigate to the appropriate folder. Give your new file the name “Sacramento_County_Tracts_Dems.shp”.</li>
+<li>Keep everything else the same. You should have a window that looks like Figure 13. Click OK.</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture31.JPG" alt="Figure 13: Attribute table" />
+<p class="caption">Figure 13: Attribute table</p>
+</div>
+</center>
+<p>You should see Sacramento_County_Tracts_Dems pop up in your Layers panel. Because we only need this shapefile moving forward, remove tracts_demographics and Sacramento_Country_Tracts by right clicking on each from the Layers panel and selecting Remove Layer.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="making-a-map" class="section level2">
+<h2><strong>Making a map</strong></h2>
+<p><br />
+Let’s map percent poverty at the tract level for the county of Sacramento. The first thing to do is to symbolize our map based on percent poverty.</p>
+<ol style="list-style-type: decimal">
+<li>Right click on Sacramento_County_Tracts_Dems and select Properties.<br />
+</li>
+<li>Select the Symbology button <img src="Capture23.JPG" /> on the left panel.<br />
+</li>
+<li>From the top pull down menu, select Graduated (the default should be Single symbol). A graduated map relates values to color gradients on a map; each color gradation corresponds to a specific interval of values.<br />
+</li>
+<li>That selected variable is percent poverty. From the Column pull down menu, select ppov</li>
+<li>Leave Symbol alone. In Legend Format, reduce the precision down to 2 (this will show percent poverty in two decimal points in the legend)</li>
+<li>You can select whatever color scheme you would like using the pull down menu from Color ramp. I kept it at the default - a graduated color scheme of white to dark red.</li>
+<li>The Mode tells QGIS how to break up the values. Remember from Lecture that you can easily distort your data by choosing different break values. Select Quantile (Equal Count) and keep Classes to 5. This will break up the values by quintile (bottom 20%, 20% to 40%, 40% to 60%, 60% to 80%, and top 20%).</li>
+<li>The final setup should look like Figure 14. Click OK</li>
+</ol>
+<center>
+<div class="figure">
+<img src="Capture24.JPG" alt="Figure 14: Symbology setup" />
+<p class="caption">Figure 14: Symbology setup</p>
+</div>
+</center>
+<p>You should get something that looks like Figure 15.</p>
+<center>
+<div class="figure">
+<img src="Capture25.JPG" alt="Figure 15: Map showing percent poverty in quintiles" />
+<p class="caption">Figure 15: Map showing percent poverty in quintiles</p>
+</div>
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="using-map-layout-manager" class="section level2">
+<h2><strong>Using Map Layout Manager</strong></h2>
+<p><br />
+QGIS has a powerful tool called Layout Manager that allows you to take your GIS layers and package them to create and save pretty maps. Why do we need this tool? A GIS map file is not an image. Rather, it saves the state of the GIS program, with references to all the layers, their labels, colors, etc. So for someone who doesn’t have the data or the same GIS program (such as QGIS), the map file will be useless.</p>
+<p>From the Main Menu go to Project and click on New Print Layout. A dialog box will pop up asking you for a title - type in “Percent Poverty by Census Tract in Sacramento County”</p>
+<center>
+<div class="figure">
+<img src="Capture20.JPG" alt="Figure 16: Map title" />
+<p class="caption">Figure 16: Map title</p>
+</div>
+</center>
+<p>You should see a screen that looks like Figure 17 pop up. This is known as the Map Layout screen.</p>
+<center>
+<div class="figure">
+<img src="Capture21.JPG" alt="Figure 17: Map layout screen" />
+<p class="caption">Figure 17: Map layout screen</p>
+</div>
+</center>
+<p>Let’s go through each component of the Layout screen</p>
+<ol style="list-style-type: decimal">
+<li><em>Main menu</em>: Provides access and functions of the applications in a standard pull down menu format.</li>
+<li><em>Toolbars</em>: There are toolbars located at the top and the left of the screen. These toolbars provide buttons to perform various functions. Right click to choose which toolbars to show</li>
+<li><em>Map window</em>: This is where your map will be displayed. This includes legends, labels, titles, scale bars, north arrows, and other map accouterments.</li>
+<li><em>Items and History</em>: This window provides two basic pieces of information: (1) what items are on your map (for the items you can add to your map, look at the menu Add Item from the main menu). Think of this as a table of contents. (2) all the actions you’ve done to your map. This can be simple actions like moving the legend around.<br />
+</li>
+<li><em>Layout and properties</em>: This window provides the properties of a selected item on your map. This is where you can change the appearance of any item on your map. For example, you can change the size of your legend font. The item whose properties you are viewing is listed at the top of this window - for example, if you are adjusting the legend, it will say Legend at the top of this panel.</li>
+</ol>
+<p>To add our map, select Add Item from the Main Menu of the new screen and select Add Map. Nothing should happen. However, your mouse cursor should look like a black cross. Move your cursor to the top left corner of the white canvas and drag it to the bottom right corner to create a rectangle. See Figure 18.</p>
+<center>
+<div class="figure">
+<img src="Capture22.JPG" alt="Figure 18: Adding your map" />
+<p class="caption">Figure 18: Adding your map</p>
+</div>
+</center>
+<p>The map of Sacramento county maps should pop up. With the map now displayed, you can</p>
+<ul>
+<li>Move the map by clicking and dragging it around</li>
+<li>Resize it by clicking and dragging the boxes in the corners</li>
+<li>Add map details such as a legend and title.</li>
+</ul>
+<p>The scale of the map shown in the Map Layout will match what is shown in the main interface. If you want to make the map bigger or smaller in the Map Layout window, you can change the scale from the Status bar in the main interface. For example, the current scale I have in the main interface is <img src="Capture26.JPG" />. I can zoom in a little more - I can do that using the <img src="Capture27.JPG" /> tool or just type a scale in directly to the scale box. I do the latter by typing in 1:300000 as such <img src="Capture28.JPG" />. The scale in the Map Layout window will <strong>not</strong> update - you will have to do it manually. Go back to the Map Layout window. Click anywhere on your map. On the bottom right panel, click on Item Properties, scroll down midway, and click on the button Set to map canvas extent. You should see Sacramento county fills up the page a little more.</p>
+<center>
+<div class="figure">
+<img src="Capture29.JPG" alt="Figure 19: Scale of 1:350912" />
+<p class="caption">Figure 19: Scale of 1:350912</p>
+</div>
+</center>
+<center>
+<div class="figure">
+<img src="Capture30.JPG" alt="Figure 20: Scale of 1:300000" />
+<p class="caption">Figure 20: Scale of 1:300000</p>
+</div>
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="add-a-legend" class="section level3">
+<h3><strong>Add a legend</strong></h3>
+<p><br />
+1. Click on Add Item from the Main Menu of the Map Layout window<br />
+2. Click on Add Legend.<br />
+3. The same cross cursor will pop up, which means you’ll need to click, hold and drag to the place where you want to place the legend.</p>
+<p>If you want to customize the legend, click on the legend, check the bottom right panel and click on Item Properties. A window named Legend should be there. You can customize how the legend looks by playing around with the properties. For example, we can give the legend a more descriptive name by double clicking on Sacramento_County_Tracts_Dems under Legend items</p>
+<center>
+<img src="Capture32.JPG" alt="Figure 21: Legend items in Layout screen" />
+</center>
+<p>This should bring up a little dialog box. Under Item text, give the legend a more descriptive name, such as “Percent Poverty”. We can also change the title “Legend” by simply clicking in the white text box next to Title under Main Properties and typing a title name. You can change the font size and color by altering the properties under Fonts.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="add-a-scale-bar" class="section level3">
+<h3><strong>Add a scale bar</strong></h3>
+<p><br />
+A scale bar is an important component of a map because it gives the viewer a visual indication of the size of features, and distance between features, on the map. To add a scale bar</p>
+<ol style="list-style-type: decimal">
+<li>Click on Add Item from the Main Menu of the Map Layout window<br />
+</li>
+<li>Select Add scale bar.<br />
+</li>
+<li>Click, hold and drag to place your scale bar, usually somewhere in the bottom right or left of the map.</li>
+</ol>
+<p>Similar to legend, the scale bar properties should pop up in the bottom right panel. You can change its properties, for example going from Kilometers to (the US centric) miles. So far, here’s what our map looks like.</p>
+<center>
+<img src="Capture33.JPG" />
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="add-a-north-arrow" class="section level3">
+<h3><strong>Add a North arrow</strong></h3>
+<p><br />
+Adding a north arrow improves many maps, especially large-scale maps that show a smaller area in great detail and maps that are not oriented with north at the top. To add a north arrow</p>
+<ol style="list-style-type: decimal">
+<li>Click on Add Item from the Main Menu of the Map Layout window<br />
+</li>
+<li>Select Add Picture.<br />
+</li>
+<li>Click, hold and drag to place the arrow, usually in one of the corners.<br />
+</li>
+<li>You’ll notice that nothing popped up. Go to the Item Properties for the Picture. Scroll down a little until you see Search directories - click on the arrow and you should see some preloaded images pop up (Figure 22)</li>
+</ol>
+<center>
+<img src="Capture34.JPG" alt="Figure 22: Picking a north arrow" />
+</center>
+<ol start="5" style="list-style-type: decimal">
+<li>Select your favorite north arrow image.</li>
+</ol>
+<p>After selecting it, you can customize as you see fit. For example, my arrow looks like <img src="Capture39.png" /></p>
+<p>How did I make the arrow look like this? Under Main properties, I selected Middle in the Placement pull down menu to center the arrow. I then selected black in the pull down menu next to Fill color under SVG Parameters to make the arrow black.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="add-a-title" class="section level3">
+<h3><strong>Add a title</strong></h3>
+<p><br />
+You can’t have a map without a descriptive title.</p>
+<ol style="list-style-type: decimal">
+<li>Under Add Item, select Add label.<br />
+</li>
+<li>Click, hold, drag a rectangle across the top of the map.<br />
+</li>
+<li>Click on the title and under Item Properties, a Label panel should have popped up. Under Main properties, add a title (I used “Tract Percent Poverty in 2016, Sacramento County”).</li>
+</ol>
+<p>As with all features, you can customize as you see fit. Under Appearance, I clicked on the Center radio button under Horizontal alignment and the Middle radio button under Vertical alignment. This will center the title text. I clicked on the pull down menu directly under Appearance and increased the font size to 25. My map now looks like Figure 23.</p>
+<center>
+<img src="Capture35.JPG" alt="Figure 23: Map" />
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="adding-context" class="section level3">
+<h3><strong>Adding context</strong></h3>
+<p><br />
+Right now, it looks like Sacramento county is floating in space. There’s nothing necessarily wrong with this - check this gallery of <a href="https://www.qgis.org/en/site/about/screenshots.html">QGIS maps</a> or even do a basic Google search of Sacramento poverty map and you’ll find plenty of maps without context. But, we can provide some context to the map by adding a background. We can do this two ways.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="adding-a-base-layer" class="section level3">
+<h3><strong>Adding a base layer</strong></h3>
+<p><br />
+A base layer provides geographical context to a region of interest. For example, a base layer might help viewers orient themselves to a specific county by displaying the surrounding counties. Let’s add a base layer of California census tracts to the map.</p>
+<ol style="list-style-type: decimal">
+<li>Go back to the main interface and open up the Data Source Manager.<br />
+</li>
+<li>Go to Vector and navigate to the folder you downloaded from Canvas and select California_Tracts.shp. You should see your screen fill up with all census tracts in California.<br />
+</li>
+<li>You’ll see these tracts obscuring the Sacramento_County_Tracts_Dems layer. Change the layer order by clicking, holding and dragging the California_Tracts layer below Sacramento_County_Tracts_Dems in the Layers panel. You should see your symbolized map pop up.<br />
+</li>
+<li>When I brought in California_Tracts, they appeared in this ugly green color. Bring up symbology for California_Tracts (right click on California_Tracts and select Properties and then Symbology) to change the color. Select a color of your choice from the Color menu. I chose white.<br />
+</li>
+<li>Your map in the Layout view should automatically update to reflect your changes. If it doesn’t, click on the map in Layout view and select Item Properties. Under main properties, click on the Update preview button.<br />
+</li>
+<li>You’ll also need to do some minor style changes to the items on your map. For example, I added a white background to the title, legend, scale bar, and north arrow. To do this, for each item, go to its item properties, scroll down and click on the white box next to Background.<br />
+</li>
+<li>You’ll need to make a couple more changes to the legend.<br />
+</li>
+</ol>
+<ul>
+<li>Add a frame to the legend to distinguish it from the rest of the map - to do this, click on the box next to Frame.</li>
+<li>The legend has white listed for tracts with 0.00 to 0.07 percent poverty. We’ll need to change that color to distinguish it from the tracts in the background, which are all white (you won’t have to worry about this if you chose to color California_Tracts with another color). To do this, double click on <img src="Capture44.JPG" /> from the Layout panel in the main interface. The screen below should pop up.</li>
+</ul>
+<center>
+<div class="figure">
+<img src="Capture45.JPG" alt="Figure 24: Changing symbol color" />
+<p class="caption">Figure 24: Changing symbol color</p>
+</div>
+</center>
+<p>Select the pop down menu next to Color. From there, move the black circle towards a light pinkish color.</p>
+<center>
+<div class="figure">
+<img src="Capture46.JPG" alt="Figure 25: Changing symbol color" />
+<p class="caption">Figure 25: Changing symbol color</p>
+</div>
+</center>
+<p>Click OK - the symbol should now no longer be white but look something like <img src="Capture43.JPG" /> * You’ll notice that a symbol for California_Tracts pops up in the legend of your map. Let’s eliminate that because it’s not necessary. To do this, turn off Auto update under Legend items by unchecking the box. Then click on the California_Tracts <img src="Capture42.JPG" /> and then click on <img src="Capture41.JPG" />. California_Tracts should disappear from the legend. You should get a map that looks like Figure 26.</p>
+<center>
+<div class="figure">
+<img src="Capture39.JPG" alt="Figure 26: Map with background tracts" />
+<p class="caption">Figure 26: Map with background tracts</p>
+</div>
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="add-a-basemap" class="section level3">
+<h3><strong>Add a basemap</strong></h3>
+<p><br />
+The function of a basemap is to provide background detail necessary to orient the location of the map. QGIS does not have basemaps preloaded. You’ll need to rely on a QGIS plugin to get a basemap. QGIS plugins are user created functions and applications - remember that QGIS is open software, so if you are a programmer, you can create and add to QGIS’ basic functionality by making your own QGIS tools.</p>
+<p>To add a plugin</p>
+<ol style="list-style-type: decimal">
+<li>Select Plugins from the main menu</li>
+<li>Select Manage and Install Plugins.<br />
+</li>
+<li>In the text box at the top of the window that pops up, type in QuickMapServices, a plugin for finding datasets and basemaps.<br />
+</li>
+<li>Click on the plugin and hit Install.</li>
+</ol>
+<p>You should see some new buttons <img src="Capture36.JPG" /> pop up in your toolbars. Select <img src="Capture37.JPG" /> and you can select basemaps from a variety of different sources. OSM is Open Street Maps, a free crowd sourced editable map. Select OSM and select standard. The OSM basemap should pop up both in the Map and Layout views. Customize the map as you see fit. I ended up with the map shown in Figure 27</p>
+<center>
+<div class="figure">
+<img src="Capture38.JPG" alt="Figure 27: Map with basemap" />
+<p class="caption">Figure 27: Map with basemap</p>
+</div>
+</center>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="saving-your-map" class="section level2">
+<h2><strong>Saving your map</strong></h2>
+<p><br />
+Ultimately, you’ll want to share this map with others. You usually do that by sharing it as a jpeg or pdf. If you save it as a jpeg, you can paste it into a word document or PowerPoint presentation. To export your map into one of these formats</p>
+<ol style="list-style-type: decimal">
+<li>Select Layout from the Main Menu of the Layout view.</li>
+<li>Select either Export as Image or Export as PDF.</li>
+<li>Save the file with an appropriate name in the appropriate folder.</li>
+</ol>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="saving-your-project" class="section level2">
+<h2><strong>Saving your project</strong></h2>
+<p><br />
+When saving a project you are not saving actual data files. That is, you are not saving Sacramento_County_Tracts_Dems. Project files do not contain maps, instead they contain information on where original shapefiles are stored and what processes are needed to recreate a map. A saved project file includes information about the path to each data layer included as well as your choices about symbology, labels, and layer order. Before closing QGIS, users should save their progress in a Project file so it can be used and edited in the future. It is important to note that all shapefiles associated with the map must stay in their original location. If they are moved, QGIS will not be able to locate the files and rebuild the map. To save a project</p>
+<ol style="list-style-type: decimal">
+<li>From the Main Menu of the main interface, select Project</li>
+<li>Select Save</li>
+<li>Navigate to the folder that contains the data you’ve uploaded into your current project. Type in an appropriate name and select Save.</li>
+</ol>
+<p>The project file will be saved as a <code>.qgz</code>, which can be only opened in QGIS.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>

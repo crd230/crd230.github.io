@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Lab 9: Social Network Analysis</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<link href="site_libs/vis-4.20.1/vis.css" rel="stylesheet" />
+<script src="site_libs/vis-4.20.1/vis.min.js"></script>
+<script src="site_libs/visNetwork-binding-2.0.5/visNetwork.js"></script>
+<link href="site_libs/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 298: Winter 2019</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab0.html">Lab 0</a>
+    </li>
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+    <li>
+      <a href="lab2.html">Lab 2</a>
+    </li>
+    <li>
+      <a href="lab3.html">Lab 3</a>
+    </li>
+    <li>
+      <a href="lab4.html">Lab 4</a>
+    </li>
+    <li>
+      <a href="lab5.html">Lab 5</a>
+    </li>
+    <li>
+      <a href="lab6.html">Lab 6</a>
+    </li>
+    <li>
+      <a href="lab7.html">Lab 7</a>
+    </li>
+    <li>
+      <a href="lab8.html">Lab 8</a>
+    </li>
+    <li>
+      <a href="lab9.html">Lab 9</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Mini Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="nhgis.html">Download data from NHGIS</a>
+    </li>
+    <li>
+      <a href="missingdata.html">Dealing with missing data</a>
+    </li>
+    <li>
+      <a href="geocoding.html">Geocoding</a>
+    </li>
+    <li>
+      <a href="gwr.html">Geographically Weighted Regression</a>
+    </li>
+    <li>
+      <a href="qgis.html">Introduction to QGIS</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+    <li>
+      <a href="censusgeography.html">Census Geographies</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Lab 9: Social Network Analysis</h1>
+<h3 class="subtitle"><em><h4 style="font-style:normal">
+CRD 298 - Spatial Methods in Community Research
+</h4></em></h3>
+<h4 class="author"><em><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></em></h4>
+<h4 class="date"><em><h4 style="font-style:normal">
+March 6, 2019
+</h4></em></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+h1.title {
+  font-weight: bold;
+}
+
+</style>
+<p><br />
+</p>
+<p>For most of this quarter, we’ve conceptualized connectivity and dependence from a purely spatial perspective. In this lab, we will examine how neighborhood linkages can be shaped by networks that transcend geographic connectivity. The objectives of this guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to construct a social network object in R</li>
+<li>Learn how to visualize a social network</li>
+<li>Learn how to calculate network summary statistics</li>
+<li>Learn how to incorporate network connectivity in a regression model</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will use the same data from Labs 6 and 7 - socioeconomic characteristics and violent crime rates for census tracts in the wonderful city of Seattle, WA. We’ll construct a social network linking census tracts based on <a href="http://teamcore.usc.edu/projects/security/muri_publications/gang_ecology.pdf">gang turfs</a>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="install-and-load-packages" class="section level2">
+<h2><strong>Install and load packages</strong></h2>
+<p><br />
+We’ll be using the following new packages in this lab</p>
+<pre class="r"><code>install.packages(&quot;tidygraph&quot;)
+install.packages(&quot;ggraph&quot;)
+install.packages(&quot;igraph&quot;)
+install.packages(&quot;visNetwork&quot;)</code></pre>
+<p>Load in the following packages, all of which we’ve covered in previous labs</p>
+<pre class="r"><code>library(tidyverse)
+library(sf)
+library(sp)
+library(tmap)
+library(spdep)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bring-in-the-census-tract-data" class="section level2">
+<h2><strong>Bring in the census tract data</strong></h2>
+<p><br />
+We will be using the shapefile seattle_census_tracts_2010.shp. This file contains violent crime counts and rates between 2014 and 2017 by census tract. It also contains demographic and socioeconomic data from the 2012-16 American Community Survey. The record layout for the shapefile’s attribute table is located <a href="https://raw.githubusercontent.com/crd230/data/master/seattle_record_layout.txt">here</a>.</p>
+<p>I zipped up the files associated with the shapefile onto Github. Download the file, unzip it, and bring it into R using the following code.</p>
+<pre class="r"><code>setwd(&quot;insert your pathway here&quot;)
+download.file(url = &quot;https://raw.githubusercontent.com/crd230/data/master/seattle_census_tracts_2010.zip&quot;, destfile = &quot;seattle_census_tracts_2010.zip&quot;)
+unzip(zipfile = &quot;seattle_census_tracts_2010.zip&quot;)
+
+sea.tracts &lt;- st_read(&quot;seattle_census_tracts_2010.shp&quot;, stringsAsFactors = FALSE)
+sea.tracts.df &lt;- sea.tracts
+st_geometry(sea.tracts.df) &lt;- NULL</code></pre>
+<p>You’ll notice that I used the argument <code>stringsAsFactors = FALSE</code> in <code>st_read()</code>. The default is TRUE, which means that variables that are detected as strings (characters) are turned into factors. This is no good because we’ll need to merge in network data into <em>sea.tracts</em> using the variable <em>TRACTCE10</em>, which needs to be either a character or numeric.</p>
+<p>We’re going to examine the association between structural neighborhood characteristics and violent crime rates in the City of Seattle. Like we did <a href="https://crd230.github.io/lab6.html#standard_linear_regression">in Labs 6 and 7</a>, create the concentrated disadvantage and immigrant concentration indices. We’ll also need to convert our <strong>sf</strong> object to <strong>sp</strong> for our regression models.</p>
+<pre class="r"><code>sea.tracts.std &lt;-sea.tracts.df %&gt;%
+  select(GEOID10, ppov, unemp, pnhblack, pund18, pwelfare, pfb, phisp) %&gt;%
+  gather(variable, value, -c(GEOID10)) %&gt;%
+  group_by(variable) %&gt;%
+  mutate(mean = mean(value), sd = sd(value), z = (value-mean)/sd) %&gt;%
+  select(-(c(value, mean, sd))) %&gt;%
+  spread(variable, z) %&gt;%
+  mutate(concd = (ppov+unemp+pnhblack+pund18+pwelfare)/5, immc = (pfb+phisp)/2) %&gt;%
+  select(GEOID10, concd, immc)
+
+sea.tracts &lt;- left_join(sea.tracts, sea.tracts.std, by = &quot;GEOID10&quot;)
+#create sp version
+sea.tracts.sp &lt;- as(sea.tracts, &quot;Spatial&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bring-in-the-network-data" class="section level2">
+<h2><strong>Bring in the network data</strong></h2>
+<p><br />
+There are numerous network analysis packages in R. We’ll be using the packages <strong>igraph</strong>, perhaps the most relied upon social network package in R (that or the suite of <a href="http://www.statnet.org/">statnet packages</a>) and <strong>tidygraph</strong> and <strong>ggraph</strong>, which leverage the power of <strong>igraph</strong> in a manner consistent with the tidyverse workflow. <a href="https://www.data-imaginist.com/2018/tidygraph-1-1-a-tidy-hope/">Here</a> is a vignette of <strong>tidygraph</strong>. <a href="https://igraph.org/redirect.html">Here</a> is the <strong>igraph</strong> website and <a href="https://www.r-project.org/conferences/useR-2008/slides/Csardi.pdf">lecture slides</a> providing a brief background on the package. Finally, find <strong>ggraph</strong> vignettes from its creator <a href="https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html">here</a>, <a href="https://cran.r-project.org/web/packages/ggraph/vignettes/Layouts.html">here</a>, and <a href="https://cran.r-project.org/web/packages/ggraph/vignettes/Nodes.html">here</a>. Let’s load these packages into your current R session</p>
+<pre class="r"><code>library(tidygraph)
+library(ggraph)
+library(igraph)</code></pre>
+<p>The two primary aspects of networks are a multitude of separate entities and the connections between them. The vocabulary can be a bit technical and even inconsistent between different disciplines, packages, and software. The entities are referred to as nodes or actors of a graph, while the connections are edges or ties.</p>
+<p>The network object classes for <strong>igraph</strong> and <strong>tidygraph</strong> are all based on sociomatrices, also known as adjacency matrices. An adjacency matrix is a square matrix in which the column and row names are the nodes of the network. Within the matrix a 1 indicates that there is a connection between the nodes (edge), and a 0 indicates no connection. Let’s bring in the sociomatrix for neighborhood gang affiliation in Seattle.</p>
+<pre class="r"><code>gang.matrix &lt;- read_csv(&quot;https://raw.githubusercontent.com/crd230/data/master/seattle_gang_tracts.csv&quot;)</code></pre>
+<p>The matrix does not distinguish between which gangs are in which neighborhoods - a value of 1 indicates that the neighborhoods on the row and column are in the same gang turf. Note that a neighborhood cannot be associated with multiple gangs. The gang network is undirected. An adjacency matrix is always symmetric if you are dealing with an undirected network.</p>
+<p>We can create a network object using the adjacency matrix using the function <code>graph.adjacency()</code>. We’ll need to clean up this matrix a bit before we can input it into <code>graph.adjacency()</code>. First, we want just 0 and 1 values in the matrx cells, so get rid of the column <em>X1</em>, which provide the tract IDs. Next, designate row names using the column names of the data frame, which are the tract IDs.</p>
+<pre class="r"><code>gang.matrix &lt;- select(gang.matrix, -c(X1))
+rownames(gang.matrix) &lt;- colnames(gang.matrix)</code></pre>
+<p>Next, we use <code>graph.adjacency()</code> to create an <strong>igraph</strong> network object. The function <code>graph.adjacency()</code> takes in a <em>matrix</em> object, so we’ll need to use <code>as.matrix()</code> to convert <em>gang.matrix</em> to a matrix, which is currently a tibble. We’ll also need to specify that the network is undirected using the argument <code>mode = &quot;undirected&quot;</code></p>
+<pre class="r"><code>gang.network.ig &lt;- graph.adjacency(as.matrix(gang.matrix), mode = &quot;undirected&quot;)</code></pre>
+<p>To convert the <strong>igraph</strong> network object into a tidy network object, use the function <code>as_tbl_graph()</code></p>
+<pre class="r"><code>gang.network1&lt;-as_tbl_graph(gang.network.ig)</code></pre>
+<p>You can also create a network from an edge list and a node list. An edge list is a data frame that contains a minimum of two columns, one column of nodes that are the source of a connection and another column of nodes that are the target of the connection. The nodes in the data are identified by unique IDs. If the distinction between source and target is meaningful, the network is directed. If the distinction is not meaningful, the network is undirected. Let’s bring in the edge list, which I uploaded onto Github.</p>
+<pre class="r"><code>sea.edges &lt;- read_csv(&quot;https://raw.githubusercontent.com/crd230/data/master/edges.csv&quot;)</code></pre>
+<p>A node list is a data frame with a column that lists the node IDs found in the edge list. Let’s bring in the node list.</p>
+<pre class="r"><code>sea.nodes &lt;- read_csv(&quot;https://raw.githubusercontent.com/crd230/data/master/nodes.csv&quot;)</code></pre>
+<p>The node list is a regular tibble with two columns indicating a generic ID from 1 to 140 for each tract and the tract FIPS code. What is the purpose of the ID of 1 to 140? Because the function <code>tbl_graph()</code> which creates a network object from node and edge lists assumes that there should be nodes for every integer between <code>min(node$id)</code> and <code>max(node$id)</code>, which is not the case if we use the FIPS tract code.</p>
+<p>We can then create the network from the node and edge lists using the function <code>tbl_graph()</code>. Note that the argument <code>directed =</code> tells R whether we want to create a directed or undirected network.</p>
+<pre class="r"><code>gang.network2 &lt;- tbl_graph(nodes = sea.nodes, edges = sea.edges, directed = FALSE)
+gang.network2</code></pre>
+<pre><code>## # A tbl_graph: 140 nodes and 90 edges
+## #
+## # An undirected simple graph with 101 components
+## #
+## # Node Data: 140 x 2 (active)
+##      id label
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1     1 26700
+## 2     2 26600
+## 3     3   800
+## 4     4   700
+## 5     5   600
+## 6     6   500
+## # … with 134 more rows
+## #
+## # Edge Data: 90 x 2
+##    from    to
+##   &lt;int&gt; &lt;int&gt;
+## 1     5   104
+## 2     5   136
+## 3    21    50
+## # … with 87 more rows</code></pre>
+<p>The output for <em>gang.network2</em> is similar to that of a normal tibble. We find that there are 140 nodes (census tracts) and 90 edges. The first six rows of “Node Data” and the first three of “Edge Data” are also shown.</p>
+<p>Run the command <code>class()</code> on <em>gang.network2</em> and you’ll find that <strong>tidygraph</strong> sub classes <strong>igraph</strong> with the <em>tbl_graph</em> class and simply exposes it in a tidy manner.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="visualizing-your-network" class="section level2">
+<h2><strong>Visualizing your network</strong></h2>
+<p><br />
+There are a number of ways to visualize your network. A simple visualization is a matrix plot. The matrix plot has neighborhoods on the row and columns and fills in the cells when there is a connection. I use the <code>ggplot()</code> function to create this plot.</p>
+<pre class="r"><code># Adjust the &#39;to&#39; and &#39;from&#39; factor levels so they are equal to this complete list of 
+# node names
+plot_data &lt;- sea.edges %&gt;% mutate(to = factor(to, levels = sea.nodes$id),
+        from = factor(from, levels = sea.nodes$id))
+
+ggplot(plot_data, aes(x = from, y = to)) +
+      geom_raster() +
+      theme_bw() +
+      # Because we need the x and y axis to display every node,
+      # not just the nodes that have connections to each other,
+      # make sure that ggplot does not drop unused factor levels
+      scale_x_discrete(drop = FALSE) +
+      scale_y_discrete(drop = FALSE) +
+      theme(
+        # Rotate the x-axis lables so they are legible
+        axis.text.x = element_text(angle = 270, hjust = 0),
+        # Force the plot into a square aspect ratio
+        aspect.ratio = 1,
+        # Hide the legend (optional)
+        legend.position = &quot;none&quot;)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<p>With a lot of nodes, we can’t easily identify the specific connections, but it does give us an idea of how many ties exist in the network. We can look at a matrix plot for just the neighborhoods with edges by directly plugging in <em>sea.edges</em> into the <code>ggplot()</code> function as follows</p>
+<pre class="r"><code>ggplot(sea.edges, aes(x = from, y = to)) +
+      geom_raster() +
+      theme_bw() +
+      theme(
+        # Rotate the x-axis lables so they are legible
+        axis.text.x = element_text(angle = 270, hjust = 0),
+        # Force the plot into a square aspect ratio
+        aspect.ratio = 1,
+        # Hide the legend (optional)
+        legend.position = &quot;none&quot;)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p>The most common approach to visualizing a network is to graph the network nodes and edges onto a two-dimensional space. The tidy package for graphing networks is <code>ggraph</code>, which is an extension of <strong>ggplot2</strong>, making it easier to carry over basic <code>ggplot()</code> skills to the creation of network plots.</p>
+<pre class="r"><code>ggraph(gang.network2) + geom_edge_link() + geom_node_point() + theme_graph()</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+<p>As you can see, the structure of the command <code>ggraph()</code> is similar to that of <code>ggplot()</code> with the separate layers added with the <code>+</code> sign. <code>geom_edge_link()</code> plots the edges and <code>geom_node_point()</code> plots the nodes. And there are arguments within these commands to stylize and alter their graphical features. Network visualizations are cool if you’ve got a small enough data set. Check out the <strong>ggraph</strong> <a href="https://cran.r-project.org/web/packages/ggraph/index.html">vignettes</a> to find out how you can improve your graphics.</p>
+<p>The plot shows the network including neighborhoods with no connections. Perhaps you want to just examine the linkages between connected nodes. You can save a <strong>tidygraph</strong> object of just connected nodes using the following set of commands</p>
+<pre class="r"><code>gang.network.connected &lt;- gang.network2 %&gt;%
+  # Remove isolated nodes
+  activate(nodes) %&gt;%
+  filter(!node_is_isolated())</code></pre>
+<p>One neat command of <strong>tidygraph</strong> is <code>activate()</code>, which we used above. Let’s look back at the output for <em>gang.network2</em></p>
+<pre class="r"><code>gang.network2</code></pre>
+<pre><code>## # A tbl_graph: 140 nodes and 90 edges
+## #
+## # An undirected simple graph with 101 components
+## #
+## # Node Data: 140 x 2 (active)
+##      id label
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1     1 26700
+## 2     2 26600
+## 3     3   800
+## 4     4   700
+## 5     5   600
+## 6     6   500
+## # … with 134 more rows
+## #
+## # Edge Data: 90 x 2
+##    from    to
+##   &lt;int&gt; &lt;int&gt;
+## 1     5   104
+## 2     5   136
+## 3    21    50
+## # … with 87 more rows</code></pre>
+<p>Notice the word “active” in parentheses after the label “Node Data: 140 x 2”. This indicates that the Node part of the network is active. In other words, any manipulation of <em>gang.network2</em> will be done on the nodes tibble. If we run the following code</p>
+<pre class="r"><code>activate(gang.network2, edges)</code></pre>
+<pre><code>## # A tbl_graph: 140 nodes and 90 edges
+## #
+## # An undirected simple graph with 101 components
+## #
+## # Edge Data: 90 x 2 (active)
+##    from    to
+##   &lt;int&gt; &lt;int&gt;
+## 1     5   104
+## 2     5   136
+## 3    21    50
+## 4    21    51
+## 5    22    36
+## 6    22    40
+## # … with 84 more rows
+## #
+## # Node Data: 140 x 2
+##      id label
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1     1 26700
+## 2     2 26600
+## 3     3   800
+## # … with 137 more rows</code></pre>
+<p>We find that the edges are now active.</p>
+<p>The command <code>node_is_isolated()</code> identifies the nodes that do not have a link and the <code>!</code> sign indicates <strong>not</strong>, which means when plugged into <code>filter()</code>, remove nodes that have a TRUE for <code>node_is_isolated()</code>. Graph it using <code>ggraph()</code></p>
+<pre class="r"><code>ggraph(gang.network.connected) + geom_edge_link() + geom_node_point() + theme_graph()</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-20-1.png" /><!-- --></p>
+<p>Finally, just like with interactive maps, you can make interactive network graphs. You can do this by using the package <strong>visNetwork</strong>. First load the package and use the function <code>toVisNetworkData()</code>. The argument <code>idToLabel = FALSE</code> tells R not to use the column <em>id</em> to identify the nodes. It will instead grab the column <em>label</em></p>
+<pre class="r"><code>library(visNetwork)
+
+dataVis &lt;-  toVisNetworkData(gang.network2,idToLabel = FALSE)</code></pre>
+<p>You then create the interactive network using the function <code>visNetwork()</code>. Similar to <code>ggraph()</code> you can make this interactive visual <a href="https://cran.r-project.org/web/packages/visNetwork/vignettes/Introduction-to-visNetwork.html">prettier</a>.</p>
+<pre class="r"><code>visNetwork(nodes = dataVis$nodes, edges = dataVis$edges, width = &quot;100%&quot;,
+           main = &quot;Gang Network in Seattle Neighborhoods&quot;) %&gt;%
+  addFontAwesome() %&gt;%
+  visOptions(highlightNearest = list(enabled = T, hover = T), nodesIdSelection = T) %&gt;%
+  visInteraction(navigationButtons = TRUE)</code></pre>
+<div id="htmlwidget-7ff539ff5303aaefce61" style="width:100%;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7ff539ff5303aaefce61">{"x":{"nodes":{"id":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140],"label":[26700,26600,800,700,600,500,402,401,300,200,100,26500,26400,26300,26100,26001,1702,4302,4301,7402,10002,10001,11002,10402,10702,11402,11401,25302,12100,12000,11900,10900,10800,10600,10500,10300,1701,7401,10200,10100,9900,9800,9702,9701,9600,10401,10701,11001,9500,9400,9300,9200,9100,9000,8900,8800,8700,11800,11700,11600,11500,11300,11200,11102,11101,8600,8500,8400,8300,8200,8100,8002,8001,7900,7800,7700,7600,7500,7300,7200,7100,7000,6900,6800,6700,6600,6500,6400,6300,6200,6100,6000,5801,5700,5600,5400,5302,5301,5200,5100,5000,4900,4800,4700,4600,4500,4400,4200,4100,4000,3900,3800,5900,5802,3600,3500,3400,3300,3200,3100,3000,2900,2800,2700,2600,2500,2400,2200,2100,2000,1900,1800,1600,1500,1400,1300,1200,1100,1000,900]},"edges":{"from":[5,5,21,21,22,22,22,23,23,23,23,23,23,23,24,24,24,24,24,24,25,25,25,25,25,25,25,31,31,33,33,33,33,33,33,34,34,35,35,35,35,36,36,36,36,36,36,36,40,41,46,46,46,46,46,47,48,48,48,48,50,50,50,53,53,53,54,54,54,54,56,56,56,56,57,57,58,58,58,59,59,64,66,71,71,72,74,98,98,104],"to":[104,136,50,51,36,40,46,24,36,46,48,59,64,65,36,46,48,59,64,65,33,34,35,41,42,47,61,58,59,34,35,41,42,47,61,47,61,41,42,53,54,39,40,46,48,60,64,65,46,42,48,58,59,64,65,61,58,59,64,65,51,54,55,54,66,67,55,57,66,67,57,74,75,76,74,76,59,64,65,64,65,65,67,72,80,80,76,104,107,136]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"interaction":{"hover":true,"navigationButtons":true}},"groups":null,"width":"100%","height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)"},"main":{"text":"Gang Network in Seattle Neighborhoods","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","iconsRedraw":true,"highlight":{"enabled":true,"hoverNearest":true,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
+<p>The widget will allow you to pick a neighborhood and highlight its ego network.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="network-characteristics" class="section level2">
+<h2><strong>Network characteristics</strong></h2>
+<p><br />
+You’ve successfully created a network object and visualized it. Next, let’s get some network-level summary characteristics. First, transitivity, which refers to the extent to which the relation that relates two nodes in a network that are connected by an edge is transitive. Perfect transitivity implies that, if neighborhood 1 is connected (through an edge) to neighborhood 2, and neighborhood 2 is connected to neighborhood 3, then neighborhood 1 is connected to neighborhood 3 as well. Transitivity is used to capture how clustered your network is. We use the function <code>transitivity()</code></p>
+<pre class="r"><code>transitivity(gang.network2)</code></pre>
+<pre><code>## [1] 0.6966825</code></pre>
+<p>If neighborhood 1 is affiliated with neighborhood 2 and neighborhood 2 is affiliated with neighborhood 3 through a gang turf, then the probability that neighborhood 1 is affiliated with neighborhood 3 through a gang turf is 69.8 percent.</p>
+<p>Another important network summary statistic is the diameter, which gives the length (in number of edges) of the longest geodesic path between any two nodes.</p>
+<pre class="r"><code>diameter(gang.network2)</code></pre>
+<pre><code>## [1] 6</code></pre>
+<p>The value 6 means that longest geodesic path to go from one neighborhood to another is 6. We can get this path by using the <code>get_diameter()</code> function</p>
+<pre class="r"><code>get_diameter(gang.network2)</code></pre>
+<pre><code>## + 7/140 vertices, from 96550d8:
+## [1] 34 25 35 54 57 56 75</code></pre>
+<p>What do the results tell us?</p>
+<p>The mean distance of the shortest paths from one neighborhood to another can be calculated using the function <code>mean_distance()</code></p>
+<pre class="r"><code>mean_distance(gang.network2)</code></pre>
+<pre><code>## [1] 2.468153</code></pre>
+<p>Note that this value only considers the connected neighborhoods.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="cohesive-sub-graphs" class="section level2">
+<h2><strong>Cohesive sub graphs</strong></h2>
+<p><br />
+Networks often have different clusters or communities of nodes that are more densely connected to each other than to the rest of the network. A component is a measure of a connected sub graph. Components of a graph are sub graphs that are connected within, but disconnected between sub graphs. We can get the number of components in a network by using the function <code>count_components()</code></p>
+<pre class="r"><code>count_components(gang.network2)</code></pre>
+<pre><code>## [1] 101</code></pre>
+<p>Why so many? Because isolates are included as their own individual network (how lonely!). You can find the number of weak or strong components by using the argument <code>mode =</code> followed by weak or strong in quotes.</p>
+<p>There are many other community detection techniques available in the <strong>tidygraph</strong> and <strong>igraph</strong> packages, many of them taking on the form <code>group_</code>. For example, type in <code>? cliques</code> if you want to generate clique and n-clique communities. For some of these community detection methods, it is best to use the connected network if you have a lot of isolates. For example, the <a href="http://www.mapequation.org/">group_infomap()</a> function detects 7 separate connected communities</p>
+<pre class="r"><code>#only for restricted
+gang.network.connected %&gt;% 
+  mutate(community = as.factor(group_infomap())) %&gt;% 
+  ggraph(layout = &#39;kk&#39;) + 
+  geom_edge_link(aes(alpha = ..index..), show.legend = FALSE) + 
+  geom_node_point(aes(colour = community), size = 7) + 
+  theme_graph()</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-28-1.png" /><!-- --></p>
+<p><strong>tidygraph</strong> has not tidied all the functions available in <strong>igraph</strong>. For example, to get k-core communities, you’ll use the function <code>coreness()</code> from <strong>igraph</strong>. The function yields the sub graphs that has at least a degree of k. Let’s save the k-core value back into <em>gang.network2</em>.</p>
+<pre class="r"><code>gang.network2 &lt;- mutate(gang.network2, kcore = coreness(gang.network2)) </code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="node-characteristics" class="section level2">
+<h2><strong>Node characteristics</strong></h2>
+<p><br />
+Let’s now calculate local measures of the network, specifically attaching values to nodes based on their connectedness or relationships with one another. The most popular node characteristic is centrality. In a nutshell, a measure of centrality is an index that assigns numeric values to the nodes of the network. The higher the value, the more central the node. The definition of centrality is pretty broad. As such, there are several measures of centrality. The <strong>tidygraph</strong> functions that calculate centrality take on the form <code>centrality_</code>. First, there is degree centrality, which captures the number of relationships (edges) that a node has. Use the function <code>centrality_degree()</code>. Remember, this is a node measure, so make sure the Nodes tibble is active within your network object (we already checked this above)</p>
+<pre class="r"><code>gang.network2 &lt;- mutate(gang.network2, degree = centrality_degree()) </code></pre>
+<p>We can then plot degree centrality using our new friend <code>ggraph()</code></p>
+<pre class="r"><code>ggraph(gang.network2, layout = &#39;kk&#39;) + 
+  geom_edge_link() + 
+  geom_node_point(aes(size = degree, colour = degree)) + 
+  scale_color_continuous(guide = &#39;legend&#39;) + 
+  theme_graph()</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
+<p>Making nice graphs with large networks that are disconnected is sometimes difficult. If the artist in you is calling out, you can make a nice visual using only nodes that are connected. For example, here is one with labels and a title.</p>
+<pre class="r"><code>gang.network.connected &lt;- mutate(gang.network.connected, degree = centrality_degree()) 
+
+ggraph(gang.network.connected, layout = &quot;nicely&quot;) + 
+  geom_edge_diagonal(alpha = 0.2) + 
+  geom_node_point(aes(size = degree)) + 
+  scale_color_brewer(palette = &quot;Set1&quot;, name = &quot;Type&quot;) +
+  geom_node_text(aes(label = label), size = 2.5, repel = TRUE) +
+  theme_graph() +
+  theme(plot.background = element_rect(fill = &quot;#f8f2e4&quot;)) +
+  labs(title = &quot;Gang Centrality in Seattle Neighborhoods&quot;,
+       size = &quot;Degree&quot;,
+       caption = &quot;CRD 298\n Data source: Seattle Police Department&quot;)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
+<p>Another measure of centrality is betweenness, which captures the number of shortest paths that go through a node. Use the function <code>centrality_betweenness()</code> with <code>ggraph()</code> to plot node betweenness for our network.</p>
+<p><a href="https://en.wikipedia.org/wiki/PageRank">Page rank centrality</a> estimates the probability that information will arrive to a particular node. This algorithm was developed by Google’s founders, and originally applied to website links</p>
+<pre class="r"><code>gang.network2 %&gt;% 
+  mutate(pagerank = centrality_pagerank()) %&gt;% 
+  ggraph(layout = &#39;kk&#39;) + 
+  geom_edge_link() + 
+  geom_node_point(aes(size = pagerank, colour = pagerank)) + 
+  scale_color_continuous(guide = &#39;legend&#39;) + 
+  theme_graph()</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<p>There are other measures of centrality that you can calculate to find out the most influential or connected nodes in your network. Type in <code>? centrality</code> and you’ll find all the measures possible in the <strong>igraph</strong> and <strong>tidygraph</strong> packages.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="social-and-geographic-network-models" class="section level2">
+<h2><strong>Social and geographic network models</strong></h2>
+<p><br />
+Let’s now bring “link” the gang social network to the spatial world. One thing we can do is map the node characteristics we calculated above to find where the most influential nodes are physically located. First, let’s take out the node tibble from <em>gang.network2</em> using the function <code>as_tibble()</code>. Remember, make sure the node tibble is active.</p>
+<pre class="r"><code>node.centrality &lt;-as_tibble(gang.network2)
+node.centrality</code></pre>
+<p>You’ll find that we have the ID we created, the FIPS tract code, the measure of degree centrality, and k-coreness.</p>
+<p>Join degree centrality to the spatial object <em>sea.tracts</em>. We’ll join using the FIPS tract code, which we’ll need to turn to numeric in <em>sea.tracts</em> and name it <em>label</em></p>
+<pre class="r"><code>sea.tracts&lt;- mutate(sea.tracts, label = as.numeric(TRACTCE10))
+sea.tracts &lt;- left_join(sea.tracts, node.centrality, by = &quot;label&quot;)</code></pre>
+<p>We can get summary statistics of tract centrality</p>
+<pre class="r"><code>summary(sea.tracts$degree)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   1.286   2.000  10.000</code></pre>
+<p>And then map it</p>
+<pre class="r"><code>tm_shape(sea.tracts, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;degree&quot;, style = &quot;pretty&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 1, 2), size = 1, position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+  tm_compass(type = &quot;4star&quot;, position = c(&quot;left&quot;, &quot;top&quot;)) + 
+  tm_layout(main.title = &quot;Gang network degree centrality&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-38-1.png" /><!-- --></p>
+<p>We can also map the k-core communities like in Bastomski et al. (2017). First, the k-core = 2 community showing degree centrality</p>
+<pre class="r"><code>kcore1  &lt;- filter(sea.tracts, kcore &gt;= 1) 
+  tm_shape(sea.tracts, unit = &quot;mi&quot;) +
+  tm_polygons(col=&quot;white&quot;) +
+tm_shape(kcore1) +
+  tm_polygons(col = &quot;degree&quot;, style = &quot;pretty&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 1, 2), size = 1, position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+  tm_compass(type = &quot;4star&quot;, position = c(&quot;left&quot;, &quot;top&quot;)) + 
+  tm_layout(main.title = &quot;K-core = 2, gang network degree centrality&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-39-1.png" /><!-- --></p>
+<p>What about kcore = 4?</p>
+<pre class="r"><code>kcore3  &lt;- filter(sea.tracts, kcore &gt;= 4) 
+  tm_shape(sea.tracts, unit = &quot;mi&quot;) +
+  tm_polygons(col=&quot;white&quot;) +
+tm_shape(kcore3) +
+  tm_polygons(col = &quot;degree&quot;, style = &quot;pretty&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 1, 2), size = 1, position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+  tm_compass(type = &quot;4star&quot;, position = c(&quot;left&quot;, &quot;top&quot;)) + 
+  tm_layout(main.title = &quot;K-core = 4, gang network degree centrality&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-40-1.png" /><!-- --></p>
+<p>And then the highest k-core = 6</p>
+<pre class="r"><code>kcore6  &lt;- filter(sea.tracts, kcore &gt;= 6) 
+  tm_shape(sea.tracts, unit = &quot;mi&quot;) +
+  tm_polygons(col=&quot;white&quot;) +
+tm_shape(kcore6) +
+  tm_polygons(col = &quot;degree&quot;, style = &quot;pretty&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 1, 2), size = 1, position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+  tm_compass(type = &quot;4star&quot;, position = c(&quot;left&quot;, &quot;top&quot;)) + 
+  tm_layout(main.title = &quot;K-core = 6, gang network degree centrality&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
+<p>We can calculate whether a network measure is spatially clustered using the Moran’s I. Let’s do that for degree centrality. We’ll need to create an <strong>sp</strong> object out of <strong>sea.tracts</strong> and then define a row standardized spatial weights matrix using Queen contiguity.</p>
+<pre class="r"><code>sea.tracts.sp &lt;- as(sea.tracts, &quot;Spatial&quot;)
+
+seab&lt;-poly2nb(sea.tracts.sp, queen=T)
+seaw&lt;-nb2listw(seab, style=&quot;W&quot;, zero.policy = TRUE)</code></pre>
+<p>Then calculate Moran’s I</p>
+<pre class="r"><code>moran.mc(sea.tracts.sp$degree, seaw, nsim=999)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  sea.tracts.sp$degree 
+## weights: seaw  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.63442, observed rank = 1000, p-value = 0.001
+## alternative hypothesis: greater</code></pre>
+<p>What is the Moran’s I value tell you about the spatial clustering of gang network degree centrality?</p>
+<p>The adjacency matrix can be plugged into a spatial regression framework - rather than a spatial weights matrix, we’re dealing with a social network weights matrix. This means we can apply the methods we’ve been using to measure and model spatial dependency using the gang adjacency matrix. You’ll need to first convert <em>gang.matrix</em> into a row-standardized weights matrix using the function <code>mat2listw()</code></p>
+<pre class="r"><code>gang.matrix.w &lt;- mat2listw(as.matrix(gang.matrix), style=&quot;W&quot;)</code></pre>
+<p>We can then plot the connections</p>
+<pre class="r"><code>plot(sea.tracts.sp, main = &quot;Gang network&quot;)
+plot.listw(gang.matrix.w, coords = coordinates(sea.tracts.sp) , add = T, col = &quot;red&quot;)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-45-1.png" /><!-- --></p>
+<p>How does this compare to, say, a basic queen contiguity spatial weights matrix?</p>
+<pre class="r"><code>par(mfrow = c(1, 2))
+plot(sea.tracts.sp, main = &quot;Gang network&quot;)
+plot.listw(gang.matrix.w, coords = coordinates(sea.tracts.sp) , add = T, col = &quot;red&quot;)
+plot(sea.tracts.sp, main = &quot;Queen contiguity network&quot;)
+plot.listw(seaw, coords = coordinates(sea.tracts.sp) , add = T, col = &quot;red&quot;)</code></pre>
+<p><img src="lab9_files/figure-html/unnamed-chunk-46-1.png" /><!-- --></p>
+<p>It would be neat to combine <code>visNetwork()</code> with, say, <code>leaflet()</code> so that you can create an interactive network and map. You can also create a Shiny app to do this. I’m not smart enough to construct this, so I will leave this up to the super coders to handle.</p>
+<p>You’ve created a weights matrix based on gang turf affiliation. You can then plug this matrix into the spatial regression functions we covered in Labs 6 and 7 to find out whether gang network dependency has an effect on violent crime rates above and beyond neighborhood structural characteristics. For example, use <code>lagsarlm()</code> to run a social network lag model. You’ll need to add the argument <code>zero.policy=TRUE</code> because of the isolates in the city.</p>
+<pre class="r"><code>fit.lag.net&lt;-lagsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
+     data = sea.tracts, listw = gang.matrix.w, zero.policy=TRUE) 
+summary(fit.lag.net)</code></pre>
+<pre><code>## 
+## Call:lagsarlm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + popd + 
+##     div + pnhblack, data = sea.tracts, listw = gang.matrix.w, 
+##     zero.policy = TRUE)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -4.88826 -0.54629  0.25757  1.15653  3.70627 
+## 
+## Type: lag 
+## Regions with no neighbours included:
+##  26700 26600 800 700 500 402 401 300 200 100 26500 26400 26300 26100 26001 1702 4302 4301 7402 11402 11401 25302 12100 12000 10900 1701 7401 9702 9701 9600 9500 9200 11600 11300 11200 8400 8300 8200 8001 7600 7500 7300 7100 7000 6900 6800 6700 6600 6500 6400 6300 6200 6100 6000 5801 5700 5600 5400 5302 5200 5100 5000 4900 4800 4600 4500 4200 4100 4000 3900 3800 5900 5802 3600 3500 3400 3300 3200 3100 3000 2900 2800 2700 2600 2500 2400 2200 2100 2000 1900 1800 1600 1500 1400 1200 1100 1000 900 
+## Coefficients: (asymptotic standard errors) 
+##                Estimate  Std. Error z value Pr(&gt;|z|)
+## (Intercept)  4.35765260  4.89684817  0.8899 0.373525
+## concd       -0.19401521  0.43285406 -0.4482 0.653992
+## mob          4.22335747  1.53413329  2.7529 0.005907
+## pocc        -0.28474545  5.01993016 -0.0567 0.954766
+## immc         0.18877512  0.34491078  0.5473 0.584162
+## popd        -0.00136586  0.00051167 -2.6694 0.007599
+## div         -0.31791384  2.13230774 -0.1491 0.881480
+## pnhblack    -1.28858281  3.44687760 -0.3738 0.708523
+## 
+## Rho: 0.25743, LR test value: 19.229, p-value: 1.1593e-05
+## Asymptotic standard error: 0.056256
+##     z-value: 4.5759, p-value: 4.7409e-06
+## Wald statistic: 20.939, p-value: 4.7409e-06
+## 
+## Log likelihood: -277.2069 for lag model
+## ML residual variance (sigma squared): 3.0532, (sigma: 1.7473)
+## Number of observations: 140 
+## Number of parameters estimated: 10 
+## AIC: 574.41, (AIC for lm: 591.64)
+## LM test for residual autocorrelation
+## test value: 0.036686, p-value: 0.84811</code></pre>
+<p>You use the same interpretations here as you did for the models we ran in Lab 6, except instead of a spatial diffusion effect, you’re modelling a social network diffusion effect. Remember to use <code>impacts()</code> to get the direct, indirect and total effects of your variables.</p>
+<p>You can compare the findings from these models to a spatial dependency model using Queen contiguity. This is the approach that Papachristos and Bastomski (2018) used in their American Journal of Sociology paper examining co-offending networks in Chicago. You’ll also be comparing network and geographic based models in Assignment 4 to explain major building code violations in Philadelphia.</p>
+<hr />
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>
