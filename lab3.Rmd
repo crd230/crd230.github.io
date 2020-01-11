@@ -34,5 +34,3 @@ h1.title {
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-
