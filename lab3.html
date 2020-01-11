@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -74,9 +74,7 @@ h6 {
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -90,7 +88,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -100,6 +97,9 @@ img {
 }
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -115,7 +115,6 @@ body {
   padding-top: 56px;
   margin-top: -56px;
 }
-
 .section h2 {
   padding-top: 56px;
   margin-top: -56px;
@@ -135,6 +134,43 @@ body {
 .section h6 {
   padding-top: 56px;
   margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -156,55 +192,69 @@ $(document).ready(function () {
 });
 </script>
 
-
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-</script>
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
 
 <!-- code folding -->
 <style type="text/css">
 .code-folding-btn { margin-bottom: 4px; }
 </style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
-
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -218,6 +268,12 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -253,8 +309,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -263,6 +317,16 @@ div.tocify {
 
 
 </style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
 <div class="row-fluid">
@@ -336,45 +400,6 @@ div.tocify {
     </li>
   </ul>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Mini Labs
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="nhgis.html">Download data from NHGIS</a>
-    </li>
-    <li>
-      <a href="missingdata.html">Dealing with missing data</a>
-    </li>
-    <li>
-      <a href="geocoding.html">Geocoding</a>
-    </li>
-    <li>
-      <a href="gwr.html">Geographically Weighted Regression</a>
-    </li>
-    <li>
-      <a href="qgis.html">Introduction to QGIS</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Other
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="ndata.html">Data Sources</a>
-    </li>
-    <li>
-      <a href="censusgeography.html">Census Geographies</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -396,15 +421,15 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Lab 3: Point Data</h1>
-<h3 class="subtitle"><em><h4 style="font-style:normal">
+<h3 class="subtitle"><h4 style="font-style:normal">
 CRD 298 - Spatial Methods in Community Research
-</h4></em></h3>
-<h4 class="author"><em><h4 style="font-style:normal">
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
 Professor Noli Brazil
-</h4></em></h4>
-<h4 class="date"><em><h4 style="font-style:normal">
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
 January 23, 2019
-</h4></em></h4>
+</h4></h4>
 
 </div>
 
@@ -426,331 +451,6 @@ h1.title {
 </style>
 <p><br />
 </p>
-<p>In Lab 2, we covered how to work with <em>polygon</em> data in R. In this lab, we will cover how to cover <em>point</em> data in R. The objectives of this guide are</p>
-<ol style="list-style-type: decimal">
-<li>Understand Coordinate Reference Systems</li>
-<li>Learn how to reproject spatial data</li>
-<li>Learn how to create point buffers</li>
-<li>Learn how to calculate point distances</li>
-</ol>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="installing-and-loading-packages" class="section level2">
-<h2><strong>Installing and loading packages</strong></h2>
-<p><br />
-You’ll need to install the following packages in R. You only need to do it once, so if you’ve already installed these packages, skip the code. Also, don’t put these <code>install.packages()</code> in your R Markdown document. Copy and paste the code in the R Console.</p>
-<pre class="r"><code>install.packages(&quot;matrixStats&quot;)</code></pre>
-<p>You’ll need to load the following packages. Unlike installing, you will <em>always</em> need to load packages whenever you start a new R session. You’ll also always need to use <code>library()</code> in your R Markdown file.</p>
-<pre class="r"><code>library(sf)
-library(tidyverse)
-library(units)
-library(tmap)
-library(matrixStats)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="bringing-in-point-data" class="section level2">
-<h2><strong>Bringing in point data</strong></h2>
-<p><br />
-Point objects represents entities (e.g. buildings, trees) or events (e.g. crimes, vehicle collisions). Often you will receive point data in tabular form. If you have point longitudes and latitudes (or X and Y coordinates), you have all the information you need to make the data spatial. This process involves using geographic coordinates (longitude and latitude) to place points on a map. In some cases, you won’t have coordinates but street addresses. Here, you’ll need to geocode your data, which involves converting street addresses to geographic coordinates. These tasks are intimately related to the concept of projection and reprojection, and underlying all of these concepts is the Coordinate Reference System. These topics will be covered using the wonderful City of Angeles as our case study.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="longitudelatitude" class="section level3">
-<h3><strong>Longitude/Latitude</strong></h3>
-<p><br />
-You may receive a point data set in tabular form with geographic coordinates. Geographic coordinates are in the form of longitude and latitude, where longitude is your X coordinate and spans East/West and latitude is your Y coordinate and spans North/South.</p>
-<p>Let’s bring in a csv data set of homeless encampments in Los Angeles City, which was downloaded from the <a href="https://data.lacity.org/A-Well-Run-City/MyLA311-Service-Request-Data-2017/d4vt-q4t5">Los Angeles City Open Data portal</a>. I uploaded the data set on GitHub so you can directly read it in using <code>read_csv()</code></p>
-<pre class="r"><code>homeless311.df &lt;- read_csv(&quot;https://raw.githubusercontent.com/crd150/data/master/homeless311_la_2017.csv&quot;)</code></pre>
-<p>The data represent homeless encampment locations in 2017 as reported through the City’s <a href="https://www.lacity.org/311-services">311 system</a>. We will use the function <code>st_as_sf()</code> to create a point <strong>sf</strong> object of <em>homeless311.df</em>. The function requires you to specify the longitude and latitude of each point using the <code>coords =</code> argument, which are conveniently stored in the variables <em>longitude</em> and <em>latitude</em>.</p>
-<pre class="r"><code>homeless311.sf &lt;- st_as_sf(homeless311.df, coords = c(&quot;longitude&quot;, &quot;latitude&quot;))</code></pre>
-<p>Plot homeless encampments using functions from the <strong>tmap</strong> package, which we learned in <a href="https://crd230.github.io/lab2.html#tmap">Lab 2</a>.</p>
-<pre class="r"><code>tm_shape(homeless311.sf) +  
-  tm_dots(col=&quot;red&quot;)</code></pre>
-<pre><code>## Warning: Currect projection of shape homeless311.sf unknown. Long-lat
-## (WGS84) is assumed.</code></pre>
-<pre><code>## Warning: unknown projection</code></pre>
-<p><img src="lab3_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
-<p>We got a map and it looks right. But, we did get two warnings. These warnings aren’t something to sneeze at - the second one in particular is troubling, as it tells us that we haven’t set a projection, which is no problem if we’re just mapping, but is no bueno if we want to do some analyses on these point locations.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="coordinate-reference-system" class="section level3">
-<h3><strong>Coordinate Reference System</strong></h3>
-<p><br />
-The Coordinate Reference System (CRS) is an important concept to understand when dealing with spatial data. We won’t go through the <em>real</em> nuts and bolts of CRS, which you can read in GWR Chapters 2.4 and 6, but we’ll go through enough of it so that you can get through most CRS related spatial data wrangling tasks. Please also read the document Coordinate_Reference_Systems.pdf on Canvas in the Week 2 Lab folder.</p>
-<p>The CRS contains two major components: the Geographic Coordinate System (GCS) and the Projected Coordinate System (PCS). A GCS uses a three-dimensional spherical surface to define locations on the earth. The GCS can be further separated into two parts: the ellipse and the datum. The ellipse is a model of the Earth’s shape. The datum defines the coordinate system of this model - the origin point and the axes. You need these two basic components to place points on Earth’s three-dimensional surface. Think of it as trying to create a globe (ellipse) and figuring out where to place points on that globe (datum).</p>
-<p>The PCS then translates these points from a globe onto a two-dimensional space. We need to do this because were creating paper (or flat screen) maps, not globes (or 3-D models).</p>
-<p>You can find out the CRS of a spatial data set using the function <code>st_crs()</code>, which is in the <strong>sf</strong> package.</p>
-<pre class="r"><code>st_crs(homeless311.sf)</code></pre>
-<pre><code>## Coordinate Reference System: NA</code></pre>
-<center>
-<div class="figure">
-<img src="1ptdm0.jpg" />
-
-</div>
-</center>
-<p><br />
-</p>
-<p>When we used <code>st_as_sf()</code> above, we did not specify a CRS. We should have. Working with spatial data requires both a Geographic Coordinate System (so you know where your points are on Earth) and a Projection (a way of putting points in 2 dimensions). Both. Always. Like Peanut Butter and Jelly. Like Sonny and Cher. Like Ashton Kutcher and Demi Moore.</p>
-<p>There are two ways of specifying a coordinate system in R: via the EPSG numeric <a href="http://spatialreference.org/ref/epsg/">code</a> or via the <a href="https://proj4.org/apps/proj.html">PROJ4</a> formatted string. The EPSG code may not always be available for a particular coordinate system, but if a spatial object has a defined coordinate system, it will always have a PROJ4 projection string.</p>
-<p>The PROJ4 syntax consists of a list of parameters, each separated by a space and prefixed with the <code>+</code> character. To specify the PCS, you use the argument <code>+proj=</code>. To specify the GCS, you use the arguments <code>+ellps=</code> to establish the ellipse and <code>+datum=</code> to specify the datum.</p>
-<p>How do we know which CRS to use? The most common datums in North America are NAD27, NAD83 and WGS84, which has the ellipsoids clrk66, GRS80, and WGS84, respectively. The datum always specifies the ellipsoid that is used, but the ellipsoid does not specify the datum. This means you can specify <code>+datum=</code> and not specify <code>+ellps=</code> and R will know what to do, but not always the other way around. For example, the ellipsoid GRS80 is also associated with the datum GGRS87, so if you specify <code>ellps=GRS80</code> without the datum, R won’t spit out an error, but will give you an unknown CRS.</p>
-<p>When you are bringing in point data with latitude and longitude, the projected coordinate system is already set for you. Latitudes and longitudes are X-Y coordinates, which is essentially a Plate Carree projection. You specify a PCS using the argument (in quotes) <code>+proj=longlat</code>.</p>
-<pre class="r"><code>homeless311.sf &lt;- st_as_sf(homeless311.df, coords = c(&quot;longitude&quot;, &quot;latitude&quot;), crs = &quot;+proj=longlat +datum=WGS84&quot;)</code></pre>
-<p>As we discussed in <a href="https://crd230.github.io/lab2.html#areal_interpolation">Lab 2</a>, the CRS should have spaces only in between <code>+proj=longlat</code> and <code>+datum=WGS84</code> (and other definitions) and no other place. What is the CRS now?</p>
-<pre class="r"><code>st_crs(homeless311.sf)</code></pre>
-<pre><code>## Coordinate Reference System:
-##   EPSG: 4326 
-##   proj4string: &quot;+proj=longlat +datum=WGS84 +no_defs&quot;</code></pre>
-<p>As you can see here, the EPSG associated with this particular GCS and PCS combination is 4326. Had we looked this up <a href="http://spatialreference.org/ref/epsg/4326/">here</a>, we could used <code>crs = 4326</code> instead of <code>&quot;+proj=longlat +datum=WGS84&quot;</code> in the <code>st_as_sf()</code> command above.</p>
-<p>The takeaway point: Always establish the CRS for all spatial data sets you bring into R. This includes not only situations where you need to convert nonspatial into spatial data like we did above, but also in situations where you bring in spatial data whose CRS has not been established. That is, a spatial data set you downloaded from a source that did not establish a CRS. Bring it into R, check the CRS using <code>st_crs()</code>, if you get an NA, set the CRS. To do this, use the function <code>st_set_crs()</code>. See GWR 6.1 for more details.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="reprojection" class="section level3">
-<h3><strong>Reprojection</strong></h3>
-<p><br />
-The above section deals with a situation where you are establishing the CRS for the first time. However, you may want to change an already defined CRS. This task is known as reprojection. Why would you want to do this? There are three main reasons:</p>
-<ol style="list-style-type: decimal">
-<li>Two objects that are compared or combined have a different CRS.</li>
-<li>Aesthetic purposes and/or to correct distortions.</li>
-<li>Many geometric functions require certain CRS.</li>
-</ol>
-<p>Reason 1: When you are working with two or more spatial data sets (i.e. doing analyses that connect the two data sets), you need to make sure their CRS are the same. This is similar to making sure that units are the same when measuring volume or distances. R is (semi) smart, so when you map two spatial data sets with different CRS, it will convert one to the other for mapping purposes, so everything looks peachy keen. But, don’t be fooled - they still have different CRS. When you try to do spatial operations and analyses that require connecting the two objects, such as finding the distance between two objects, R will either blow up or give you incorrect results.</p>
-<p>Reason 2: Another reason why you may need to change the CRS is when you need to correct distortions or produce maps that are “visually correct”. To illustrate this point, let’s bring in the files <em>la.city.nhgis.shp</em> and <em>la.city.tigris.shp</em>, which provide Los Angeles City boundaries downloaded from different sources - one from the package <strong>tigris</strong> and the other downloaded from the <a href="https://crd230.github.io/nhgis.html#download_shapefiles">National Historical Geographic Information System</a> (NHGIS). For your convenience, I uploaded these shapefiles into a zip file on GitHub. Set your working directory to a folder you want to work out of. Download the file and unzip it using the following code.</p>
-<pre class="r"><code>setwd(&quot;insert your pathway here&quot;)
-download.file(url = &quot;https://raw.githubusercontent.com/crd230/data/master/lab3.zip&quot;, destfile = &quot;lab3.zip&quot;)
-unzip(zipfile = &quot;lab3.zip&quot;)</code></pre>
-<p>Bring in the <strong>tigris</strong> and NHGIS boundary files using our friend <code>st_read()</code></p>
-<pre class="r"><code>la.city.tigris &lt;- st_read(&quot;lacity_tigris.shp&quot;)
-la.city.nhgis &lt;- st_read(&quot;lacity_nhgis.shp&quot;)</code></pre>
-<p>Check the CRS of both boundary files</p>
-<pre class="r"><code>st_crs(la.city.tigris)</code></pre>
-<pre><code>## Coordinate Reference System:
-##   EPSG: 4269 
-##   proj4string: &quot;+proj=longlat +datum=NAD83 +no_defs&quot;</code></pre>
-<pre class="r"><code>st_crs(la.city.nhgis)</code></pre>
-<pre><code>## Coordinate Reference System:
-##   No EPSG code
-##   proj4string: &quot;+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs&quot;</code></pre>
-<p>We find that they have different CRS. Let’s map the two boundaries side by side. I used the function <code>tmap_arrange()</code> from the <strong>tmap</strong> package to do this</p>
-<pre class="r"><code>lacity1 &lt;- tm_shape(la.city.tigris) +
-  tm_polygons() 
-lacity2 &lt;- tm_shape(la.city.nhgis) +
-  tm_polygons() 
-
-tmap_arrange(lacity1, lacity2)</code></pre>
-<p><img src="lab3_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
-<p>You see a tilt for the NHGIS boundary map on the right. That tilt is not due to our bad eyesight or anything wrong in our code. It’s due to the projection system that NHGIS uses for their shapefiles, which is Albers Equal Area (<code>aea</code>). Figure 1 shows maps of the United States by different projection systems, including Albers Equal Area (top left)</p>
-<center>
-<div class="figure">
-<img src="projections.jpg" alt="Figure 1: U.S. Projection Coordinate Systems" />
-<p class="caption">Figure 1: U.S. Projection Coordinate Systems</p>
-</div>
-</center>
-<p>You’ll see that under Albers Equal Area, California tilts. Hence, Los Angeles will tilt. In this case, AEA may be better for maps of the entire U.S. or for certain parts of the country (e.g. Midwest).</p>
-<p>To fix the tilt, let’s change the <em>la.city.nhgis</em> CRS to the <em>la.city.tigris</em> CRS, which has a PCS of <code>longlat</code>. We use the function <code>st_transform()</code> to accomplish this task. I extract the CRS of <em>la.city.tigris</em> using <code>st_crs()</code> and specify that directly into the <code>crs</code> argument.</p>
-<pre class="r"><code>la.city.nhgis.tr &lt;-st_transform(la.city.nhgis, crs = st_crs(la.city.tigris)) </code></pre>
-<p>Now, no more tilt!!</p>
-<pre class="r"><code>lacity1 &lt;- tm_shape(la.city.tigris) +
-  tm_polygons() 
-lacity2 &lt;- tm_shape(la.city.nhgis.tr) +
-  tm_polygons() 
-
-tmap_arrange(lacity1, lacity2)</code></pre>
-<p><img src="lab3_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
-<p>Reason 3: Many of R’s geometric functions that require calculating distances (e.g. distance from one point to another) or areas require a standard measure of distance/area. The spatial point data of homeless encampments are in longitude/latitude coordinates. Distance in latitude/longitude is in decimal degrees, which is not a standard measure. We can find out the units of a spatial data set by using the <code>st_crs()</code> function and calling up units as follows</p>
-<pre class="r"><code>st_crs(homeless311.sf)$units</code></pre>
-<pre><code>## NULL</code></pre>
-<pre class="r"><code>st_crs(la.city.tigris)$units</code></pre>
-<pre><code>## NULL</code></pre>
-<p>Not good. We can reproject the encampments and Los Angeles City boundaries to a CRS that handles standard distance measures such as meters or kilometers. The <a href="http://desktop.arcgis.com/en/arcmap/latest/map/projections/universal-transverse-mercator.htm">Universal Transverse Mercator</a> (UTM) coordinate system works in meters. It splits the country into zones so that you can get appropriate (non titling) maps of your specific region. The zones are shown in Figure 2</p>
-<center>
-<div class="figure">
-<img src="utm.png" alt="Figure 2: UTM Zones" />
-<p class="caption">Figure 2: UTM Zones</p>
-</div>
-</center>
-<p>Southern California looks like it’s in Zone 11. So, let’s reproject <em>la.city.tigris</em> and <em>homeless311.sf</em> to a UTM Zone 11 projection using the function <code>st_transform()</code>. We’ll need to specify an additional parameter in the CRS - the zone, which is <code>+zone=11N</code> for Los Angeles, where <code>11N</code> stands for the Northern Hemisphere (there are UTM zones in the Southern Hemisphere). You don’t need to specify the “N” as R is smart enough to know, but it’s good to specify it to be technically correct.</p>
-<pre class="r"><code>la.city.tigris.utm &lt;-st_transform(la.city.tigris, 
-                                 crs = &quot;+proj=utm +zone=11N +datum=NAD83 +ellps=GRS80&quot;) 
-
-homeless.sf.utm &lt;- st_transform(homeless311.sf, 
-                                 crs = &quot;+proj=utm +zone=11N +datum=NAD83 +ellps=GRS80&quot;) </code></pre>
-<p>Check the units</p>
-<pre class="r"><code>st_crs(la.city.tigris.utm)$units</code></pre>
-<pre><code>## [1] &quot;m&quot;</code></pre>
-<pre class="r"><code>st_crs(homeless.sf.utm)$units</code></pre>
-<pre><code>## [1] &quot;m&quot;</code></pre>
-<p>“m” means meters.</p>
-<p>Note that you cannot change the CRS if one has not already been established. For example, you cannot use the function <code>st_transform()</code> on <em>homeless311.sf</em> if you did not establish the CRS when you used <code>st_as_sf()</code> on <em>homeless311.df</em>.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="geocoding" class="section level3">
-<h3><strong>Geocoding</strong></h3>
-<p><br />
-If you have a data set of street addresses, you’ll need to convert those addresses to geographic coordinates. This process is known as geocoding. There are numerous ways to geocode in R. And there are many online services you can use (most paid, some free up to a certain limit). I cover geocoding street addresses in the mini lab located <a href="https://crd230.github.io/geocoding.html">here</a>.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
-<div id="working-with-point-data" class="section level2">
-<h2><strong>Working with point data</strong></h2>
-<p><br />
-Now we know how to spatialize point data in R. Other than mapping them, what can we do with point locations? We’ll cover three common point data operations (1) Count how many points are in each polygon; (2) Create buffers around points; and (3) Calculate distances between points</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="points-in-polygon" class="section level3">
-<h3><strong>Points in polygon</strong></h3>
-<p><br />
-One of the simplest analyses we can do with point data is to examine the distribution of points across an area. When working with neighborhoods, we can examine point distributions by summing up the number of points in each neighborhood. To get the count of homeless encampments by census tract, we need to use the function <code>aggregate()</code>, which is a part of the <strong>sf</strong> package. The code below tells R to sum up the number of points <em>homeless.sf.utm</em> in <em>la.city.tigris.utm</em> identifying each point by its unique ID “srnumber”. The argument <code>FUN</code> indicates how we want to summarize the points located in each polygon. We specify <code>length</code> for summing up the number of points.</p>
-<pre class="r"><code>la.city.tigris.utm.sum &lt;- aggregate(homeless.sf.utm[&quot;srnumber&quot;], 
-                                    by = la.city.tigris.utm, FUN = length) %&gt;%
-                          replace(is.na(.), 0)
-View(la.city.tigris.utm.sum)</code></pre>
-<p>The column <em>srnumber</em> in the resulting table indicates the number of homeless encampments in each tract. The function <code>aggregate()</code> assigns an NA value to a tract if no encampments are found in that tract. That’s why we included the command <code>replace(is.na(.), 0)</code>, which tells R to replace any NA values with a 0. Notice that <em>la.city.tigris.utm.sum</em> does not have the other variables from <em>la.city.tigris.utm</em>. We’ll have to join <em>la.city.tigris.utm.sum</em> back to <em>la.city.tigris.utm</em>. Because we’re joining two <strong>sf</strong> objects, we’ll use the function <code>st_join()</code> as we covered in <a href="https://crd230.github.io/lab2.html#merging_attribute_data">Lab 2</a>. Let’s also rename the variable <em>srnumber</em> to something more descriptive (<em>hcamps</em>)</p>
-<pre class="r"><code>la.city.tigris.utm &lt;- la.city.tigris.utm %&gt;% 
-    st_join(la.city.tigris.utm.sum, join=st_equals, left=FALSE) %&gt;%
-    rename(hcamps = srnumber)</code></pre>
-<p>We can map the count of encampments by census tract, but counts do not take into consideration exposure. In this case, tracts that are larger in size will likely have more encampments. Let’s calculate the number of encampments per area.</p>
-<p>To calculate the number of encampments per area, we’ll need to get the area of each polygon, which we do by using the function <code>st_area()</code>. The default area metric is kilometers squared, but we can use the function <code>set_units()</code> from the <strong>units</strong> package to set the unit of measure to (the U.S. friendly) miles squared <code>value = mi2</code>. Use these functions within <code>mutate()</code> to create a new column containing each tract’s area.</p>
-<pre class="r"><code>library(units)
-la.city.tigris.utm&lt;-mutate(la.city.tigris.utm,area=set_units(st_area(la.city.tigris.utm), value = mi2))</code></pre>
-<p>Then calculate the number of homeless encampments per area.</p>
-<pre class="r"><code>la.city.tigris.utm&lt;-mutate(la.city.tigris.utm,harea=hcamps/area)</code></pre>
-<p>Let’s create a choropleth map of encampments per area.</p>
-<pre class="r"><code>tm_shape(la.city.tigris.utm, unit = &quot;mi&quot;) +
-  tm_polygons(col = &quot;harea&quot;, style = &quot;quantile&quot;,palette = &quot;Reds&quot;, 
-              border.alpha = 0, title = expression(&quot;Encampments per &quot; * mi^2)) +
-  tm_scale_bar(position = c(&quot;left&quot;, &quot;bottom&quot;)) +
-  tm_style(&quot;natural&quot;, title = &quot;Homeless encampments in Los Angeles\nTracts 2017&quot;,  title.size = 0.95, frame=FALSE)</code></pre>
-<p><img src="lab3_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="point-proximity-buffers" class="section level3">
-<h3><strong>Point proximity buffers</strong></h3>
-<p><br />
-Buffer analysis is used for identifying areas surrounding geographic features. The process involves generating a circle with a radius <em>r</em> around existing geographic features. Buffer analysis is a form of distance analysis. In this case, you connect other features to the points based on whether they fall inside or outside the boundary of the buffer. Let’s detect whether homeless encampments tend to be clustered near certain types of schools. We’ll create buffers around each school and count the number of encampments located within the buffers.</p>
-<p>I included in the Zip file you downloaded earlier a point shapefile containing locations of public Elementary, Middle, and High schools. I’ve already reprojected the file into UTM Zone 11.</p>
-<pre class="r"><code>schools.utm &lt;- st_read(&quot;Schools_LAUSD.shp&quot;)</code></pre>
-<p>The first task is to create buffers of radius <em>r</em> around each school. The size of the buffer radius depends on the city you are examining and the context of your question. In this case, let’s use 150 meter buffers, which is the average size of a city block.</p>
-<p>We use the <strong>sf</strong> function <code>st_buffer()</code> to create buffers. The required arguments are your <strong>sf</strong> object and the distance. Remember that the units for UTM is meters, so specifying <code>dist = 150</code> means 150 meters.</p>
-<pre class="r"><code>sch.buff &lt;-st_buffer(schools.utm, dist = 150)
-sch.buff</code></pre>
-<p>You’ll see that <em>sch.buff</em> is a polygon object like a census tract. To be clear regarding what a buffer is, let’s extract one school, Camino Nuevo High School (ID 438), and its 150 meter buffer.</p>
-<pre class="r"><code>ex1 &lt;- filter(sch.buff, ID == &quot;438&quot;)
-ex2 &lt;- filter(schools.utm, ID == &quot;438&quot;)</code></pre>
-<p>And let’s map it onto tracts with the encampments.</p>
-<pre class="r"><code>ex.map&lt;-tm_shape(la.city.tigris.utm) +
-          tm_polygons() +
-        tm_shape(homeless.sf.utm) +
-          tm_dots(size = 0.01) +
-          tm_shape(ex1) +
-          tm_borders(col=&quot;red&quot;) +  
-        tm_shape(ex2) +
-          tm_dots(col = &quot;red&quot;) 
-tmap_mode(&quot;view&quot;)
-ex.map </code></pre>
-<p>The school we are mapping is located in the middle right of the city. If you zoom in (Figure 3), you’ll see that the school is right in the middle of the buffer. The radius of this buffer is 150 meters, and we find that there are 18 encampments located within 150 meters of the school</p>
-<center>
-<div class="figure">
-<img src="buffer.png" alt="Figure 3: 150 meter buffer" />
-<p class="caption">Figure 3: 150 meter buffer</p>
-</div>
-</center>
-<p>One operation we can do using these buffers is to count the number of encampments located within the buffers. Remember that <em>sch.buff</em> is a polygon. Counting the number of encampments inside a buffer is a points-in-polygons operation, which we already did above using the <code>aggregate()</code> function.</p>
-<pre class="r"><code>temp&lt;-aggregate(homeless.sf.utm[&quot;srnumber&quot;], sch.buff, length) %&gt;%
-                  replace(is.na(.), 0)</code></pre>
-<p>We’ll have to join the object we get from <code>aggregate()</code> back to the buffer.</p>
-<pre class="r"><code>sch.buff &lt;- sch.buff %&gt;% 
-    st_join(temp, join=st_equals, left=FALSE) %&gt;%
-    rename(hcamps = srnumber)</code></pre>
-<p>We can then use <code>summarize()</code> to find the mean number of encampments that occur within 150 meters.</p>
-<pre class="r"><code>sch.buff %&gt;%
-  summarize(mean = mean(hcamps, na.rm=TRUE))</code></pre>
-<pre><code>## Simple feature collection with 1 feature and 1 field
-## geometry type:  MULTIPOLYGON
-## dimension:      XY
-## bbox:           xmin: 347440.4 ymin: 3731259 xmax: 393248.4 ymax: 3798213
-## epsg (SRID):    NA
-## proj4string:    +proj=utm +zone=11 +ellps=GRS80 +units=m +no_defs
-##      mean                       geometry
-## 1 1.82772 MULTIPOLYGON (((379800.9 37...</code></pre>
-<p>There are on average 1.8 encampments within 150 meters of public schools in Los Angeles. What about by type of school?</p>
-<pre class="r"><code>table1 &lt;- sch.buff %&gt;%
-  group_by(MPD_DESC) %&gt;%
-  summarize(mean = mean(hcamps, na.rm=TRUE))
-st_geometry(table1) &lt;- NULL  
-table1</code></pre>
-<pre><code>## # A tibble: 3 x 2
-##   MPD_DESC           mean
-## * &lt;fct&gt;             &lt;dbl&gt;
-## 1 Elementary School  1.75
-## 2 High School        1.66
-## 3 Middle School      2.46</code></pre>
-<p>On average, Middle schools average about 2.5 homeless encampments within a 150 meter distance.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="distances-to-encampments" class="section level3">
-<h3><strong>Distances to encampments</strong></h3>
-<p><br />
-We limit ourselves a bit by capturing encampments just within a radius distance. Why not calculate the distance to all encampments and summarize that distribution? We can get descriptive statistics such as the mean or nearest distance to an encampment.</p>
-<p>To calculate the distance (in meters) from each school in <em>schools.utm</em> to each encampment <em>homeless.sf.utm</em> we use the function <code>st_distance()</code></p>
-<pre class="r"><code>school.dist&lt;-st_distance(schools.utm, homeless.sf.utm)</code></pre>
-<p>For the object <em>school.dist</em>, the rows represent the schools and the columns are the encampments You can check this by comparing dimensions</p>
-<pre class="r"><code>#number of schools is 694
-dim(schools.utm)</code></pre>
-<pre><code>## [1] 694  19</code></pre>
-<pre class="r"><code>#number of camps is 25621
-dim(homeless.sf.utm)</code></pre>
-<pre><code>## [1] 25621    32</code></pre>
-<pre class="r"><code>#694 by 25621
-dim(school.dist)</code></pre>
-<pre><code>## [1]   694 25621</code></pre>
-<p>So, we have a distance matrix. That is we have each school’s distance to each encampment. What is the distance to the <em>closest</em> encampment. We can use the function <code>rowMins()</code> in the package <strong>matrixStats</strong> to accomplish this.</p>
-<p>The function <code>rowMins()</code> does exactly what you think it would do - get the minimum value across columns for each row. For <em>school.dist</em>, this means we get the minimum distance to an encampment for each neighborhood. Run this function within <code>mutate()</code> to save the resulting value in our main data set <em>schools.utm</em></p>
-<pre class="r"><code>schools.utm &lt;- mutate(schools.utm, hcampmin = rowMins(school.dist))</code></pre>
-<p>We can then use <code>summarize()</code> to find the mean minimum distance to encampments.</p>
-<pre class="r"><code>schools.utm %&gt;%
-  summarize(meanmin = mean(hcampmin, na.rm=TRUE))</code></pre>
-<pre><code>## Simple feature collection with 1 feature and 1 field
-## geometry type:  MULTIPOINT
-## dimension:      XY
-## bbox:           xmin: 347590.4 ymin: 3731409 xmax: 393098.4 ymax: 3798063
-## epsg (SRID):    NA
-## proj4string:    +proj=utm +zone=11 +ellps=GRS80 +units=m +no_defs
-##   meanmin                       geometry
-## 1 262.913 MULTIPOINT (347590.4 378621...</code></pre>
-<p>What about by type of school?</p>
-<pre class="r"><code>table2 &lt;- schools.utm %&gt;%
-    group_by(MPD_DESC) %&gt;%
-  summarize(meanmin = mean(hcampmin))
-st_geometry(table2) &lt;- NULL  
-table2</code></pre>
-<pre><code>## # A tibble: 3 x 2
-##   MPD_DESC          meanmin
-## * &lt;fct&gt;               &lt;dbl&gt;
-## 1 Elementary School    274.
-## 2 High School          239.
-## 3 Middle School        242.</code></pre>
-<p>The closest reported homeless encampment to a High school in Los Angeles in 2017 is on average 239 meters. Wow! Homeless encampments is an issue in Los Angeles (and many large cities out West). For example, check this <a href="https://www.latimes.com/local/lanow/la-me-ln-tents-camps-lawsuits-20181010-story.html">article</a> out.</p>
-<hr />
-<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
-</div>
-</div>
 
 
 
@@ -770,6 +470,54 @@ $(document).ready(function () {
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 

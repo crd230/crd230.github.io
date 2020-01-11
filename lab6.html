@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -74,9 +74,7 @@ h6 {
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -90,7 +88,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -100,6 +97,9 @@ img {
 }
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -115,7 +115,6 @@ body {
   padding-top: 56px;
   margin-top: -56px;
 }
-
 .section h2 {
   padding-top: 56px;
   margin-top: -56px;
@@ -135,6 +134,43 @@ body {
 .section h6 {
   padding-top: 56px;
   margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -156,55 +192,69 @@ $(document).ready(function () {
 });
 </script>
 
-
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-</script>
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
 
 <!-- code folding -->
 <style type="text/css">
 .code-folding-btn { margin-bottom: 4px; }
 </style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
-
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -218,6 +268,12 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -253,8 +309,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -263,6 +317,16 @@ div.tocify {
 
 
 </style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
 <div class="row-fluid">
@@ -336,45 +400,6 @@ div.tocify {
     </li>
   </ul>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Mini Labs
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="nhgis.html">Download data from NHGIS</a>
-    </li>
-    <li>
-      <a href="missingdata.html">Dealing with missing data</a>
-    </li>
-    <li>
-      <a href="geocoding.html">Geocoding</a>
-    </li>
-    <li>
-      <a href="gwr.html">Geographically Weighted Regression</a>
-    </li>
-    <li>
-      <a href="qgis.html">Introduction to QGIS</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Other
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="ndata.html">Data Sources</a>
-    </li>
-    <li>
-      <a href="censusgeography.html">Census Geographies</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -396,15 +421,15 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Lab 6: Spatial Regression I</h1>
-<h3 class="subtitle"><em><h4 style="font-style:normal">
+<h3 class="subtitle"><h4 style="font-style:normal">
 CRD 298 - Spatial Methods in Community Research
-</h4></em></h3>
-<h4 class="author"><em><h4 style="font-style:normal">
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
 Professor Noli Brazil
-</h4></em></h4>
-<h4 class="date"><em><h4 style="font-style:normal">
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
 February 13, 2019
-</h4></em></h4>
+</h4></h4>
 
 </div>
 
@@ -426,1045 +451,6 @@ h1.title {
 </style>
 <p><br />
 </p>
-<p>The methods we have been covering up to this point have been descriptive in nature. In this lab, you will be moving from the descriptive to the inferential side of spatial data analysis by learning how to run spatial regression models in R. We focus on how to model spatial dependence both as a nuisance to control for and as a process of theoretical interest. The objectives of the guide are as follows</p>
-<ol style="list-style-type: decimal">
-<li>Learn how to run a linear regression model</li>
-<li>Learn the process for detecting spatial autocorrelation</li>
-<li>Learn how to run a spatial lag model</li>
-<li>Learn how to run a spatial error model</li>
-</ol>
-<p>To help us accomplish these learning objectives, we will examine the association between neighborhood characteristics and violent crime rates (per Federal Bureau of Investigation guidelines, violent crimes are murder and nonnegligent manslaughter, rape, robbery, and aggravated assault) in the City of Seattle, WA.</p>
-<p>This lab guide assumes working knowledge of basic concepts in linear regression modelling. If you need a brushing up on linear regression modelling concepts and terms, please see this week’s handout and Chapters 3 and 4 in Gelman and Hill.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="load-necessary-packages" class="section level2">
-<h2><strong>Load necessary packages</strong></h2>
-<p><br />
-We’ll be introducing the following packages in this lab</p>
-<pre class="r"><code>install.packages(&quot;broom&quot;)
-install.packages(&quot;corrplot&quot;)
-install.packages(&quot;car&quot;)
-install.packages(&quot;olsrr&quot;)
-install.packages(&quot;stargazer&quot;)
-install.packages(&quot;knitr&quot;)</code></pre>
-<p>You may have already installed <strong>knitr</strong> in the past if you’ve been using the function <code>kable()</code> to create presentation ready tables in your html documents.</p>
-<p>Load in the following packages, all of which we’ve covered in previous labs</p>
-<pre class="r"><code>library(sf)
-library(tidyverse)
-library(sp)
-library(tmap)
-library(spdep)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="bring-in-the-data" class="section level2">
-<h2><strong>Bring in the data</strong></h2>
-<p><br />
-We will be using the shape file seattle_census_tracts_2010.shp. This file contains violent crime rates between 2014 and 2017 by census tract. It also contains demographic and socioeconomic data from the 2012-16 American Community Survey. The record layout for the shapefile’s attribute table is located <a href="https://raw.githubusercontent.com/crd230/data/master/seattle_record_layout.txt">here</a>.</p>
-<p>I zipped up the files associated with the shapefile onto Github. Download the file, unzip it, and bring it into R using the following code.</p>
-<pre class="r"><code>setwd(&quot;insert your pathway here&quot;)
-download.file(url = &quot;https://raw.githubusercontent.com/crd230/data/master/seattle_census_tracts_2010.zip&quot;, destfile = &quot;seattle_census_tracts_2010.zip&quot;)
-unzip(zipfile = &quot;seattle_census_tracts_2010.zip&quot;)
-
-sea.tracts &lt;- st_read(&quot;seattle_census_tracts_2010.shp&quot;)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="standard-linear-regression" class="section level2">
-<h2><strong>Standard linear regression</strong></h2>
-<p><br />
-We’re interested in examining the neighborhood characteristics associated with violent crime rates in Seattle. What explanatory variables should we include? An important determining factor is to make sure we do not pick variables that are highly correlated. In regression, this is known as multicollinearity, and is a problem because the partial regression coefficient for any collinear variable is highly unstable.</p>
-<p>One way to detect multicollinearity is to view a correlation matrix. Let’s produce a correlation matrix of the candidate variables using the function <code>cor()</code>. The function does not directly take in spatial objects. We use the function <code>st_geometry()</code> in the following way to make the spatial data set not spatial.</p>
-<pre class="r"><code>sea.tracts.df &lt;- sea.tracts
-st_geometry(sea.tracts.df) &lt;- NULL</code></pre>
-<p>The way to read the above is code is that <code>st_geometry()</code> calls up the geometry of <em>sea.tracts.df</em>, which we then set to NULL. This removes the geometry and makes <em>sea.tracts.df</em> a non-spatial data frame.</p>
-<pre class="r"><code>class(sea.tracts.df)</code></pre>
-<p>We then select the variables we want to calculate correlations for and feed the resulting pared down data frame into the <code>cor()</code> function.</p>
-<pre class="r"><code>corrMat &lt;- sea.tracts.df %&gt;% 
-            select(ppov:pfhh, vcmrt1417,popd) %&gt;%
-            cor()
-corrMat</code></pre>
-<pre><code>##                  ppov         tpop      mhhinc     pnhwhite    pnhblack
-## ppov       1.00000000  0.041576357 -0.72997644 -0.576247612  0.42449864
-## tpop       0.04157636  1.000000000 -0.02367974 -0.031709181  0.02823612
-## mhhinc    -0.72997644 -0.023679744  1.00000000  0.645176496 -0.48295953
-## pnhwhite  -0.57624761 -0.031709181  0.64517650  1.000000000 -0.81281986
-## pnhblack   0.42449864  0.028236119 -0.48295953 -0.812819855  1.00000000
-## pnhasian   0.56619989  0.037426912 -0.52348530 -0.831337854  0.50564332
-## phisp      0.25789639  0.032021981 -0.43908005 -0.514871654  0.30639225
-## unemp      0.68030188  0.004486756 -0.50780424 -0.534437251  0.36104147
-## pm1834     0.46818852  0.118217856 -0.44579424 -0.063187369 -0.12245627
-## div        0.56374118  0.039985830 -0.69553859 -0.921135459  0.74842294
-## pfb        0.56982293  0.064708411 -0.58719797 -0.895337638  0.66716581
-## mob        0.50115587  0.202842669 -0.41735437  0.008336732 -0.13048745
-## pocc      -0.22457586  0.110261400  0.21139029  0.178339014 -0.13365671
-## pfhh       0.21496873  0.008354680 -0.30230602 -0.688882452  0.69439479
-## vcmrt1417  0.23841814 -0.102752503 -0.26027001 -0.183984231  0.14911326
-## popd       0.03195487  0.006678511 -0.02550528 -0.018556868 -0.02428409
-##              pnhasian       phisp        unemp      pm1834         div
-## ppov       0.56619989  0.25789639  0.680301876  0.46818852  0.56374118
-## tpop       0.03742691  0.03202198  0.004486756  0.11821786  0.03998583
-## mhhinc    -0.52348530 -0.43908005 -0.507804239 -0.44579424 -0.69553859
-## pnhwhite  -0.83133785 -0.51487165 -0.534437251 -0.06318737 -0.92113546
-## pnhblack   0.50564332  0.30639225  0.361041466 -0.12245627  0.74842294
-## pnhasian   1.00000000  0.15111631  0.533306092  0.19957684  0.67152942
-## phisp      0.15111631  1.00000000  0.212272193  0.02473400  0.59918752
-## unemp      0.53330609  0.21227219  1.000000000  0.25846620  0.50761717
-## pm1834     0.19957684  0.02473400  0.258466199  1.00000000  0.17860792
-## div        0.67152942  0.59918752  0.507617168  0.17860792  1.00000000
-## pfb        0.88104358  0.38060593  0.514856320  0.14405408  0.79014331
-## mob        0.11743552 -0.02980207  0.250659072  0.83821530  0.14002677
-## pocc      -0.13373592 -0.14789776 -0.206689302 -0.13451408 -0.22661912
-## pfhh       0.39333848  0.47039787  0.250799137 -0.36406424  0.59924748
-## vcmrt1417  0.13309873  0.10089597  0.140269432  0.16687085  0.25166012
-## popd      -0.04031585  0.08747867  0.017220958 -0.05674208  0.06397972
-##                   pfb          mob         pocc         pfhh   vcmrt1417
-## ppov       0.56982293  0.501155867 -0.224575856  0.214968733  0.23841814
-## tpop       0.06470841  0.202842669  0.110261400  0.008354680 -0.10275250
-## mhhinc    -0.58719797 -0.417354367  0.211390292 -0.302306017 -0.26027001
-## pnhwhite  -0.89533764  0.008336732  0.178339014 -0.688882452 -0.18398423
-## pnhblack   0.66716581 -0.130487446 -0.133656714  0.694394789  0.14911326
-## pnhasian   0.88104358  0.117435520 -0.133735918  0.393338485  0.13309873
-## phisp      0.38060593 -0.029802065 -0.147897759  0.470397872  0.10089597
-## unemp      0.51485632  0.250659072 -0.206689302  0.250799137  0.14026943
-## pm1834     0.14405408  0.838215302 -0.134514083 -0.364064241  0.16687085
-## div        0.79014331  0.140026775 -0.226619124  0.599247483  0.25166012
-## pfb        1.00000000  0.101751651 -0.208109912  0.498920065  0.21374976
-## mob        0.10175165  1.000000000 -0.231309533 -0.411501184  0.17814429
-## pocc      -0.20810991 -0.231309533  1.000000000  0.003197837 -0.41233114
-## pfhh       0.49892006 -0.411501184  0.003197837  1.000000000 -0.07413971
-## vcmrt1417  0.21374976  0.178144294 -0.412331143 -0.074139713  1.00000000
-## popd      -0.04079050 -0.083710869 -0.123616410 -0.011969695 -0.05113622
-##                   popd
-## ppov       0.031954873
-## tpop       0.006678511
-## mhhinc    -0.025505275
-## pnhwhite  -0.018556868
-## pnhblack  -0.024284086
-## pnhasian  -0.040315852
-## phisp      0.087478665
-## unemp      0.017220958
-## pm1834    -0.056742082
-## div        0.063979722
-## pfb       -0.040790497
-## mob       -0.083710869
-## pocc      -0.123616410
-## pfhh      -0.011969695
-## vcmrt1417 -0.051136222
-## popd       1.000000000</code></pre>
-<p>That’s a lot of numbers. Let’s visualize this matrix using a correlation plot. We do this using the function <code>corrplot()</code> in the the <em>corrplot</em> package, which we need to load in.</p>
-<pre class="r"><code>library(corrplot)</code></pre>
-<pre class="r"><code>corrplot(corrMat, method=&quot;color&quot;)</code></pre>
-<p><img src="lab6_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
-<p>We find a lot of highly correlated variables. But, which ones do we choose? Let theory and prior empirical research guide you. Fortunately for us, there is substantive theoretical and empirical work discussing the structural neighborhood characteristics associated with the prevalence of crime. Let’s draw from this literature (for example, see <a href="https://academic.oup.com/socpro/article-abstract/57/2/205/1655557">Hipp (2010)</a> and <a href="http://science.sciencemag.org/content/277/5328/918?casa_token=FRkzNHg3zoMAAAAA:SGgF3R83W9KdKvwJV90lo54saJb56fIEvvlqq5Jt2oBNT5cltBz0pnIenQbNM3zmYmPwo3019h5MmW0">Sampson et al. (1997)</a>) to select the variables to include in the explanatory model.</p>
-<p>Criminological studies typically incorporate measures of concentrated disadvantage, residential mobility, immigrant concentration, levels of racial/ethnic heterogeneity, and aspects of the built environment. How do we measure these concepts? We covered concentrated disadvantage in Week 4 (% of households on public assistance, percent poverty, unemployment rate, percent of female-headed households, percent non-Hispanic black, and percent of residents under 18 years old). Immigrant concentration can be measured by percent Hispanic and percent foreign-born. Following the methods used in <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-9125.2001.tb00932.x">Morenoff et al. (2001)</a>, we will standardize each of the variables, sum the resulting z-scores, and then divide by the number of variables in order to construct a scale of concentrated disadvantage and immigrant concentration. This produces a composite measure that evenly weights each of the original variables. We can do this using the following code, which follows closely the code we used when creating opportunity indices in <a href="https://crd230.github.io/lab4.html">Lab 4</a>.</p>
-<pre class="r"><code>sea.tracts.std &lt;-sea.tracts.df %&gt;%
-  select(GEOID10, ppov, unemp, pnhblack, pund18, pwelfare, pfb, phisp) %&gt;%
-  gather(variable, value, -c(GEOID10)) %&gt;%
-  group_by(variable) %&gt;%
-  mutate(mean = mean(value), sd = sd(value), z = (value-mean)/sd) %&gt;%
-  select(-(c(value, mean, sd))) %&gt;%
-  spread(variable, z) %&gt;%
-  mutate(concd = (ppov+unemp+pnhblack+pund18+pwelfare)/5, immc = (pfb+phisp)/2) %&gt;%
-  select(GEOID10, concd, immc)
-
-sea.tracts &lt;- left_join(sea.tracts, sea.tracts.std, by = &quot;GEOID10&quot;)</code></pre>
-<p>Racial/ethnic heterogeneity is measured by the Herfindahl index (see, for example, page 666 in this <a href="https://journals.sagepub.com/doi/10.1177/000312240707200501">article</a>). We also include the variables <em>mob</em> <em>pocc</em>, and <em>popd</em> in the model. Regress <em>lvcmrt1417</em> (log average yearly violent crime rates 2014-2017) on these variables using the <code>lm()</code> function.</p>
-<pre class="r"><code>fit.ols &lt;- lm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div, 
-     data = sea.tracts)</code></pre>
-<p>The first argument in <code>lm()</code> takes on a formula object. A formula is indicated by a tilde. The dependent variable <em>lvcmrt1417</em> comes first, followed by the tilde <code>~</code>, and then the independent variables separated by <code>+</code>. The function <code>lm()</code> fits linear models. You can run generalized linear models, which allows you to run different types of regression models (e.g. logit) including the basic linear model you run using <code>lm()</code>, using the function <code>glm()</code>.</p>
-<p>We can look at a summary of results using the <code>summary()</code> function</p>
-<pre class="r"><code>summary(fit.ols)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + popd + 
-##     div, data = sea.tracts)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -5.8710 -0.4994  0.3924  1.1388  3.4698 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)   
-## (Intercept)  3.8351930  5.3963313   0.711  0.47851   
-## concd       -0.0683434  0.3932643  -0.174  0.86230   
-## mob          4.4693388  1.5950932   2.802  0.00584 **
-## pocc        -0.2609372  5.5270811  -0.047  0.96242   
-## immc         0.0507213  0.3649737   0.139  0.88968   
-## popd        -0.0015659  0.0005553  -2.820  0.00554 **
-## div          1.4279538  2.0600280   0.693  0.48941   
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 1.927 on 133 degrees of freedom
-## Multiple R-squared:  0.1436, Adjusted R-squared:  0.105 
-## F-statistic: 3.717 on 6 and 133 DF,  p-value: 0.001893</code></pre>
-<p>We can make the results look “tidy” by using the function <code>tidy()</code> in the <em>broom</em> package</p>
-<pre class="r"><code>library(broom)
-tidy(fit.ols)</code></pre>
-<pre><code>## # A tibble: 7 x 5
-##   term        estimate std.error statistic p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)  3.84     5.40        0.711  0.479  
-## 2 concd       -0.0683   0.393      -0.174  0.862  
-## 3 mob          4.47     1.60        2.80   0.00584
-## 4 pocc        -0.261    5.53       -0.0472 0.962  
-## 5 immc         0.0507   0.365       0.139  0.890  
-## 6 popd        -0.00157  0.000555   -2.82   0.00554
-## 7 div          1.43     2.06        0.693  0.489</code></pre>
-<p>It appears that population density decreases crime - Jane Jacobs’ <a href="https://www.citylab.com/equity/2013/07/new-way-understanding-eyes-street/6276/">more eyes on the street</a> - whereas residential mobility increases crime.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="diagnostic-tests" class="section level3">
-<h3><strong>Diagnostic tests</strong></h3>
-<p><br />
-R has some useful commands for running diagnostics to see if our regression model has some problems, specifically if it’s breaking any of the OLS standard assumptions. First, we can verify whether multicollinearity is still a problem by calculating <a href="https://en.wikipedia.org/wiki/Variance_inflation_factor">Variance Inflation Factors (VIF)</a>. The higher a variable’s VIF, the more collinear it is with one or more variables in the model. Use the <code>vif()</code> function in the <em>car</em> package</p>
-<pre class="r"><code>library(car)</code></pre>
-<pre class="r"><code>vif(fit.ols)</code></pre>
-<pre><code>##    concd      mob     pocc     immc     popd      div 
-## 2.557800 1.177415 1.130534 3.441351 1.041359 4.777150</code></pre>
-<p>A variable with a VIF generally above 10 is considered to be too high. Looks like were good! yay.</p>
-<p>One assumption of linear regression is that errors are normally distributed. We can visually inspect for violations of this assumption through a quantile-quantile (Q-Q) plot, which plots the quantile of the residuals against the expected quantile of the standard normal distribution.</p>
-<pre class="r"><code>#QQ plot
-qqPlot(fit.ols)</code></pre>
-<p><img src="lab6_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
-<pre><code>## [1]  1 28</code></pre>
-<p>The above figure is a quantile-comparison plot, graphing for each observation its <code>fit.ols</code> model residual on the y axis and the corresponding quantile in the t-distribution on the x axis. The dashed lines indicate 95% confidence intervals calculated under the assumption that the errors are normally distributed. If any observations fall outside this range, this is an indication that the normality assumption has been violated.</p>
-<p>The function <code>shapiro.test()</code> runs the <a href="https://en.wikipedia.org/wiki/Shapiro%E2%80%93Wilk_testhttps://en.wikipedia.org/wiki/Shapiro%E2%80%93Wilk_test">Shapiro-Wilk Test</a>, a formal test of normality</p>
-<pre class="r"><code>shapiro.test(resid(fit.ols))</code></pre>
-<pre><code>## 
-##  Shapiro-Wilk normality test
-## 
-## data:  resid(fit.ols)
-## W = 0.86162, p-value = 4.029e-10</code></pre>
-<p>The function <code>resid()</code> extracts the residuals (Predicted Y minus Actual Y) from the linear regression model saved in <em>fit.ols</em>.</p>
-<p>Want more tests of normality?There is the <a href="https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test">Kolmogorov-Smirnov test</a></p>
-<pre class="r"><code>ks.test(resid(fit.ols), y  = pnorm)</code></pre>
-<pre><code>## 
-##  One-sample Kolmogorov-Smirnov test
-## 
-## data:  resid(fit.ols)
-## D = 0.17707, p-value = 0.0003078
-## alternative hypothesis: two-sided</code></pre>
-<p>where <code>y = pnorm</code> specifies the null distribution, in this case normal. What does the Q-Q plot and the tests for normality suggest?</p>
-<p>Another assumption is that errors are homeskedastic - that is the variance of residuals are constant. You can plot the residuals to explore the presence of heteroskedasticity. If we see the spread of the points narrow or widen from left to right, heteroskedasticity is present.</p>
-<pre class="r"><code>#plot residuals
-plot(resid(fit.ols))</code></pre>
-<p><img src="lab6_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
-<p>There are formal statistical tests to check for heteroscedasticity. One such test is the <a href="https://en.wikipedia.org/wiki/Breusch%E2%80%93Pagan_test">Breusch-Pagan</a> test, which is located in the <strong>lmtest</strong> package.</p>
-<pre class="r"><code>library(lmtest)
-bptest(fit.ols)</code></pre>
-<pre><code>## 
-##  studentized Breusch-Pagan test
-## 
-## data:  fit.ols
-## BP = 18.069, df = 6, p-value = 0.006062</code></pre>
-<p>What did you find?</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
-<div id="exploratory-spatial-data-analysis" class="section level2">
-<h2><strong>Exploratory spatial data analysis</strong></h2>
-<p><br />
-The above sections go through the steps conducted in non spatial regression analysis. The focus of this lab, however, is to account for spatial dependence in the error term and the dependent variable. Before doing any kind of spatial modelling, you should conduct an Exploratory Spatial Data Analysis (ESDA) to gain an understanding of how your data are spatially structured.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="map-your-data" class="section level3">
-<h3><strong>Map your data</strong></h3>
-<p><br />
-The first step in ESDA is to map your dependent variable. Map the log average violent crime rate per 100,000 residents.</p>
-<pre class="r"><code>tm_shape(sea.tracts, unit = &quot;mi&quot;) +
-  tm_polygons(col = &quot;lvcmrt1417&quot;, style = &quot;quantile&quot;,palette = &quot;Reds&quot;, 
-              border.alpha = 0, title = &quot;&quot;) +
-  tm_scale_bar(breaks = c(0, 1, 2), size = 1, position = c(&quot;left&quot;, &quot;bottom&quot;)) +
-  tm_compass(type = &quot;4star&quot;, position = c(&quot;left&quot;, &quot;top&quot;)) + 
-  tm_layout(main.title = &quot;Log violent crime rates in Seattle
-            Tracts&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
-<p><img src="lab6_files/figure-html/unnamed-chunk-21-1.png" /><!-- --></p>
-<p>Next, you’ll want to map the residuals from your regression model. To extract the residuals from <em>fit.ols</em>, use the <code>resid()</code> function. Save it back into <em>sea.tracts</em>.</p>
-<pre class="r"><code>sea.tracts &lt;- mutate(sea.tracts, olsresid = resid(fit.ols))</code></pre>
-<p>Plot it</p>
-<pre class="r"><code>tm_shape(sea.tracts, unit = &quot;mi&quot;) +
-  tm_polygons(col = &quot;olsresid&quot;, style = &quot;quantile&quot;,palette = &quot;Reds&quot;, 
-              border.alpha = 0, title = &quot;&quot;) +
-  tm_scale_bar(breaks = c(0, 1, 2), size = 1, position = c(&quot;left&quot;, &quot;bottom&quot;)) +
-  tm_compass(type = &quot;4star&quot;, position = c(&quot;left&quot;, &quot;top&quot;)) + 
-  tm_layout(main.title = &quot;Residuals from linear regression in Seattle
-            Tracts&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
-<p><img src="lab6_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="global-morans-i" class="section level3">
-<h3><strong>Global Moran’s I</strong></h3>
-<p><br />
-There appears to be evidence of clustering from the exploratory maps. What does our buddy the Moran’s I tell us? First, we need to convert <em>sea.tracts</em> to an <strong>sp</strong> object.</p>
-<pre class="r"><code>sea.tracts.sp &lt;- as(sea.tracts, &quot;Spatial&quot;)</code></pre>
-<p>Then create a neighbor object and its associated spatial weights matrix. Let’s use the standard Queen contiguity.</p>
-<pre class="r"><code>seab&lt;-poly2nb(sea.tracts.sp, queen=T)
-seaw&lt;-nb2listw(seab, style=&quot;W&quot;, zero.policy = TRUE)</code></pre>
-<p>Examine the Moran scatterplot.</p>
-<pre class="r"><code>moran.plot(sea.tracts.sp$lvcmrt1417, listw=seaw, xlab=&quot;Standardized Log Violent Crime Rate&quot;, ylab=&quot;Standardized Lagged Log Viiolent Crime Rate&quot;,
-main=c(&quot;Moran Scatterplot for Log Violent Crime Rate&quot;, &quot;in Seatte&quot;) )</code></pre>
-<p><img src="lab6_files/figure-html/unnamed-chunk-26-1.png" /><!-- --></p>
-<p>Finally, the Global Moran’s I</p>
-<pre class="r"><code>moran.mc(sea.tracts.sp$lvcmrt1417, seaw, nsim=999)</code></pre>
-<pre><code>## 
-##  Monte-Carlo simulation of Moran I
-## 
-## data:  sea.tracts.sp$lvcmrt1417 
-## weights: seaw  
-## number of simulations + 1: 1000 
-## 
-## statistic = 0.37384, observed rank = 1000, p-value = 0.001
-## alternative hypothesis: greater</code></pre>
-<p>Repeat for the residuals using the <code>lm.morantest()</code> function</p>
-<pre class="r"><code>lm.morantest(fit.ols, seaw)</code></pre>
-<pre><code>## 
-##  Global Moran I for regression residuals
-## 
-## data:  
-## model: lm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + popd
-## + div, data = sea.tracts)
-## weights: seaw
-## 
-## Moran I statistic standard deviate = 5.5829, p-value = 1.183e-08
-## alternative hypothesis: greater
-## sample estimates:
-## Observed Moran I      Expectation         Variance 
-##      0.267708587     -0.019089365      0.002638935</code></pre>
-<p>You should use other spatial weight matrices to test the robustness of your ESDA results. For example, do you get similar results when using a 3-nearest neighbor definition? What about a 2000 meter distance based matrix? How about a 2000 meter distance based matrix with inverse distance weights?</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
-<div id="spatial-lag-model" class="section level2">
-<h2><strong>Spatial lag model</strong></h2>
-<p><br />
-Based on the exploratory mapping, Moran scatterplot, and the Moran’s I, there appears to be spatial autocorrelation in the dependent variable. This means that if there is a spatial lag process going on and we fit an OLS model our coefficients will be biased and inefficient. That is, the coefficient size and sign are not close to their true value and its standard errors are underestimated. This means trouble, big trouble, real big trouble.</p>
-<p>A spatial lag model can be estimated in R using the command <code>lagsarlm()</code>, which is in the <strong>spdep</strong> package. Let’s go with a Queen contiguity spatial weights matrix. One potential motivation for using Queen contiguity is that the city is physically separated by a body of water. Plotting the Queen contiguity neighborhood connections, we find no connections across Lake Union going west to Puget Sound and east to Lake Washington because the neighborhoods are not physically connected (or they are but only via bridges).</p>
-<pre class="r"><code>sea.coords &lt;- coordinates(sea.tracts.sp)
-plot(sea.tracts.sp, border = &quot;grey60&quot;)
-plot(seaw, coords = sea.coords, add=T, col=2)</code></pre>
-<p><img src="lab6_files/figure-html/unnamed-chunk-30-1.png" /><!-- --></p>
-<p>If we use a 2000 m distance band, we get connections, as seen in the following map.</p>
-<p><img src="lab6_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
-<p>Some have argued that physical barriers like highways and lakes create natural neighborhood boundaries <a href="https://journals.sagepub.com/doi/abs/10.1177/2399808318766067">(Kramer 2018)</a>. This is an example of how one should think very carefully about how to define neighbors in a spatial analysis. Are those neighborhoods across Lake Union “connected”?</p>
-<p>Let’s fit the spatial lag model</p>
-<pre class="r"><code>fit.lag&lt;-lagsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
-     data = sea.tracts, listw = seaw) 
-summary(fit.lag)</code></pre>
-<pre><code>## 
-## Call:lagsarlm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + popd + 
-##     div + pnhblack, data = sea.tracts, listw = seaw)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -4.83726 -0.55279  0.30206  0.97785  3.73405 
-## 
-## Type: lag 
-## Coefficients: (asymptotic standard errors) 
-##                Estimate  Std. Error z value Pr(&gt;|z|)
-## (Intercept)  1.00383088  4.62917264  0.2168  0.82833
-## concd       -0.07542595  0.40688686 -0.1854  0.85294
-## mob          3.17302815  1.45574071  2.1797  0.02928
-## pocc         0.42652900  4.72143846  0.0903  0.92802
-## immc         0.16953408  0.32309875  0.5247  0.59978
-## popd        -0.00066296  0.00048075 -1.3790  0.16789
-## div          0.19110001  1.98958374  0.0961  0.92348
-## pnhblack     0.84348609  3.19232138  0.2642  0.79161
-## 
-## Rho: 0.55191, LR test value: 27.277, p-value: 1.7628e-07
-## Asymptotic standard error: 0.086442
-##     z-value: 6.3848, p-value: 1.716e-10
-## Wald statistic: 40.766, p-value: 1.716e-10
-## 
-## Log likelihood: -273.1829 for lag model
-## ML residual variance (sigma squared): 2.6973, (sigma: 1.6424)
-## Number of observations: 140 
-## Number of parameters estimated: 10 
-## AIC: 566.37, (AIC for lm: 591.64)
-## LM test for residual autocorrelation
-## test value: 2.1681, p-value: 0.1409</code></pre>
-<p>The only real difference between the code for <code>lm()</code> and <code>lagsarlm()</code> is the argument <code>listw</code>, which you use to specify the spatial weights matrix.</p>
-<p>Let’s calculate the Moran’s I on the model’s residuals</p>
-<pre class="r"><code>moran.mc(resid(fit.lag), seaw, nsim=999)</code></pre>
-<pre><code>## 
-##  Monte-Carlo simulation of Moran I
-## 
-## data:  resid(fit.lag) 
-## weights: seaw  
-## number of simulations + 1: 1000 
-## 
-## statistic = -0.027722, observed rank = 374, p-value = 0.626
-## alternative hypothesis: greater</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="spatial-error-model" class="section level2">
-<h2><strong>Spatial error model</strong></h2>
-<p><br />
-The spatial error model incorporates spatial dependence in the errors. If there is a spatial error process going on and we fit an OLS model our coefficients will be unbiased but inefficient. That is, the coefficient size and sign are asymptotically correct but its standard errors are underestimated.</p>
-<p>We can estimate a spatial error model in R using the command <code>errorsarlm()</code> also in the <strong>spdep</strong> package.</p>
-<pre class="r"><code>fit.err&lt;-errorsarlm(lvcmrt1417 ~ concd + mob + pocc + immc  + popd + div +pnhblack, 
-     data = sea.tracts, listw = seaw) 
-summary(fit.err)</code></pre>
-<pre><code>## 
-## Call:errorsarlm(formula = lvcmrt1417 ~ concd + mob + pocc + immc + 
-##     popd + div + pnhblack, data = sea.tracts, listw = seaw)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -5.05103 -0.53563  0.23645  1.06351  3.52178 
-## 
-## Type: error 
-## Coefficients: (asymptotic standard errors) 
-##                Estimate  Std. Error z value Pr(&gt;|z|)
-## (Intercept)  4.01348889  4.37971215  0.9164   0.3595
-## concd        0.08451506  0.45104334  0.1874   0.8514
-## mob          2.48138004  1.83221252  1.3543   0.1756
-## pocc         0.11809722  4.58373082  0.0258   0.9794
-## immc         0.31587004  0.33957270  0.9302   0.3523
-## popd        -0.00056011  0.00047213 -1.1863   0.2355
-## div          0.80469055  2.16560090  0.3716   0.7102
-## pnhblack    -0.77447714  3.45762071 -0.2240   0.8228
-## 
-## Lambda: 0.59098, LR test value: 25.823, p-value: 3.7412e-07
-## Asymptotic standard error: 0.083722
-##     z-value: 7.0588, p-value: 1.6791e-12
-## Wald statistic: 49.827, p-value: 1.679e-12
-## 
-## Log likelihood: -273.9097 for error model
-## ML residual variance (sigma squared): 2.6911, (sigma: 1.6405)
-## Number of observations: 140 
-## Number of parameters estimated: 10 
-## AIC: 567.82, (AIC for lm: 591.64)</code></pre>
-<p>And the Moran’s I of the residuals</p>
-<pre class="r"><code>moran.mc(resid(fit.err), seaw, nsim=999)</code></pre>
-<pre><code>## 
-##  Monte-Carlo simulation of Moran I
-## 
-## data:  resid(fit.err) 
-## weights: seaw  
-## number of simulations + 1: 1000 
-## 
-## statistic = -0.020788, observed rank = 416, p-value = 0.584
-## alternative hypothesis: greater</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="presenting-your-results" class="section level2">
-<h2><strong>Presenting your results</strong></h2>
-<p><br />
-An organized table of results is an essential component not just in academic papers, but in any professional report or presentation. Up till this point, we’ve been reporting results by simply printing objects, like the following</p>
-<pre class="r"><code>fit.ols</code></pre>
-<p>We used the function <code>tidy()</code> above to create a tibble of modelling results. We can make these results prettier by using a couple of functions for making nice tables in R. First, there is the <code>kable()</code> function from the <strong>knitr</strong> package.</p>
-<pre class="r"><code>library(knitr)</code></pre>
-<pre class="r"><code>kable(tidy(fit.ols))</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">3.8351930</td>
-<td align="right">5.3963313</td>
-<td align="right">0.7107038</td>
-<td align="right">0.4785123</td>
-</tr>
-<tr class="even">
-<td align="left">concd</td>
-<td align="right">-0.0683434</td>
-<td align="right">0.3932643</td>
-<td align="right">-0.1737850</td>
-<td align="right">0.8622986</td>
-</tr>
-<tr class="odd">
-<td align="left">mob</td>
-<td align="right">4.4693388</td>
-<td align="right">1.5950932</td>
-<td align="right">2.8019296</td>
-<td align="right">0.0058389</td>
-</tr>
-<tr class="even">
-<td align="left">pocc</td>
-<td align="right">-0.2609372</td>
-<td align="right">5.5270811</td>
-<td align="right">-0.0472107</td>
-<td align="right">0.9624161</td>
-</tr>
-<tr class="odd">
-<td align="left">immc</td>
-<td align="right">0.0507213</td>
-<td align="right">0.3649737</td>
-<td align="right">0.1389724</td>
-<td align="right">0.8896821</td>
-</tr>
-<tr class="even">
-<td align="left">popd</td>
-<td align="right">-0.0015659</td>
-<td align="right">0.0005553</td>
-<td align="right">-2.8199563</td>
-<td align="right">0.0055385</td>
-</tr>
-<tr class="odd">
-<td align="left">div</td>
-<td align="right">1.4279538</td>
-<td align="right">2.0600280</td>
-<td align="right">0.6931720</td>
-<td align="right">0.4894103</td>
-</tr>
-</tbody>
-</table>
-<p>There are options to control the number of digits, whether row names are included or not, column alignment, and other options that depend on the output type.</p>
-<p>The table produced by <code>kable()</code>looks good. But what if we want to present results for more than one model, such as presenting <em>fit.ols</em>, <em>fit.lag</em>, and <em>fit.err</em> side by side? We can use the <code>stargazer()</code> function from the <strong>stargazer</strong> package to do this.</p>
-<pre class="r"><code>library(stargazer, quietly = TRUE)
-stargazer(fit.ols, fit.lag, fit.err, type = &quot;html&quot;,
-                    title=&quot;Title: Regression Results&quot;)</code></pre>
-<table style="text-align:center">
-<caption>
-<strong>Title: Regression Results</strong>
-</caption>
-<tr>
-<td colspan="4" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td colspan="3">
-<em>Dependent variable:</em>
-</td>
-</tr>
-<tr>
-<td>
-</td>
-<td colspan="3" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td colspan="3">
-lvcmrt1417
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-<em>OLS</em>
-</td>
-<td>
-<em>spatial</em>
-</td>
-<td>
-<em>spatial</em>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-<em></em>
-</td>
-<td>
-<em>autoregressive</em>
-</td>
-<td>
-<em>error</em>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(1)
-</td>
-<td>
-(2)
-</td>
-<td>
-(3)
-</td>
-</tr>
-<tr>
-<td colspan="4" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-concd
-</td>
-<td>
--0.068
-</td>
-<td>
--0.075
-</td>
-<td>
-0.085
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.393)
-</td>
-<td>
-(0.407)
-</td>
-<td>
-(0.451)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-mob
-</td>
-<td>
-4.469<sup>***</sup>
-</td>
-<td>
-3.173<sup>**</sup>
-</td>
-<td>
-2.481
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(1.595)
-</td>
-<td>
-(1.456)
-</td>
-<td>
-(1.832)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-pocc
-</td>
-<td>
--0.261
-</td>
-<td>
-0.427
-</td>
-<td>
-0.118
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(5.527)
-</td>
-<td>
-(4.721)
-</td>
-<td>
-(4.584)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-immc
-</td>
-<td>
-0.051
-</td>
-<td>
-0.170
-</td>
-<td>
-0.316
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.365)
-</td>
-<td>
-(0.323)
-</td>
-<td>
-(0.340)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-popd
-</td>
-<td>
--0.002<sup>***</sup>
-</td>
-<td>
--0.001
-</td>
-<td>
--0.001
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.001)
-</td>
-<td>
-(0.0005)
-</td>
-<td>
-(0.0005)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-div
-</td>
-<td>
-1.428
-</td>
-<td>
-0.191
-</td>
-<td>
-0.805
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(2.060)
-</td>
-<td>
-(1.990)
-</td>
-<td>
-(2.166)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-pnhblack
-</td>
-<td>
-</td>
-<td>
-0.843
-</td>
-<td>
--0.774
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-(3.192)
-</td>
-<td>
-(3.458)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Constant
-</td>
-<td>
-3.835
-</td>
-<td>
-1.004
-</td>
-<td>
-4.013
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(5.396)
-</td>
-<td>
-(4.629)
-</td>
-<td>
-(4.380)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td colspan="4" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Observations
-</td>
-<td>
-140
-</td>
-<td>
-140
-</td>
-<td>
-140
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-R<sup>2</sup>
-</td>
-<td>
-0.144
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Adjusted R<sup>2</sup>
-</td>
-<td>
-0.105
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Log Likelihood
-</td>
-<td>
-</td>
-<td>
--273.183
-</td>
-<td>
--273.910
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-sigma<sup>2</sup>
-</td>
-<td>
-</td>
-<td>
-2.697
-</td>
-<td>
-2.691
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Akaike Inf. Crit.
-</td>
-<td>
-</td>
-<td>
-566.366
-</td>
-<td>
-567.819
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Residual Std. Error
-</td>
-<td>
-1.927 (df = 133)
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-F Statistic
-</td>
-<td>
-3.717<sup>***</sup> (df = 6; 133)
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Wald Test (df = 1)
-</td>
-<td>
-</td>
-<td>
-40.766<sup>***</sup>
-</td>
-<td>
-49.827<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-LR Test (df = 1)
-</td>
-<td>
-</td>
-<td>
-27.277<sup>***</sup>
-</td>
-<td>
-25.823<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td colspan="4" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-<em>Note:</em>
-</td>
-<td colspan="3" style="text-align:right">
-<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
-</td>
-</tr>
-</table>
-<p><br />
-There are a number of options you can tweak to make the table more presentation ready, such as adding footnotes and changing column and row labels.</p>
-<p>Note three things: First, if you ran the <code>stargazer()</code> function above directly in your R console, you’ll get output that won’t make sense. Knit the document and you’ll see your pretty table. Second, you’ll need to add the argument <code>quietly = TRUE</code> when you load <strong>stargazer</strong> into your current R session. Third, you will need to add <code>results = 'asis'</code> as an RMarkdown chunk option.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="which-model-ols-spatial-lag-or-spatial-error" class="section level2">
-<h2><strong>Which model? OLS, Spatial lag, or Spatial error?</strong></h2>
-<p><br />
-As we discussed in this week’s handout, there are many fit statistics and tests to determine which model is most appropriate. A popular set of tests proposed by Anselin (1988) (also see Anselin et al. 1996) are the Lagrange Multiplier (LM) tests. The null in these tests is the OLS model. A test showing statistical significance rejects this null.</p>
-<p>In general, you fit the OLS model to your dependent variable, then submit the OLS model fit to the LM testing procedure. Then go through the series of steps I outlined in this week’s handout.</p>
-<p>To run the LM tests in R, use the <code>lm.LMtests()</code> command in the <strong>spdep</strong> package. Run this command and interpret the results. Which model is “best”? Why?</p>
-<p>The LM test is not the only way to select between models. We’ll go through a couple of other methods in next week’s lecture and lab.</p>
-<hr />
-<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
-</div>
 
 
 
@@ -1484,6 +470,54 @@ $(document).ready(function () {
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 

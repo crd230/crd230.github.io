@@ -31,24 +31,7 @@ navbar:
           href: lab8.html
         - text: "Lab 9"
           href: lab9.html
-    - text: "Mini Labs"
-      menu: 
-        - text: "Download data from NHGIS"
-          href: nhgis.html
-        - text: "Dealing with missing data"
-          href: missingdata.html     
-        - text: "Geocoding"
-          href: geocoding.html  
-        - text: "Geographically Weighted Regression"
-          href: gwr.html  
-        - text: "Introduction to QGIS"
-          href: qgis.html
-    - text: "Other"
-      menu: 
-        - text: "Data Sources"
-          href: ndata.html  
-        - text: "Census Geographies"
-          href: censusgeography.html  
+
 output:
   html_document:
     theme: cosmo

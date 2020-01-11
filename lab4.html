@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -74,9 +74,7 @@ h6 {
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -90,7 +88,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -100,6 +97,9 @@ img {
 }
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -115,7 +115,6 @@ body {
   padding-top: 56px;
   margin-top: -56px;
 }
-
 .section h2 {
   padding-top: 56px;
   margin-top: -56px;
@@ -135,6 +134,43 @@ body {
 .section h6 {
   padding-top: 56px;
   margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -156,55 +192,69 @@ $(document).ready(function () {
 });
 </script>
 
-
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-</script>
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
 
 <!-- code folding -->
 <style type="text/css">
 .code-folding-btn { margin-bottom: 4px; }
 </style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
-
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -218,6 +268,12 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -253,8 +309,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -263,6 +317,16 @@ div.tocify {
 
 
 </style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
 <div class="row-fluid">
@@ -336,45 +400,6 @@ div.tocify {
     </li>
   </ul>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Mini Labs
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="nhgis.html">Download data from NHGIS</a>
-    </li>
-    <li>
-      <a href="missingdata.html">Dealing with missing data</a>
-    </li>
-    <li>
-      <a href="geocoding.html">Geocoding</a>
-    </li>
-    <li>
-      <a href="gwr.html">Geographically Weighted Regression</a>
-    </li>
-    <li>
-      <a href="qgis.html">Introduction to QGIS</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Other
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="ndata.html">Data Sources</a>
-    </li>
-    <li>
-      <a href="censusgeography.html">Census Geographies</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -396,15 +421,15 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Lab 4: Opportunity Mapping</h1>
-<h3 class="subtitle"><em><h4 style="font-style:normal">
+<h3 class="subtitle"><h4 style="font-style:normal">
 CRD 298 - Spatial Methods in Community Research
-</h4></em></h3>
-<h4 class="author"><em><h4 style="font-style:normal">
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
 Professor Noli Brazil
-</h4></em></h4>
-<h4 class="date"><em><h4 style="font-style:normal">
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
 January 30, 2019
-</h4></em></h4>
+</h4></h4>
 
 </div>
 
@@ -426,331 +451,6 @@ h1.title {
 </style>
 <p><br />
 </p>
-<p>In this guide you will learn how to condense a suite of neighborhood variables into a single numerical index and a categorical classification using R. Both methods are often used within the context of opportunity mapping. The objectives of the guide are as follows</p>
-<ol style="list-style-type: decimal">
-<li>Understand the data workflow for computing indices and classifications</li>
-<li>Learn about standardization</li>
-<li>Create a numeric index of opportunity</li>
-<li>Create a classification of neighborhood context</li>
-</ol>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="load-necessary-packages" class="section level2">
-<h2><strong>Load necessary packages</strong></h2>
-<p><br />
-We’ll be introducing four new packages in this lab: <strong>factoextra</strong>, <strong>plotrix</strong>, <strong>NbClust</strong> and <strong>dendextend</strong>.</p>
-<pre class="r"><code>install.packages(&quot;factoextra&quot;)
-install.packages(&quot;plotrix&quot;)
-install.packages(&quot;NbClust&quot;)
-install.packages(&quot;dendextend&quot;)</code></pre>
-<p>We’ll also be using the <strong>tidyimpute</strong> and <strong>VIM</strong> packages to impute for missingness. If you have not gone through the missing data <a href="https://crd230.github.io/missingdata.html">mini lab</a>, you’ll need to install those packages.</p>
-<p>Load in the following packages</p>
-<pre class="r"><code>library(tidyverse)
-library(sf)
-library(tigris)
-options(tigris_class = &quot;sf&quot;)
-library(VIM)
-library(tidyimpute)
-library(tmap)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="workflow" class="section level2">
-<h2><strong>Workflow</strong></h2>
-<p><br />
-As we discussed in lecture, the basic workflow for creating a neighborhood index or typology is as follows</p>
-<ol style="list-style-type: decimal">
-<li>Establish the theoretical framework for the model</li>
-<li>Collect data on variables that capture important contextual features of a neighborhood</li>
-<li>Clean, process, and transform input variables</li>
-<li>Select modelling approach: numeric or categorical</li>
-<li>Run, refine, alter and expand model</li>
-<li>Map your index/typology</li>
-</ol>
-<p>Keeping this workflow in mind let’s start out with opportunity indices.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="opportunity-indices" class="section level2">
-<h2><strong>Opportunity Indices</strong></h2>
-<p><br />
-We’re going to use the underlying 2014 tract-level data that make up the the <a href="https://interact.regionalchange.ucdavis.edu/roi/data.html">Regional Opportunity Index (ROI)</a>, which is a numeric index of opportunity for California neighborhoods created by the <a href="https://regionalchange.ucdavis.edu/">Center for Regional Change (CRC)</a> at the University of California, Davis. The CRC provides the underlying data for the ROI on their website. Bring in these data, which I’ve made available on Github, into R</p>
-<pre class="r"><code>roi.tract.data &lt;- read_csv(&quot;https://raw.githubusercontent.com/crd230/data/master/roi_data_2014.csv&quot;)</code></pre>
-<p>The data are largely cleaned. This includes converting variable counts to percentages, ratios, and rates where appropriate. The variables correspond to different place dimensions: Education, Economic, Housing, Health/Environment, and Civic Life. Detailed information on these domains and their variables can be found on the <a href="https://interact.regionalchange.ucdavis.edu/roi/Download_Data/ROI%20Metadata.pdf">ROI website</a>. You can view the record layout for the variables in <em>roi.tract.data</em> <a href="https://raw.githubusercontent.com/crd230/data/master/record_layout.xlsx">here</a>. Note that the ROI has two indices: one for people and another for place. We will be working on data for the place index.</p>
-<p>I said that the data are <em>largely</em> cleaned. We still have some missingness to deal with.</p>
-<pre class="r"><code>summary(aggr(roi.tract.data))</code></pre>
-<p>The CRC does not impute for missigness, but let’s do so here to get a complete data set. Use the <code>impute_mean()</code> function to impute the mean for missing values. The mean percent Hispanic is likely very different in Butte county than in Los Angeles county. Rather than imputing the California state mean, let’s use <code>group_by()</code> to impute the county means. The variable <em>cntyfips</em> provides the unique county ID.</p>
-<pre class="r"><code>roi.tract.data &lt;- roi.tract.data %&gt;%
-    group_by(cntyfips) %&gt;%
-    impute_mean(edplc1:soplc2) %&gt;%
-    ungroup()
-summary(aggr(roi.tract.data))</code></pre>
-<p>The one variable still missing values is <em>placenm</em> which provides the name of the place/city, which we don’t need to worry about in this guide.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="standardizing-variables" class="section level3">
-<h3><strong>Standardizing variables</strong></h3>
-<p><br />
-In order to combine variables into either an index or typology, we need to transform and standardize them. First, <a href="https://en.wikipedia.org/wiki/The_Transformers_(TV_series)">transforming</a>. Higher values on an opportunity index should mean more opportunity. This means the variables used in the index should also be scaled that way. However, not all variables follow this format. For example, the variable <em>edplc4</em> is the percentage of high school students in the school district who were suspended or expelled. Higher values here indicate lower opportunity. These indicators need to be inverted before including them in the index. For percentages, subtract them from 100 (or 1 if you’ve kept them in proportional form). Variables on other scales are inverted by the reciprocal of the variable (1 divided by the value). The other variable in the data set that needs inversion is <em>enplc4</em>, the annual mean concentration of PM2.5 (exposure to pollution).</p>
-<pre class="r"><code>roi.tract.data &lt;-roi.tract.data %&gt;%
-  mutate(edplc4 = 100-edplc4, enplc4 = 1/enplc4) </code></pre>
-<p>Next, we need to standardize the variables. We do this to get the variables onto the same scale. That is, variables are measured across multiple measurement scales, from percentages such as percent non-Hispanic black to ratios such as population density, and we want to transform these variables to make apple to apple comparisons. The CRC uses min-max scaling to standardize variables. Min-max scaling expresses variables as a percentage of the range between the minimum and maximum values of that variable. Here, we’ll instead use the more common approach to standardizing variables - creating z-scores. The z-score is a measure of distance from the mean, in this case the mean of all tracts in California.</p>
-<p>Let’s calculate the z-score for the variable <em>hsplc1</em>. Create a variable named <em>hsplc1z</em> that subtracts from each tract’s value on <em>hsplc1</em> the total mean of <em>hsplc1</em> and then divide by the standard deviation of <em>hsplc1</em>. The mean and standard deviation of <em>hsplc1</em> should be 0 and 1 respectively.</p>
-<pre class="r"><code>roi.tract.data %&gt;%
-  mutate(hsplc1z = (hsplc1-mean(hsplc1))/sd(hsplc1)) %&gt;%
-  summarize(hsplc1zm = mean(hsplc1z), hsplc1zs = sd(hsplc1z))</code></pre>
-<p>We need to do this for all variables in the data set. The complete ROI incorporates 31 variables. Yes, you can repeat the above code 31 times, but is there a more efficient way? Why yes! Instead of writing out the above code for every variable, we can <em>gather</em> the data as described on page 152-154 in RDS using the function <code>gather()</code></p>
-<pre class="r"><code>roi.std &lt;-roi.tract.data %&gt;%
-  gather(variable, value, -c(cntyfips, cntyname, tract, placenm)) %&gt;%
-  group_by(variable) %&gt;%
-  mutate(mean = mean(value), sd = sd(value), z = (value-mean)/sd) %&gt;%
-  select(-(c(value, mean, sd))) %&gt;%
-  spread(variable, z)</code></pre>
-<p>Let’s explain the above code line by line. The <code>gather()</code> function transforms <em>roi.tract.data</em> into a tract by variable data set. The <code>group_by()</code> function groups the data set by <em>variable</em>. In the <code>mutate()</code> command, we calculate the mean, standard deviation, and the z-score for each variable. We discard unnecessary variables in the <code>select()</code> command, and then spread the data back to a tract-level data set using the <code>spread()</code> function. Instead of 30+ lines of code, we were able to complete the task of standardizing all variables in 6 lines of code. Efficiency is next to godliness. Or something like that.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="combining-into-domains" class="section level3">
-<h3><strong>Combining into domains</strong></h3>
-<p><br />
-The next step is to take the average of the variables within each of the ROI domains. The CRC takes the <a href="https://en.wikipedia.org/wiki/Geometric_mean">geometric mean</a>, but let’s once again go with the simple route, the basic mean. The crosswalk between variables and domains is provided in the <a href="https://raw.githubusercontent.com/crd230/data/master/record_layout.xlsx">record layout</a>.</p>
-<pre class="r"><code>roi.std &lt;- mutate(roi.std, Education = (edplc1+edplc2+edplc3+edplc4)/4, 
-                  Economic = (ecplc1+ecplc2+ecplc3+ecplc4)/4, Housing = (hsplc1+hsplc2)/2, 
-                  Health = (enplc1+enplc2+enplc3+enplc4)/4, Civic = (soplc1+soplc2)/2)</code></pre>
-<p>We then average the domain specific averages to get an overall index.</p>
-<pre class="r"><code>roi.std &lt;- mutate(roi.std, Overall =(Education+Economic+Housing+Health+Civic)/5)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="mapping-the-indices" class="section level3">
-<h3><strong>Mapping the indices</strong></h3>
-<p><br />
-We’ve got our indices, now it’s time to map them! The object <em>roi.std</em> is a regular data frame of Census tracts in California. Let’s bring in a shapefile of California census tracts using the <code>tracts()</code> function from the <strong>tigris</strong> package. Note that the Census ID in <em>roi.std</em> is in numeric form, so we’ll need to make the Census ID in the <strong>tigris</strong> tract file also a numeric.</p>
-<pre class="r"><code>ca.tracts &lt;- tracts(&quot;CA&quot;) %&gt;%
-#Converts GEOID from character to numeric to match roi.std
-              mutate(tract = as.numeric(GEOID))</code></pre>
-<p>You may notice that <em>ca.tracts</em> has more rows than <em>roi.std</em>. It looks like CRC took some tracts out, potentially because these tracts have no populations. Next, we merge the indices from <em>roi.std</em> into the <strong>sf</strong> object <em>ca.tracts</em> using <code>left_join()</code></p>
-<pre class="r"><code>ca.tracts.z &lt;- left_join(ca.tracts, roi.std, by = &quot;tract&quot;)</code></pre>
-<p>Finally, we use <strong>tmap</strong> functions to map the indices. Let’s put the map into view mode so we can zoom in and out of different areas of California. Following how the ROI is presented by the CRC on their website, we break the categories into quintiles where darker green indicates higher opportunity and darker brown represents lower opportunity. First, here’s the overall index.</p>
-<pre class="r"><code>ca.map.ind.ov &lt;- tm_shape(ca.tracts.z) +
-  tm_polygons(col = &quot;Overall&quot;, style = &quot;quantile&quot;, palette = &quot;BrBG&quot;,
-              border.alpha = 0, alpha = 0.75, title = &quot;Overall Opportunity&quot;)
-tmap_mode(&quot;view&quot;)
-ca.map.ind.ov + tm_view(basemaps=&quot;Hydda.Full&quot;)</code></pre>
-<p>What is the Opportunity landscape like in the City of Davis? Zoom in and find out.</p>
-<p>The legend is not very illustrative. We can add labels to the legend to indicate lowest to highest opportunity (similar to the ROI <a href="https://interact.regionalchange.ucdavis.edu/roi/webmap/webmap.html">online mapping tool</a>). We’ll first cut the <em>Overall</em> variable into quintiles (five equal groups) using the <code>cut()</code> and <code>quantile()</code> commands together and then attach labels to the groups.</p>
-<pre class="r"><code>ca.tracts.z &lt;- mutate(ca.tracts.z, OverallQ = cut(Overall, breaks=quantile(Overall, c(0,0.2,0.4,0.6,0.8,1), na.rm=TRUE), labels = c(&quot;Lowest Opportunity&quot;, &quot;Low&quot;, &quot;Moderate&quot;, &quot;High&quot;, &quot;Highest Opportunity&quot;)))</code></pre>
-<p>To be clear, <code>quantile()</code> extracts the 0, 20th, … 80th, and 100th percentile values of the variable <em>Overall</em>. The function <code>cut()</code> codes the values of <em>Overall</em> into the groupings designated by the <code>breaks</code> argument, in this case the percentile groupings (0 to 20th is one grouping, above 20th to 40th is the next, and so on). This coding is saved in the variable <em>OverallQ</em>. We add the labels “Lowest Opportunity”, “Low” and so on to the groupings.</p>
-<p>Now let’s map the overall opportunity index with the labels. Note that if you’re comparing your map with the CRC’s map, it won’t match because we made some different decisions with the data (imputing for missing data, calculating the z-score, etc.).</p>
-<pre class="r"><code>ca.map.ind.ec &lt;- tm_shape(ca.tracts.z) +
-  tm_polygons(col = &quot;OverallQ&quot;,  palette = &quot;BrBG&quot;,
-              border.alpha = 0, title = &quot;Overall Opportunity&quot;, midpoint = NA)
-ca.map.ind.ec + tm_view(basemaps=&quot;Hydda.Full&quot;)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
-<div id="geodemographic-classification" class="section level2">
-<h2><strong>Geodemographic classification</strong></h2>
-<p><br />
-Rather than numeric indices, geodemographic classification combines variables into neighborhood typologies. There is no single or correct method for building a geodemographic classification. Geodemographic classification is part science, part art. As such, some of the decisions you will make may be subjective. The key is that you as the modeler can defend your choices. Some of these choices can be defended via statistical algorithms. Others by drawing on your own understanding of the communities under study.</p>
-<p>Let’s create a typology using the ROI data. What are the steps?</p>
-<ol style="list-style-type: decimal">
-<li><p>Just like with indices, you need to standardize all your input variables, which we’ve already done. Note that unlike an index, you don’t need to transform them because we’re not creating a linear or continuous measure of opportunity.</p></li>
-<li><p>Determine how many types (or categories or clusters) are appropriate.</p></li>
-<li><p>Use a statistical algorithm to classify neighborhoods based on the input variables</p></li>
-</ol>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="k-means-clustering" class="section level3">
-<h3><strong>K-means clustering</strong></h3>
-<p><br />
-K-means clustering is the most commonly used algorithm for partitioning a given data set into a set of k clusters (i.e. k types), where k represents the number of groups pre-specified by the analyst. We’re going to be using the function <code>kmeans()</code> which is preloaded in R. In order to use <code>kmeans()</code>, you’ll need to input a data frame containing just your numeric variables. This means we need to take out all the ID variables (county, tract, etc.) from <em>roi.std</em>. We’ll also need to drop the domain indices we calculated above</p>
-<pre class="r"><code>subset.data &lt;-  select(roi.std, -(c(cntyfips:placenm, Education:Overall)))</code></pre>
-<p>Let’s run the <code>kmeans()</code> function using k = 3.</p>
-<pre class="r"><code>kmeans(subset.data, centers=3,nstart=25,iter.max = 1000000)</code></pre>
-<p>The <code>kmeans()</code> function accepts a data set input - in this case <em>subset.data</em>.</p>
-<ul>
-<li><code>centers</code> specifies the number of clusters k =3.</li>
-<li><code>iter.max</code> indicates the number of iterations you run the kmeans algorithm, which should be set to a large number to allow it to complete. This is the “Iterate” part of Step 2 in the James et al. chapter (page 388).</li>
-<li><code>nstart</code> tells <code>kmeans()</code> to try that many random starts and keep the best. If a value of <code>nstart</code> greater than one is used, then K-means clustering will be performed using multiple random assignments in Step 1 of Algorithm 10.1 in the James et al. chapter (page 388). With 25 to 50 random starts, you’ll generally find the overall best solution.</li>
-</ul>
-<p>The results provide information about the 3 clusters, including their size, their means of the input variables (which make up their centroids), the within and between sum of squares, and the most important result, the cluster assignment.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="choosing-the-best-k" class="section level3">
-<h3><strong>Choosing the best k</strong></h3>
-<p><br />
-You might be wondering why we chose 3 in the example above. Well, there was no reason, we just used 3 to illustrate the usage of <code>kmeans()</code>. It is up to the modeler to select k. How does one choose the appropriate k? In choosing k, keep these major aims of cluster analysis in mind.</p>
-<ol style="list-style-type: decimal">
-<li>Each cluster should be homogeneous as possible</li>
-<li>Each cluster group should be distinct from the other groups</li>
-<li>The groups should be as evenly sized as possible</li>
-</ol>
-<p>In addition, to each of these, we must also consider the compositions of the cluster groups. In other words, can we succinctly describe each cluster type?</p>
-<p>One method for selecting the best k is to run k-means with different cluster frequency (k), and for each result, examine a statistic called the <a href="https://en.wikipedia.org/wiki/K-means_clustering">total within cluster sum of squares</a> (wss). This is a measure of how well the cluster frequency fits the data. The total wss measures the compactness of the clustering by calculating the distance between the values of each tract in a cluster and the cluster’s centroid. We we want this value to be as small as possible. In other words, it helps us capture criteria 1 above. Another statistic that is often examined is the total between cluster sum of squares (bss). Here, you are calculating the distance between cluster centroids from the overall mean. To capture criteria 2, we would want the bss to be as large as possible.</p>
-<p>These values are typically plotted across each k, with the purpose to identify an “elbow criterion” which is a visual indication of where an appropriate cluster frequency might be set. The elbow or kink indicates where the decrease in the wss (or increase in the bss) might be leveling off. This elbow criterion is trying to strike a balance of minimizing wss (or maximizing bss) but choosing a value of k that is reasonable.</p>
-<p>We can use the following algorithm to define the optimal clusters:</p>
-<ol style="list-style-type: decimal">
-<li>Compute the clustering algorithm for different values of k, varying k from 1 to <em>n</em> clusters</li>
-<li>For each k, calculate wss and bss.</li>
-<li>Plot the curve of wss and bss according to the number of clusters k.</li>
-<li>The location of a bend (knee) in the plot is generally considered as an indicator of the appropriate number of clusters.</li>
-</ol>
-<p>Starting with step 1, let’s test k clusters from 1 to 12 (you can also test k’s greater than 12, but it isn’t necessary in most situations)</p>
-<p>The following code calculates the wss and bss.</p>
-<pre class="r"><code># Create a new empty numeric object to store the wss and bss results
-wss &lt;- numeric()
-bss &lt;- numeric()
-
-# Run k means for 1-12 clusters and store the wss and bss results
-for (k in 1:12) {
-  km &lt;- kmeans(subset.data, centers=k,nstart=25,iter.max = 1000)
-  wss[k] &lt;- km$tot.withinss
-  bss[k] &lt;- km$betweenss
-}
-# Create a data frame with the results, adding a further column for the cluster number
-wss &lt;- data.frame(1:12,wss)
-bss &lt;- data.frame(1:12,bss)</code></pre>
-<p>I introduced the <code>for()</code> function or loop above. The <code>for()</code> function tells R to run the code between the brackets <code>{</code> and <code>}</code> for <code>k</code> from 1 to 12. That is, when you execute the three lines of code in between the brackets, R will choose k to equal to 1 and insert the number 1 anywhere k is found in the code. Once that is done, R will then set k to equal to 2 and run the code again. R will do (or loop through) this until it reaches 12. The for loop is running the <code>kmeans()</code> function for k = 1 to 12 - storing the wss and bss for each k in the vector <em>wss</em> and <em>bss</em>, respectively.</p>
-<p>The following lines of code plots wss.</p>
-<pre class="r"><code># Plot the results
-names(wss) &lt;- c(&quot;k&quot;,&quot;Twss&quot;)
-ggplot(data=wss, aes(x= k, y=Twss)) + geom_path() + geom_point() + scale_x_continuous(breaks=1:12) + labs(y = &quot;Total within sum of squares&quot;)</code></pre>
-<p><img src="lab4_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
-<p>We’re looking for the portion of the plot where a kink or elbow appears or when the drop off from one k to the next is not as significant. It looks like it is around 4 to 7. Let’s look at the bss.</p>
-<pre class="r"><code>names(bss) &lt;- c(&quot;k&quot;,&quot;bss&quot;)
-ggplot(data=bss, aes(x= k, y=bss)) + geom_path() + geom_point() + scale_x_continuous(breaks=1:12) + labs(y = &quot;Between sum of squares&quot;)</code></pre>
-<p><img src="lab4_files/figure-html/unnamed-chunk-20-1.png" /><!-- --></p>
-<p>Here, were also looking for a kink or when the increase in k starts to level off. Similar to the wss, there is not a clear elbow, but the leveling off starts around 4 to 7.</p>
-<p>If you’re not satisfied with the above exploratory method, you can employ the <code>NbClust()</code> command found in the <strong>NbClust</strong> package. The command tests 30 indices for determining the number of clusters. All of these indices are similar to the wss or bss in that it is examining best fit across different values of k. As the package’s creators describe in their <a href="https://cran.r-project.org/web/packages/NbClust/NbClust.pdf">documentation</a>, the function “enables the user to simultaneously evaluate several clustering schemes while varying the number of clusters, to help determining the most appropriate number of clusters for the data set of interest.”</p>
-<p>The function <code>NbClust()</code> will take a <em>long</em> time to run because it’s computing 30 indices on a data set of over 8,000 observations for a range of k values. Run the code on your own time when you have the patience and time. For now, I present the code</p>
-<pre class="r"><code>library(NbClust)
-nb &lt;- NbClust(subset.data, min.nc=2, max.nc=12, method = &quot;kmeans&quot;)</code></pre>
-<p>The arguments <code>min.nc=1</code> and <code>max.nc=12</code> tells the function to calculate the indices for k =1 to k=12. The argument <code>method = &quot;kmeans&quot;</code> gives the kind of clustering method you want to test, in our case kmeans.</p>
-<p>The results of running the <code>NbClust()</code> function will tell you the number of indices that show the best fit by k.</p>
-<p>Based on the wss and bss plots, let’s run the k-means algorithm for k = 6. As the James et al. chapter states, testing the robustness of your findings is very important, so we choose k = 6 with the understanding that we’ll select other k values later to see how results change.</p>
-<pre class="r"><code>cluster_6 &lt;- kmeans(x=subset.data, centers=6, nstart=25,iter.max = 1000000)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="evaluating-a-classification" class="section level3">
-<h3><strong>Evaluating a classification</strong></h3>
-<p><br />
-Having selected the number of clusters for the k-means model, we want to examine or visualize the fit. If we see a poor fit, we may adjust the the number of clusters. One way of doing this is by examining a principal component or cluster plot. It plots each of the cases in our data against the first 2 principal components and colors them by their cluster group from our K-means model. You could also try rerunning the K-means again with different number of groups to see how well the models discriminate based on two principal components.</p>
-<p>We will be using the function <code>fviz_cluster()</code> to create a cluster plot, which is located in the <strong>factoextra</strong> package. Load this package in.</p>
-<pre class="r"><code>library(factoextra) </code></pre>
-<p>Then use <code>fviz_cluster()</code> as follows</p>
-<pre class="r"><code>fviz_cluster(cluster_6, data = subset.data, geom = &quot;point&quot;, ellipse = F, pointsize = 0.5,
-ggtheme = theme_classic())</code></pre>
-<p><img src="lab4_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
-<p>When examining a cluster plot, see if you can find k identifiable groups. In other words, you should see a separation of color. We find in the above plot that this is mostly the case - can you identify 6 distinct color/shapes? You might notice that although there are obvious clusters in the graphs, there are some points that may overlap with other clusters. This is because the data we used is complex and includes several variables which may be exerting unique patterns.</p>
-<p>The cluster type is stored in the variable <em>cluster</em> within <em>cluster_6</em>. We can see the distribution of tracts by cluster</p>
-<pre class="r"><code>table(cluster_6$cluster)</code></pre>
-<pre><code>## 
-##    1    2    3    4    5    6 
-## 1320 1442  614  994 1333 2332</code></pre>
-<p>Remember one of the major aims of cluster analysis: the groups should be as evenly sized as possible. You might consider dropping the number of clusters down to 5 given the presence of the cluster with 614 tracts. Set k = 5 in <code>kmeans()</code>. Or examine the characteristics of that cluster and see if it can be combined with another cluster.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="mapping-the-cluster-types" class="section level3">
-<h3><strong>Mapping the cluster types</strong></h3>
-<p><br />
-Save <code>cluster_6$cluster</code> as a new variable in <em>roi.std</em>. We have to make the cluster variable a character using the function <code>as.character()</code> because we are constructing a categorical (not numeric) classification of neighborhoods.</p>
-<pre class="r"><code>roi.std &lt;- roi.std %&gt;%
-  mutate(KCluster = as.character(cluster_6$cluster) )</code></pre>
-<p>Join <em>roi.std</em> to <em>ca.tracts</em> and then map the cluster variable <em>Cluster</em>.</p>
-<pre class="r"><code>ca.tracts.cl &lt;- left_join(ca.tracts, roi.std, by = &quot;tract&quot;)
-ca.map.k &lt;- tm_shape(ca.tracts.cl, unit = &quot;mi&quot;) +
-  tm_polygons(col = &quot;KCluster&quot;, style = &quot;cat&quot;,
-              border.alpha = 0, alpha = 0.75, title = &quot;Cluster&quot;)
-ca.map.k + tm_view(basemaps=&quot;Hydda.Full&quot;)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="labelling-the-clusters" class="section level3">
-<h3><strong>Labelling the clusters</strong></h3>
-<p><br />
-You should examine the means of the input variables by cluster. This will give you a sense of what these clusters look like. These means actually represent the centroids of each cluster. In other words, the cluster centers indicate the coordinates of the centroid for each cluster group once the k-means had reached its optimum solution. It, therefore, is a good indicator of the average characteristics of each group based on the variables that were included in the original model.</p>
-<p>We inputted Z-score standardized data into the model, therefore the cluster centers are still represented as Z-scores. Zero represents the mean for each variable and values above or below indicate the number of standard deviations away from the average. The values can, therefore, be used to very easily understand how unique each group is relative to the whole sample.</p>
-<p>The centers are saved as the object <em>centers</em> within <em>cluster_6</em>. Let’s extract it and save it as a data frame.</p>
-<pre class="r"><code>KmCenters &lt;- as.data.frame(cluster_6$centers)
-KmCenters</code></pre>
-<p>The rows represent the 6 clusters and the columns represent the variables used in the k-means model. Is it immediately clear what your groups represent? Probably not. It might be easier to create charts to visualize the characteristics of each cluster group. We can create radial plots to do this. The main idea behind a radial plot is to project the data as a distance from the center in a circular form. We create radial plots in R using the function <code>radial.plot()</code> which is a part of the <strong>plotrix</strong> package.</p>
-<pre class="r"><code>library(plotrix)</code></pre>
-<p>Let’s create a radial plot for cluster 1.</p>
-<pre class="r"><code>radial.plot(KmCenters[1,], labels = colnames(KmCenters), boxed.radial = FALSE, show.radial.grid = TRUE, line.col = &quot;blue&quot;, radlab = TRUE, rp.type = &quot;p&quot;)</code></pre>
-<p><img src="lab4_files/figure-html/unnamed-chunk-30-1.png" /><!-- --></p>
-<p>The closer the polygon vertex is to the edge of the circle, the higher the cluster mean for that variable. Now let’s plot a zero line to indicate the average for the whole data.</p>
-<pre class="r"><code># creates a object of six zeros (remember we have 6 groups)
-KmCenters[6,]&lt;- c(0)
-# this reduces the size of grid and axis labels in upcoming plots
-par(cex.axis = 0.8, cex.lab = 0.8)
-
-radial.plot(KmCenters[c(1,6),], labels = colnames(KmCenters), boxed.radial = FALSE, show.radial.grid = TRUE, line.col = c(&quot;blue&quot;, &quot;red&quot;), radlab = TRUE, rp.type = &quot;p&quot;, show.grid.labels = 3)</code></pre>
-<p><img src="lab4_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
-<p>Remember that our variables are standardized - anything above 0 (the red circle) is above the mean and below 0 is below the mean. If, for example, a cluster is well below 0 in percent Hispanic (well below the red circle) but well above 0 in percent non-Hispanic white, the neighborhoods making up this cluster can be characterized as predominantly white. Create radial plots for the other clusters by replacing the 1 in <code>KmCenters[c(1,6),]</code> with 2, 3, 4 and so on. You should also present the means or medians of variables in their non-transformed format such as Table 5 in the Knaap (2017) reading.</p>
-<p>A couple of geographers created a geodemographic classification of U.S. neighborhoods using 136 variables from the American Community Survey. They mapped their results and posted it publicly on <a href="https://observatory.carto.com/viz/6391d2a6-fc12-11e5-b612-0e3ff518bd15/public_map">Carto</a>.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
-<div id="hierarchical-clustering" class="section level2">
-<h2><strong>Hierarchical Clustering</strong></h2>
-<p><br />
-Hierarchical clustering, as is denoted by the name, involves organizing your data into a kind of hierarchy. The common approach is what’s called an agglomerative approach. This is a kind of bottom up approach, where you start by thinking of the data as individual data points. Then you start lumping them together into clusters little by little until eventually your entire data set is just one big cluster.</p>
-<p>Just like for K-means, we need to keep just the model input variables. Let’s save them into a new object called <em>roi.std2</em></p>
-<pre class="r"><code>roi.std2&lt;- roi.std %&gt;%
-          select(ecplc1:soplc2)</code></pre>
-<p>Looking at Algorithm 10.2 in the James et. al chapter, our first step is to measure pairwise dissimilarity. We do this using the function <code>dist()</code>, which is a part of the <strong>stats</strong> package, which is already preinstalled. Let’s use Euclidean distance to measure dissimilarity.</p>
-<pre class="r"><code>#calculate distance/dissimilarity
-dist_mat &lt;- dist(roi.std2, method = &#39;euclidean&#39;)</code></pre>
-<p>The object <em>dist_mat</em> yields a distance matrix.</p>
-<p>Next step is to run the hierarchical clustering method. There are a number of canned functions in R that run the method, but let’s use <code>hclust()</code>, which is also a part of the <strong>stats</strong> package. We plug in the distance matrix we computed above and specify the linkage. James et al. list four common approaches on page 395, and all are available in <code>hclust()</code>, but let’s use the <a href="https://en.wikipedia.org/wiki/Ward%27s_method">Ward’s D</a>.</p>
-<pre class="r"><code>hfit &lt;- hclust(dist_mat, method=&quot;ward.D&quot;) </code></pre>
-<p>We can then evaluate the dendrogram. We need to create a dendrogram object from <em>hfit</em>, which we do using the <code>as.dendrogram()</code> function in the <strong>dendextend</strong> package.</p>
-<pre class="r"><code>library(dendextend)
-hcd &lt;- as.dendrogram(hfit)</code></pre>
-<p>We then plot the dendrogram using the basic <code>plot()</code> function</p>
-<pre class="r"><code>plot(hcd, ylab = &quot;Height&quot;,  leaflab = &quot;none&quot;)</code></pre>
-<p><img src="lab4_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
-<p>By default, <code>plot()</code> will provide the tract IDs on the x-axis. That’s fine if you’ve got a small number of observations, but we’ve got 8,000+. The argument <code>leaflab = &quot;none&quot;</code> drops the labels on the x-axis.</p>
-<p>As the James et a. chapter mentions, there is no standardized way for determining where to cut the dendrogram. They state “people often look at the dendrogram and select by eye a sensible number of clusters, based on the heights of the fusion and the number of clusters desired.” What does your eyes tell you?</p>
-<p>Let’s say we cut the dendrogram such that we get 6 clusters. We can use the following code to color the branches based on the 6 clusters</p>
-<pre class="r"><code>hcd %&gt;% set(&quot;branches_k_color&quot;,  k = 6) %&gt;% 
-   plot(main = &quot;Six clusters&quot;,  leaflab = &quot;none&quot;)</code></pre>
-<p><img src="lab4_files/figure-html/unnamed-chunk-37-1.png" /><!-- --></p>
-<p>where <code>k= 6</code> indicates the number of clusters.</p>
-<p>Once we’ve decided where to cut and thus how many clusters, we use the <code>cutree()</code> function on <em>hfit</em> to get the cluster labels. We’ll need to save this back into <em>roi.std</em>.</p>
-<pre class="r"><code>roi.std2 &lt;- roi.std %&gt;%
-  mutate(HCluster = as.character(cutree(hfit, k=6) ) ) %&gt;%
-  select(tract, HCluster)</code></pre>
-<p>Join the cluster labels to the california tract spatial object.</p>
-<pre class="r"><code>ca.tracts.cl &lt;- left_join(ca.tracts.cl, roi.std2, by = &quot;tract&quot;)</code></pre>
-<p>And map</p>
-<pre class="r"><code>ca.map.hcl &lt;- tm_shape(ca.tracts.cl, unit = &quot;mi&quot;) +
-  tm_polygons(col = &quot;HCluster&quot;, style = &quot;cat&quot;,
-              border.alpha = 0, alpha = 0.75, title = &quot;Cluster&quot;)
-ca.map.hcl + tm_view(basemaps=&quot;Hydda.Full&quot;)</code></pre>
-<p>Hierarchical clustering results are fairly sensitive to the distance dissimiarlity chosen, the type of linkage specified, and where you cut the dendrogram. Play around with these parameters and see how much the results change.</p>
-<hr />
-<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
-</div>
 
 
 
@@ -770,6 +470,54 @@ $(document).ready(function () {
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 
