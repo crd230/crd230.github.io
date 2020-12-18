@@ -1,7 +1,7 @@
-name: "CRD 298: Spatial Methods in Community Research"
+name: "CRD 230: Spatial Methods in Community Research"
 output_dir: "."
 navbar:
-  title: "CRD 298: Winter 2019"
+  title: "CRD 230: Winter 2021"
   left:
     - text: "Home"
       href: index.html
@@ -11,26 +11,12 @@ navbar:
       href: hw_guidelines.html
     - text: "Labs"
       menu: 
-        - text: "Lab 0"
-          href: lab0.html
         - text: "Lab 1"
           href: lab1.html
-        - text: "Lab 2"
-          href: lab2.html
-        - text: "Lab 3"
-          href: lab3.html
-        - text: "Lab 4"
-          href: lab4.html
-        - text: "Lab 5"
-          href: lab5.html
-        - text: "Lab 6"
-          href: lab6.html
-        - text: "Lab 7"
-          href: lab7.html
-        - text: "Lab 8"
-          href: lab8.html
-        - text: "Lab 9"
-          href: lab9.html
+    - text: "Other"
+      menu: 
+        - text: "Data Source"
+          href: ndata.html
 
 output:
   html_document:
