@@ -11,7 +11,7 @@
 
 
 
-<title>CRD 298: Spatial Methods in Community Research</title>
+<title>CRD 230: Spatial Methods in Community Research</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,6 +22,17 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -268,7 +279,7 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">CRD 298: Winter 2019</a>
+      <a class="navbar-brand" href="index.html">CRD 230: Winter 2021</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -289,34 +300,19 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="lab0.html">Lab 0</a>
-    </li>
-    <li>
       <a href="lab1.html">Lab 1</a>
     </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="lab2.html">Lab 2</a>
-    </li>
-    <li>
-      <a href="lab3.html">Lab 3</a>
-    </li>
-    <li>
-      <a href="lab4.html">Lab 4</a>
-    </li>
-    <li>
-      <a href="lab5.html">Lab 5</a>
-    </li>
-    <li>
-      <a href="lab6.html">Lab 6</a>
-    </li>
-    <li>
-      <a href="lab7.html">Lab 7</a>
-    </li>
-    <li>
-      <a href="lab8.html">Lab 8</a>
-    </li>
-    <li>
-      <a href="lab9.html">Lab 9</a>
+      <a href="ndata.html">Data Source</a>
     </li>
   </ul>
 </li>
@@ -332,7 +328,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">CRD 298: Spatial Methods in Community Research</h1>
+<h1 class="title toc-ignore">CRD 230: Spatial Methods in Community Research</h1>
 
 </div>
 
@@ -358,7 +354,8 @@ University of California, Davis
 Department of Human Ecology, Community and Regional Development
 </h4>
 <p><br />
-Welcome to the CRD 298 website! This website complements the class <a href="https://login.canvas.ucdavis.edu/">Canvas</a> site.</p>
+</p>
+<p>Welcome to the CRD 230 website! This website complements the class <a href="https://login.canvas.ucdavis.edu/">Canvas</a> site.</p>
 <p>On this website you will find:</p>
 <ul>
 <li>An abridged syllabus</li>
@@ -381,6 +378,17 @@ Welcome to the CRD 298 website! This website complements the class <a href="http
 <div id="about-the-class" class="section level2">
 <h2>About the class</h2>
 <p>Many community socioeconomic and demographic processes such as poverty, crime, healthy food access, school quality, migration, and segregation have important spatial components. Spatial data are becoming more ubiquitous and the tools for managing, processing, examining, and modelling these data are becoming more accessible. This course introduces students to the important theoretical roles that space and place have in community research. Here, the community is broadly defined as a geographic unit with recognizable boundaries that possesses a resident sense of place. The course will also have a large analytical component, exposing students to the acquisition, management, examination, and modelling of spatial data for understanding communities. The course will focus on applications in the social sciences and public health, including demography, epidemiology, sociology, criminology, human geography, public policy, education, and others. The course assumes you have taken an introductory class in statistics and have familiarity with univariate statistics such as linear regression. Experience with a statistical package (like Stata, SAS or R) is useful but not required.</p>
+<p><br></p>
+</div>
+<div id="giving-credit" class="section level2">
+<h2>Giving Credit</h2>
+<p>The following websites were used in the construction of this course website. My gratitude to the people who invested their time and effort in developing and offering these valuable resources to the public.</p>
+<ul>
+<li>Manuel Gimond’s <a href="https://mgimond.github.io/Spatial/index.html">Intro to GIS and Spatial Analysis</a></li>
+<li>Claudia Engel’s <a href="https://cengel.github.io/R-spatial/">Using Spatial Data in R</a></li>
+<li>Corey Sparks’ <a href="https://rpubs.com/corey_sparks">RPubs labs</a></li>
+<li>Ben Baumer’s <a href="https://beanumber.github.io/sds192/">Spatial Data Science Course</a></li>
+</ul>
 <hr />
 <p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
 <p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
@@ -395,7 +403,7 @@ Welcome to the CRD 298 website! This website complements the class <a href="http
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
