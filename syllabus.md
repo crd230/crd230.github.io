@@ -108,7 +108,7 @@ Late submissions will be deducted 10% per 24 hours until 72 hours after the subm
 
 2. Course project (40%)
 
-Students will conduct a research project using methods discussed in class on a topic of their choosing.  A full description of the project can be found in the file final_project_description.pdf located on Canvas. There are three main deliverables: (1) Prospectus; (2) Final paper or Policy Brief; and (3) Presentation.  Students will present their projects during a live Zoom session. If you cannot present on that day/time, please let me know, and plan on submitting and uploading on Canvas a pre-recorded presentation.  See the agenda for the due dates for each of the deliverables.
+Students will conduct a research project using methods discussed in class on a topic of their choosing.  A full description of the project can be found in the file final_project_description.pdf located on Canvas. All students must submit a Prospectus. Students have two final project options: (1) StoryMap presentation and a Policy Brief; (2) Final paper and a presentation of any format.  Students will present their projects during a live Zoom session. If you cannot present on that day/time, please let me know, and plan on submitting and uploading on Canvas a pre-recorded presentation.  See the agenda for the due dates for each of the deliverables.
 
 
 <div style="margin-bottom:25px;">
