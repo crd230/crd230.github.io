@@ -15,7 +15,9 @@ navbar:
           href: lab1.html
     - text: "Other"
       menu: 
-        - text: "Data Source"
+        - text: "R tips"
+          href: tips.html
+        - text: "Data Sources"
           href: ndata.html
 
 output:

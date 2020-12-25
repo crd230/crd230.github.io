@@ -1,22 +1,23 @@
-﻿Date,Class,Topic,Readings,Assignment
-7-Jan,Lecture,Introduction to class; U.S. Census,,
-9-Jan,Lab,Introduction to R,"Optional: RDS Ch. 1, 3, 5, 8-10, 14, 22",
-14-Jan,Lecture,Neighborhoods,"Ohmer et al. Ch. 2-3, Sharkey & Faber (2014)",
-16-Jan,Lab,Introduction to Spatial Data in R,"Optional: GWR Ch. 2.1, 4.2, 5, 8",
-21-Jan,Lecture,No Class: MLK Holiday,,
-23-Jan,Lab,Point Data in R,"Optional: GWR Ch. 4.2, 6; Apparicio et al. (2007)",
-28-Jan,Lecture,Opportunity Mapping,Knaap (2017); James et al. Ch. 10.3; ROI methods,HW 1
-30-Jan,Lab,Opportunity Mapping in R,,
-4-Feb,Lecture,Spatial Autocorrelation,Handout; Poulsen et al. (2010),
-6-Feb,Lab,Spatial Autocorrelation in R,,
-11-Feb,Lecture,Spatial Regression Models,Handout; Chi & Zhu (2008); Voss et al. (2006),HW 2
-TBD,Lab,Spatial Regression Models in R,,Proposal
-18-Feb,Lecture,No Class: President's Day Holiday,,
-20-Feb,Lab,Spatial Regression Models (cont),Handout; Yang et al (2015),
-25-Feb,Lecture,Multilevel models,Handout; O'Brien & Winship (2017),HW 3
-27-Feb,Lab,Multilevel models in R,,
-4-Mar,Lecture,Social Network Analysis,Handout; Easley & Kleinberg Ch. 1-2; Papachristos & Bastomski (2018),
-6-Mar,Lab,Social Network Analysis in R,,
-11-Mar,Lecture,Presentations,,HW 4
-13-Mar,Lab,Presentations,,
-20-Mar,,,,Paper
+﻿Date,Topic,Readings,Assignment,Project
+5-Jan,Introduction to class,,,
+7-Jan,Introduction to R,,,
+12-Jan,Introduction to the U.S. Census ,Handout 1,,
+14-Jan,Data wrangling and visualization,,,
+19-Jan,Introduction to spatial data ,Handout 2,HW 1,
+21-Jan,Neighborhoods,Sharkey and Faber (2014),,
+26-Jan,Open Data,Handout 3,,
+28-Jan,Big Data,Handout 3,,
+2-Feb,Spatial accessibility,Handout 4,HW 2,
+4-Feb,Spatial accessibility,Handout 4,,
+9-Feb,Gentrification,Handout 5; Loukaitou-Sideris et al. (2019),,
+11-Feb,Segregation,Handout 5; Logan and Stults (2011),,
+16-Feb,Spatial Autocorrelation,Handout 6,HW 3,
+18-Feb,Spatial Autocorrelation,Handout 6,,
+23-Feb,Linear regression,Handout 7,,Proposal
+25-Feb,Spatial regression,Handout 7,,
+2-Mar,Introduction to StoryMaps,Lung-Amam & Dawkins (2019) ,,
+4-Mar,Social Network Analysis,Handout 8,HW 4,
+9-Mar,Social Network Analysis,Handout 8,,
+11-Mar,No class,,,
+16-Mar,Presentations,,,Presentation
+18-Mar,Final Project report due,,,Final report

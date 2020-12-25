@@ -1,12 +1,11 @@
 ---
 title: "Data Sources"
-subtitle: <h4 style="font-style:normal">CRD 298 - Spatial Methods in Community Research</h4>
+subtitle: <h4 style="font-style:normal">CRD 230 - Spatial Methods in Community Research</h4>
 output: 
   html_document:
     theme: cosmo
 ---
 
-<h4 style="font-style:normal">Winter 2019</h4>
 
 <style>
 p.comment {
@@ -20,11 +19,30 @@ font-style: italic;
 
 h1.title {
   font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
 }
 
 </style>
 
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
 \
+
+
+
+
+
 
 For the final project, you will be expected to download, wrangle and analyze a data set of your own choosing. You can use a data set that you've put together for your thesis/dissertation.  You can also use publicly available data such as the United States Census.  Or you may want to combine publicly available data with data you've collected on your own. 
 
@@ -43,7 +61,7 @@ This guide is a reference tool describing online sources that provide data typic
 
 The Census represents the most comprehensive source for demographic and socioeconomic data at the census tract level.  You can download tract level data from the following sources
 
-* [American Fact Finder](https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml)
+* [U.S. Census Data Repository](https://data.census.gov/cedsci/)
 
 * [Social Explorer](https://www.socialexplorer.com/)
 
@@ -68,7 +86,7 @@ If you want to evaluate tract characteristics over an extensive time period, you
 * [Longitudinal Tract Database](https://s4.ad.brown.edu/projects/diversity/researcher/bridging.htm)
     + This site's tools are free to the public.  In addition to providing preloaded census data normalized to a certain boundary year, the site provides crosswalks that allow you to normalize *any* tract level data.
     
-NHGIS is part the vast umbrella known as the Integrated Public Use Microdata Series (IPUMS). IPUMS provides census and survey data from around the world integrated across time and space.  If you are interested in downloading individual level Census data (typically a 5% sample), check out [IPUMS USA](https://usa.ipums.org/usa/).  Unsurprisingly, there is also an [IPUMS CPS](https://cps.ipums.org/cps/), which provides individual level data from the Current Population Survey. All the IPUMS brands can be found on their [homepage](https://cps.ipums.org/cps/). Similar to the Census API, R can tap into IPUMS data directly through the **ipumsr** package. Check out one of its vignettes [here](https://cran.r-project.org/web/packages/ipumsr/vignettes/ipums.html).
+NHGIS is part the vast umbrella known as the Integrated Public Use Microdata Series (IPUMS). IPUMS provides census and survey data from around the world integrated across time and space.  If you are interested in downloading individual level Census data (typically a 5% sample), check out [IPUMS USA](https://usa.ipums.org/usa/).  Unsurprisingly, there is also an [IPUMS CPS](https://cps.ipums.org/cps/), which provides individual level data from the Current Population Survey. All the IPUMS brands can be found on their [homepage](https://ipums.org/). Similar to the Census API, R can tap into IPUMS data directly through the **ipumsr** package. Check out one of its vignettes [here](https://cran.r-project.org/web/packages/ipumsr/vignettes/ipums.html).
 
 **Other R packages for bringing in data**
 
@@ -96,7 +114,7 @@ HUD offers a plethora of lower geographic scale data sets on a variety of housin
 **Work commuting patterns**
 
 * [OnTheMap](https://onthemap.ces.census.gov/)
-    + OnTheMap is an application that shows where workers are employed and where they live. The data come from the [Longitudinal Employer-Household Dynamics](https://lehd.ces.census.gov/) Program, specifically from their Origin-Destination Employment Statistics (LODES).  OnTheMap also provides reports on age, earnings, industry distributions, race, ethnicity, educational attainment, and sex.  
+    + OnTheMap is an application that shows where workers are employed and where they live. The data come from the [Longitudinal Employer-Household Dynamics](https://lehd.ces.census.gov/) Program, specifically from their Origin-Destination Employment Statistics (LODES).  OnTheMap also provides reports on age, earnings, industry distributions, race, ethnicity, educational attainment, and sex.  You can use functions from the package **lehdr** to bring in data directly into R using an API.  A brief introduction to the package can be found [here](https://jamgreen.github.io/lehdr/articles/getting_started.html).
 
 **Eviction rates**
 
@@ -128,17 +146,20 @@ Opportunity mapping is used to illustrate where opportunity rich communities exi
 
 The Opportunity Atlas is an an interactive, map-based tool that can trace the root of outcomes, such as poverty and incarceration, back to the neighborhoods in which children grew up.  The atlas, in a nutshell, shows “Which neighborhoods in America offer children the best chances of climbing the income ladder?” You can view the tool and download all the census tract data [here](https://www.opportunityatlas.org/).
 
+**CA Neighborhoods and Renter Vulnerability**
+
+This [project](https://knowledge.luskin.ucla.edu/ca-renter-vulnerability/#top) focuses on identifying the broad vulnerabilities to COVID-19 and their disparities across neighborhoods in California.
 
 **Los Angeles Neighborhood Data for Social Change**
 
-A data warehouse created by the [University of Southern California](https://socialinnovation.usc.edu/) that collects a bunch of health, demographic, built environment, and socioeconomic variables at the neighborhood level for the County of Los Angeles.  Check the site out [here](https://data.myneighborhooddata.org/stories/s/xs7g-jqmb).
+A data warehouse created by the [University of Southern California](https://socialinnovation.usc.edu/) that collects a bunch of health, demographic, built environment, and socioeconomic variables at the neighborhood level for the County of Los Angeles.  Check the site out [here](https://usc.data.socrata.com/stories/s/htr6-r22g).
 
 **Big Data**
 
 * [Airbnb](http://insideairbnb.com/get-the-data.html): Provides csv files containing detailed information on data on airbnb hosts.  The data are in latitude/longitude.  They don't provide historical data.
 
 * Bikesharing: Web sites providing public use data on bikesharing.  Provides station-to-station data.
-    + [San Francisco](https://www.fordgobike.com/system-data).  
+    + [San Francisco](https://www.lyft.com/bikes/bay-wheels/system-data).  
     + [New York City](https://www.citibikenyc.com/system-data) 
     + [Chicago](https://www.divvybikes.com/system-data). 
     + [Washington D.C.](https://www.capitalbikeshare.com/system-data)
@@ -160,27 +181,15 @@ A data warehouse created by the [University of Southern California](https://soci
 
 Many city, county and even state governments maintain open data portals.  These portals provide various data sets held and maintained by the public sectors.  Some of the data are measured at a fine spatial scale, going doing to latitude/longitude.  
 
-There are a couple of sites that maintain open data portal directories, including
-
-* [Data.gov](https://www.data.gov/open-gov/)
-
-* [OpenDataSoft](https://www.opendatasoft.com/a-comprehensive-list-of-all-open-data-portals-around-the-world/#/united-states)
-
-* [US City Open Data Census](http://us-cities.survey.okfn.org/)
-
-Here are links to various open data portals in US cities (updated 10/31/18)
+Here are links to various open data portals in US cities (updated 01/04/21)
 
 *California*
 
 * [Sacramento City](http://data.cityofsacramento.org/)
 
-* [Sacramento County](http://data-sacramentocounty.opendata.arcgis.com/)
-
 * [San Francisco City](https://datasf.org/opendata/)
 
-* [Alameda County](https://data.acgov.org/)
-
-* [Oakland City](https://data.oaklandnet.com/)
+* [Oakland City](https://data.oaklandca.gov/)
 
 * [Oakland City](http://data.openoakland.org/)
 
@@ -188,45 +197,19 @@ Here are links to various open data portals in US cities (updated 10/31/18)
 
 * [San Jose City](https://data.sanjoseca.gov/home)
 
-* [Kern County](https://geodat-kernco.opendata.arcgis.com/)
-
-* [Anaheim City](http://data-anaheim.opendata.arcgis.com/)
-
-* [Riverside County](https://data.countyofriverside.us/)
-
-* [Riverside County](http://data-countyofriverside.opendata.arcgis.com/)
-
-* [Chula Vista City](http://chulavista-cvgis.opendata.arcgis.com/)
-
 * [Los Angeles City](https://data.lacity.org/)
-
-* [Los Angeles City](http://geohub.lacity.org/)
-
-* [Los Angeles County](https://data.lacounty.gov/)
-
-* [Los Angeles County](https://egis3.lacounty.gov/dataportal/)
-
-* [Orange County](http://data-ocpw.opendata.arcgis.com/)
 
 * [San Francisco City/County](https://datasf.org/)
 
-* [Santa Clara County](http://prod-sccgov.opendata.arcgis.com/)
-
-* [Santa Clara County](https://data.sccgov.org/)
-
 * [San Diego City](https://data.sandiego.gov/)
 
-* [Solano County](http://geohub-doitgis.opendata.arcgis.com/datasets)
-
-* [California State](https://data.ca.gov/)
+* [Fresno City](https://gis-cityoffresno.hub.arcgis.com/)
 
 *Major Cities*
 
 * [Boston](https://data.boston.gov/)
 
 * [New York](https://data.ny.gov/)
-
-* [New York](https://opendata.cityofnewyork.us/data/)
 
 * [Chicago](https://data.cityofchicago.org/)
 
@@ -236,23 +219,42 @@ Here are links to various open data portals in US cities (updated 10/31/18)
 
 * [Balitmore](https://data.baltimorecity.gov/)
 
-* [San Francisco City/County](https://datasf.org/)
-
 * [Seattle](https://data.seattle.gov/)
 
 * [Washington D.C.](http://opendata.dc.gov/)
 
+* [Milwaukee](https://data.milwaukee.gov/)
+
+* [Dallas](https://www.dallasopendata.com/)
+
+* [Denver](https://www.denvergov.org/opendata)
+
+* [San Antonio](https://data.sanantonio.gov/)
+
+* [Kansas City](https://data.kcmo.org/)
+
+* [New Orleans](https://datadriven.nola.gov/home/)
+
+* [Pittsburgh](https://data.wprdc.org/organization/city-of-pittsburgh)
+
+* [St. Louis](https://www.stlouis-mo.gov/data/)
 
 **Looking for more data?**
 
-* Google released a Beta site for a dataset search site akin to Google Scholar, Images, Books and so on.  Check it out [here](https://toolbox.google.com/datasetsearch)
+* Google has a site for searching datasets akin to Google Scholar, Images, Books and so on.  Check it out [here](https://toolbox.google.com/datasetsearch)
 
 * Kaggle is a crowd-sourced platform for all things data science.  This includes competitions, discussion forums, online tutorials, and most importantly, at least for the purpose of this guide, a repository of big data sources.  A lot of these data are not pertinent to this class, but some are; specifically, those with geographic information that allows you to connect data to geographic locations. Check out their datasets [here](https://www.kaggle.com/datasets).
 
 * Esri provides a repository that many of its members use to store various big and open data all in shapefile format.  Check out what's available [here](http://hub.arcgis.com/pages/open-data).
 
+* [Awesome Public Datasets](https://github.com/awesomedata/awesome-public-datasets)
+
+* [Amazon AWS Public Data Sets](https://registry.opendata.aws/)
+
 
 ***
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
 Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
 
