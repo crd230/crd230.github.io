@@ -201,15 +201,15 @@ The schedule is subject to revision throughout the quarter.  Please see the full
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 9-Feb </td>
-   <td style="text-align:left;"> Gentrification </td>
-   <td style="text-align:left;"> Handout 5; Loukaitou-Sideris et al. (2019) </td>
+   <td style="text-align:left;"> Segregation </td>
+   <td style="text-align:left;"> Handout 5a; Logan and Stults (2011) </td>
    <td style="text-align:left;width: 13em; ">  </td>
    <td style="text-align:left;">  </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 11-Feb </td>
-   <td style="text-align:left;"> Segregation </td>
-   <td style="text-align:left;"> Handout 5; Logan and Stults (2011) </td>
+   <td style="text-align:left;"> Neighborhood Opportunity/Disadvantage </td>
+   <td style="text-align:left;"> Handout 5b </td>
    <td style="text-align:left;width: 13em; ">  </td>
    <td style="text-align:left;">  </td>
   </tr>
