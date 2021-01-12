@@ -13,13 +13,20 @@ navbar:
       menu: 
         - text: "Lab 1"
           href: lab1.html
+        - text: "Lab 2"
+          href: lab2.html
     - text: "Other"
       menu: 
         - text: "R tips"
           href: tips.html
         - text: "Data Sources"
           href: ndata.html
-
+        - text: "NHGIS"
+          href: nhgis.html          
+        - text: "PolicyMap"
+          href: policymap.html
+        - text: "Census Geographies"
+          href: censusgeography.html
 output:
   html_document:
     theme: cosmo

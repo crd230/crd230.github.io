@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Downoading data from PolicyMap</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 230: Winter 2021</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+    <li>
+      <a href="lab2.html">Lab 2</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R tips</a>
+    </li>
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+    <li>
+      <a href="nhgis.html">NHGIS</a>
+    </li>
+    <li>
+      <a href="policymap.html">PolicyMap</a>
+    </li>
+    <li>
+      <a href="censusgeography.html">Census Geographies</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Downoading data from PolicyMap</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+CRD 230 - Spatial Methods in Community Research
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>This guide provides step-by-step instructions for downloading data from <a href="https://ucdavis.policymap.com/maps">PolicyMap</a>. PolicyMap is a fully web-based online data and mapping application that gives you access to over 15,000 indicators related to demographics, housing, crime, mortgages, health, jobs and more. Data are available at all common geographies (address, block group, census tract, zip code, county, city, state, Metropolitan area) as well as unique geographies like school districts and political boundaries.</p>
+<p>In this guide, we will download PolicyMap census tract data for the City of Oakland. We will download median housing value. UC Davis provides full access to all PolicyMap tools for staff, students, and faculty. You can access the full site only if you are on campus or logged onto the UC Davis VPN Client. Download the PulseSecure VPN app using the directions outlined <a href="https://www.library.ucdavis.edu/service/connect-from-off-campus/">here</a>. We will download data from the UCD PolicyMap portal and clean up the files in R.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and Loading Packages</strong></h2>
+<p><br />
+</p>
+<p>We’ll be using the package <strong>VIM</strong> in this guide. Install it.</p>
+<pre class="r"><code>install.packages(&quot;VIM&quot;)</code></pre>
+<p>Then load it and the other packages we will be using in this guide.</p>
+<pre class="r"><code>library(tidyverse)
+library(tidycensus)
+library(VIM)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="download-data" class="section level2">
+<h2><strong>Download data</strong></h2>
+<p><br />
+</p>
+<ol style="list-style-type: decimal">
+<li>Navigate to the UC Davis <a href="https://ucdavis.policymap.com/maps">PolicyMap portal</a>. You should see a webpage that looks like the figure below. Note the UC Davis logo on the top right. Go Aggies!</li>
+</ol>
+<center>
+<p><img src="pmpage.png" /></p>
+</center>
+<ol start="2" style="list-style-type: decimal">
+<li>You should see a <em>Location</em> search bar somewhere near the top of the page. Type in “Oakland, CA” in the search bar and <em>Oakland, CA (City)</em> should pop up below - select it.</li>
+</ol>
+<center>
+<p><img src="typeoakland.png" /></p>
+</center>
+<p>You should get a map that highlights Oakland’s boundaries.</p>
+<center>
+<p><img src="oaklandmap1.png" /></p>
+</center>
+<ol start="3" style="list-style-type: decimal">
+<li>The map does not show any data. Let’s add the Median Housing Value. Click on the <em>Housing</em> tab, followed by <em>Median Value</em> under <em>Home Values</em>.</li>
+</ol>
+<center>
+<p><img src="medval.png" /></p>
+</center>
+<p>Now your map should look like the following</p>
+<center>
+<p><img src="medvalmap.png" /></p>
+</center>
+<ol start="4" style="list-style-type: decimal">
+<li>Notice in the legend window you can change various aspects of the variable, including the year</li>
+</ol>
+<center>
+<p><img src="pmyear.png" /></p>
+</center>
+<p>the data type</p>
+<center>
+<p><img src="pmdata.png" /></p>
+</center>
+<p>and the geographic level.</p>
+<center>
+<p><img src="pmgeo.png" /></p>
+</center>
+<p>Leave the defaults (Year: 2014-2018, Variable: Median dollars, and Shaded by: Census Tract, 2010).</p>
+<ol start="5" style="list-style-type: decimal">
+<li><p>Let’s download these data. At the top right of the site, click on the download icon <img src="download.png" />.</p></li>
+<li><p>A window should pop up. The first screen asks you what data to download - it should be “Estimated median value of an owner-occupied home, between 2014-2018” under Layer. Click on the <em>Next, Select Location</em> button</p></li>
+</ol>
+<center>
+<p><img src="pmfirst.png" /></p>
+</center>
+<ol start="7" style="list-style-type: decimal">
+<li>The next screen asks you to select a location. It should be <em>Oakland City, CA (City, 2010)</em> and <em>Shaded by Census Tract</em>. Click on <em>Next, Confirm Download</em>.</li>
+</ol>
+<center>
+<p><img src="pmsecond.png" /></p>
+</center>
+<ol start="8" style="list-style-type: decimal">
+<li><p>The next screen asks you to confirm the download - just click on Download CSV <img src="dlcsv.png" /></p></li>
+<li><p>After a minute or two, a screen like below (on a Mac laptop) should pop up (the file name will differ).</p></li>
+</ol>
+<center>
+<p><img src="downloadcsv.png" /></p>
+</center>
+<p>Save the file into an appropriate folder, such as below (Mac laptop)</p>
+<center>
+<p><img src="pmfolder.png" /></p>
+</center>
+<ol start="10" style="list-style-type: decimal">
+<li>PolicyMap allows you to download only one variable at the time. So, you’ll need to go through the above steps again to get other variables. Follow the same steps above to download these data as a csv into an appropriate folder on your hard drive. For example, to get percent black, navigate to the <em>Demographics</em> tab, then under <em>Race</em> select <em>Black</em>. To download percent Hispanic, navigate to the <em>Demographics</em> tab, then under <em>Ethnicity</em> select <em>Hispanic</em> and finally <em>All</em>.</li>
+</ol>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="data-wrangling-in-r" class="section level2">
+<h2><strong>Data Wrangling in R</strong></h2>
+<p><br />
+</p>
+<p>Bring in the data using <code>read_csv()</code>.</p>
+<pre class="r"><code>pm.file &lt;- read_csv(&quot;##YOUR FILE NAME HERE&quot;)</code></pre>
+<p>We need to clean up the file to get it ready for analysis. The first issue with <em>pm.file</em> is the footnotes located at the bottom of the file. If you view the file in R, the footnotes look like</p>
+<center>
+<p><img src="footnotes3.png" /></p>
+</center>
+<p>To remove the footnotes, use the function <code>slice()</code></p>
+<pre class="r"><code>pm.file &lt;- pm.file %&gt;%
+              slice(-(114:n()))</code></pre>
+<p>The function removes all rows starting from row 114 to the last row in the tibble (last row is indicated by the function <code>n()</code>). Note the negative sign that tells the function to remove the rows. Without the negative sign, the function will instead keep those rows.</p>
+<p>We also need to rename variables and keep the ones that are relevant. First, let’s look at the <em>pm.file</em>’s column names</p>
+<pre class="r"><code>names(pm.file)</code></pre>
+<pre><code>## [1] &quot;Census Tract&quot;                                                    
+## [2] &quot;FIPS Code&quot;                                                       
+## [3] &quot;Formatted FIPS&quot;                                                  
+## [4] &quot;Estimated median value of an owner-occupied home, between 2014-2&quot;</code></pre>
+<p>The variable <em>Estimated median value of an owner-occupied home, between 2014-2</em> contains median housing values. Let’s shorten the name because we would not want to have to type this long name out everytime we want to refer to this variable. Make the name simple and clear. Here, we rename it <em>medval</em> using the <code>rename()</code> function.</p>
+<pre class="r"><code>pm.file &lt;- pm.file %&gt;%
+          rename(medval = &quot;Estimated median value of an owner-occupied home, between 2014-2&quot;)</code></pre>
+<p>We had to put quotes around the original variable name because it had spaces in between.</p>
+<p>Next, let’s keep the necessary variables: <em>FIPS Code</em> and <em>medinc</em>. <em>FIPS Code</em> is the tract GEOID.</p>
+<pre class="r"><code>pm.file &lt;- pm.file %&gt;%
+          select(&quot;FIPS Code&quot;, medval)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="merging-with-census-data" class="section level3">
+<h3><strong>Merging with Census data</strong></h3>
+<p><br />
+</p>
+<p>Let’s bring in some census data from the Census API. We covered how to use <code>get_acs()</code> from the <strong>tidycensus</strong> package in <a href="https://crd230.github.io/lab2.html">Lab 2</a>.</p>
+<pre class="r"><code>ca &lt;- get_acs(geography = &quot;tract&quot;, 
+              year = 2018,
+              variables = c(tpopr = &quot;B03002_001&quot;, 
+                            nhwhite = &quot;B03002_003&quot;, nhblk = &quot;B03002_004&quot;, 
+                            nhasn = &quot;B03002_006&quot;, hisp = &quot;B03002_012&quot;), 
+              state = &quot;CA&quot;,
+              survey = &quot;acs5&quot;)
+
+ca &lt;- ca %&gt;%
+            select(-moe) %&gt;%
+            spread(key = variable, value = estimate)</code></pre>
+<p>Merge in <em>ca</em> into <em>pm.file</em>. The linking variable is <em>FIPS Code</em> in <em>pm.file</em> and <em>GEOID</em> in <em>ca</em>.</p>
+<pre class="r"><code>pm.file &lt;- pm.file %&gt;%
+              left_join(ca, by = c(&quot;FIPS Code&quot; = &quot;GEOID&quot;))</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="dealing-with-missing-values" class="section level3">
+<h3><strong>Dealing with missing values</strong></h3>
+<p><br />
+</p>
+<p>Missing values are a part of a social scientist’s life. You can’t avoid them.</p>
+<p>You will notice that PolicyMap designates missing values as <em>N/A</em>. R designates missing as <em>NA</em>. Therefore, R reads <em>N/A</em> as a character. This means that R does not recognize <em>medval</em> as a numeric but a character.</p>
+<pre class="r"><code>class(pm.file$medval)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<p>We need to replace <em>N/A</em> with <em>NA</em> and then convert it to numeric</p>
+<pre class="r"><code>pm.file &lt;- pm.file %&gt;%
+              mutate(medval = as.numeric(ifelse(medval == &quot;N/A&quot;, &quot;NA&quot;, medval)))</code></pre>
+<p>The code <code>ifelse(medval == "N/A", "NA", medval)</code> says that if the variable <em>medval</em> equals “N/A”, replace it to “NA”, otherwise keep it its original value stored in <em>medval</em>. <code>as.numeric()</code> converts <em>medval</em> to a numeric.</p>
+<pre class="r"><code>class(pm.file$medval)</code></pre>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<p>The next step is to determine what percentage of your cases are missing data. The best function for doing this in R is <code>aggr()</code>, which is in the <strong>VIM</strong> package. Run the <code>aggr()</code> function as follows</p>
+<pre class="r"><code>summary(aggr(pm.file))</code></pre>
+<p><img src="policymap_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<pre><code>## 
+##  Missings per variable: 
+##   Variable Count
+##  FIPS Code     0
+##     medval     2
+##       NAME     0
+##       hisp     0
+##      nhasn     0
+##      nhblk     0
+##    nhwhite     0
+##      tpopr     0
+## 
+##  Missings in combinations of variables: 
+##     Combinations Count   Percent
+##  0:0:0:0:0:0:0:0   111 98.230088
+##  0:1:0:0:0:0:0:0     2  1.769912</code></pre>
+<p>The results show two tables and two plots. The left-hand side plot shows the proportion of cases that are missing values for each variable in the data set. The right-hand side plot shows which combinations of variables are missing. The first table shows the number of cases that are missing values for each variable in the data set. The second table shows the percent of cases missing values based on combinations of variables. The results show that 2 or 1.8% of census tracts are missing values on the variable <em>medval</em>.</p>
+<p>In any statistical analysis, you will need to deal with missing values. For example, if you wanted to find out the average median housing value in Oakland tracts, you would type in</p>
+<pre class="r"><code>mean(pm.file$medval)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<p>The mean is <em>NA</em>, which tells you that there are missing values in the variable <em>medval</em> that you need to deal with before R calculates a value. There are many ways that one can deal with missing data. One method is to just simply ignore or discard cases with a missing value. To do this in the <code>mean()</code> function (and in many other R functions), you include the argument <code>na.rm = TRUE</code></p>
+<pre class="r"><code>mean(pm.file$medval, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 589359.5</code></pre>
+<p>As long as a large proportion of your data set is not missing data, simply ignoring missing data is often acceptable. Just make sure you are transparent about what you did.</p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>
