@@ -1,6 +1,6 @@
 ---
 title: "Comparing Census Geographies"
-subtitle: <h4 style="font-style:normal">CRD 298 - Spatial Methods in Community Research</h4>
+subtitle: <h4 style="font-style:normal">CRD 230 - Spatial Methods in Community Research</h4>
 output: 
   html_document:
     toc: true
@@ -10,7 +10,7 @@ output:
     code_folding: show
 ---
 
-<h4 style="font-style:normal">Winter 2019</h4>
+<h4 style="font-style:normal">Winter 2021</h4>
 
 
 <style>
@@ -23,20 +23,25 @@ border-radius: 5px;
 font-style: italic;
 }
 
-.figure {
-   margin-top: 50px;
-   margin-bottom: 100px;
-}
-
-.html-widget {
-    margin: auto;
-}
-
 h1.title {
   font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
 }
 
 </style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
 
 \
 
@@ -47,9 +52,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 What is the spatial extent of commonly used large-scale geographies and how do they compare in size and area?  Below is a map comparing the Sacramento Metropolitan Area (Grey), Sacramento City (Red), and Sacramento County (Blue).  You can hide and add  layers to see how the geographies compare.   
 
-How do smaller scale geographies typically used to measure neighborhood boundaries compare?  Below is a map comparing Davis [zip codes](https://www.census.gov/geo/reference/zctas.html) (Grey), [tracts](https://www.census.gov/geo/reference/gtc/gtc_ct.html) (blue), and [blocks](https://www.census.gov/geo/reference/gtc/gtc_block.html) (red). Can you find the tract you  currently live in? What about the block?
+How do smaller scale geographies typically used to measure neighborhood boundaries compare?  Below is a map comparing Davis [zip codes](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_20) (Grey), [tracts](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13) (blue), [block groups](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_4) (green), and [blocks](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_5) (red). Can you find the tract you  currently live in? What about the block?
 
-One thing you'll have to be careful about if you're interested in comparing tracts over time - [boundaries change](https://www.census.gov/geo/reference/gtc/gtc_boundarychange.html).  The final map compares Davis tracts in 2000 (red) and 2010 (black). You'll notice that some tracts in 2000 get split up.  Why?  Because there were enough significant population changes within the tract from 2000 to 2010 to warrant a split.  If you are curious, for example, why the tract in East Davis got split up into 3 tracts, check out this side-by-side [Social Explorer map](https://www.socialexplorer.com/65d3c9db2b/view) showing changes in population size in the 3 tracts from 2000 to 2010. I also embedded that map below. Can you tell what happened?
+One thing you'll have to be careful about if you're interested in comparing tracts over time - [boundaries change](https://www.census.gov/programs-surveys/geography/technical-documentation/boundary-change-notes.html).  The final map compares Davis tracts in 2000 (red) and 2010 (black). You'll notice that some tracts in 2000 get split up.  Why?  Because there were enough significant population changes within the tract from 2000 to 2010 to warrant a split.  If you are curious, for example, why the tract in East Davis got split up into 3 tracts, check out this side-by-side [Social Explorer map](https://www.socialexplorer.com/65d3c9db2b/view) showing changes in population size in the 3 tracts from 2000 to 2010. I also embedded that map below. Can you tell what happened?
 
 The code producing each map is shown after the map. 
 
@@ -62,9 +67,7 @@ The code producing each map is shown after the map.
 ```{r include = FALSE, warning = FALSE, message = FALSE}
 library(sf)
 library(tidycensus)
-census_api_key("b81d373d6e785ecbc489de1fc862aef424d0a63a")
 library(tigris)
-options(tigris_class = "sf")
 library(tidyverse)
 library(rmapshaper)
 
@@ -132,7 +135,6 @@ sac.map
 ```{r eval = FALSE, warning = FALSE, message = FALSE}
 #Load in required packages
 library(tigris)
-options(tigris_class = "sf")
 library(tidyverse)
 library(rmapshaper)
 
@@ -204,9 +206,7 @@ davis.map
 ```{r eval = FALSE, warning = FALSE, message = FALSE}
 #Load required packages
 library(tidycensus)
-census_api_key("INSERT YOUR KEY HERE")
 library(tigris)
-options(tigris_class = "sf")
 library(tidyverse)
 library(rmapshaper)
 
@@ -337,5 +337,6 @@ davis.map2
 
 ***
 
-Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
