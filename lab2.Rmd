@@ -476,7 +476,7 @@ cacounty2 <- ca %>%
              mhisp = ifelse(phisp > 0.5, "Majority","Not Majority")) %>%
       left_join(ca.pm, by = "GEOID") %>%
       left_join(nhgis, by = "GEOID") %>%
-      select(GEOID, County, pwhite, pasian, pblack, phisp, mhisp, medinc)
+      select(GEOID, County, pwhite, pasian, pblack, phisp, mhisp, medinc, pfb)
 ```
 
 Let's break down what the pipe is doing here.  First, you start out with your dataset *ca*.  You "pipe" that into the command `select()`.  Notice that you didn't have to type in *ca* inside that command - `%>%` pipes that in for you.  `select()` deletes *moe* and then pipes this result into the command `spread()`, which converts the data from long to wide. The result is piped into `mutate()` which creates the percent race/ethnicity and majority Hispanic variables.  This result is piped into `left_join()` which joins *ca.pm* and then *nhgis*, which is then piped into `select()` to keep necessary variables. Finally, the code saves the result into *cacounty2* which we designated at the beginning with the arrow operator.  

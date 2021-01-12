@@ -818,7 +818,7 @@ ca1</code></pre>
              mhisp = ifelse(phisp &gt; 0.5, &quot;Majority&quot;,&quot;Not Majority&quot;)) %&gt;%
       left_join(ca.pm, by = &quot;GEOID&quot;) %&gt;%
       left_join(nhgis, by = &quot;GEOID&quot;) %&gt;%
-      select(GEOID, County, pwhite, pasian, pblack, phisp, mhisp, medinc)</code></pre>
+      select(GEOID, County, pwhite, pasian, pblack, phisp, mhisp, medinc, pfb)</code></pre>
 <p>Let’s break down what the pipe is doing here. First, you start out with your dataset <em>ca</em>. You “pipe” that into the command <code>select()</code>. Notice that you didn’t have to type in <em>ca</em> inside that command - <code>%&gt;%</code> pipes that in for you. <code>select()</code> deletes <em>moe</em> and then pipes this result into the command <code>spread()</code>, which converts the data from long to wide. The result is piped into <code>mutate()</code> which creates the percent race/ethnicity and majority Hispanic variables. This result is piped into <code>left_join()</code> which joins <em>ca.pm</em> and then <em>nhgis</em>, which is then piped into <code>select()</code> to keep necessary variables. Finally, the code saves the result into <em>cacounty2</em> which we designated at the beginning with the arrow operator.</p>
 <p>Piping makes code clearer, and simultaneously gets rid of the need to define any intermediate objects that you would have needed to keep track of while reading the code. PIPE, Pipe, and pipe whenever you can. Badge it!</p>
 <center>
