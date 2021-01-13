@@ -264,7 +264,7 @@ By learning how to read in data the tidy way, you've earned another badge! Hoora
 
 <div style="margin-bottom:25px;">
 </div>
-### **NGHIS**
+### **NHGIS**
 \
 
 The other Census data file we downloaded are from the NHGIS, which is a very user friendly resource for downloading all sorts of community data.  I highlight NHGIS here because the package **ipumsr** offers a neat and efficient way of bringing NHGIS data into R.  
