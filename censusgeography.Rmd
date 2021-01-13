@@ -82,7 +82,7 @@ zips <- zctas(cb=TRUE, state = "CA")
 ca.tracts.2000 <- tracts(state ="CA", cb = TRUE, year = 2000)
 ca.tracts.2000<-st_transform(ca.tracts.2000, crs=st_crs(ca.tracts))
 
-sac.metro <- filter(cb, NAME =="Sacramento--Roseville--Arden-Arcade, CA")
+sac.metro <- filter(cb, NAME =="Sacramento-Roseville-Folsom, CA")
 sac.city <- filter(pl, NAME == "Sacramento")
 sac.county <- filter(cnty, NAME == "Sacramento")
 davis.city <- filter(pl, NAME == "Davis")
@@ -144,7 +144,7 @@ pl <- places(state = "CA", cb = TRUE)
 cnty <- counties(state ="CA", cb = TRUE)
 
 #subset to Sacramento metro, county, and city
-sac.metro <- filter(cb, NAME =="Sacramento--Roseville--Arden-Arcade, CA")
+sac.metro <- filter(cb, NAME =="Sacramento-Roseville-Folsom, CA")
 sac.city <- filter(pl, NAME == "Sacramento")
 sac.county <- filter(cnty, NAME == "Sacramento")
 ```
