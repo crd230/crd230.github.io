@@ -385,6 +385,9 @@ div.tocify {
     <li>
       <a href="lab2.html">Lab 2</a>
     </li>
+    <li>
+      <a href="lab3.html">Lab 3</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -839,9 +842,9 @@ ca1</code></pre>
 <p><img src="subsetrows.png" /></p>
 </center>
 <p>The first argument in the parentheses of this command is the name of the data frame. The second and any subsequent arguments (separated by commas) are the expressions that filter the data frame. For example, we can select Sacramento county using its <a href="https://www.nrcs.usda.gov/wps/portal/nrcs/detail/ca/home/?cid=nrcs143_013697">FIPS code</a></p>
-<pre class="r"><code>filter(cacounty2, GEOID == 6067)</code></pre>
+<pre class="r"><code>filter(cacounty2, GEOID == &quot;06067&quot;)</code></pre>
 <p>The double equal operator <code>==</code> means equal to. We can also explicitly exclude cases and keep everything else by using the not equal operator <code>!=</code>. The following code <em>excludes</em> Sacramento county.</p>
-<pre class="r"><code>filter(cacounty2, GEOID != 6067)</code></pre>
+<pre class="r"><code>filter(cacounty2, GEOID != &quot;06067&quot;)</code></pre>
 <p>What about filtering if a county has a value greater than a specified value? For example, counties with a percent white greater than 0.5 (50%).</p>
 <pre class="r"><code>filter(cacounty2, pwhite &gt; 0.5)</code></pre>
 <p>What about less than 0.5 (50%)?</p>
@@ -850,8 +853,8 @@ ca1</code></pre>
 <pre class="r"><code>filter(cacounty2, pwhite &lt;= 0.5)</code></pre>
 <p>In addition to comparison operators, filtering may also utilize logical operators that make multiple selections. There are three basic logical operators: <code>&amp;</code> (and), <code>|</code> is (or), and <code>!</code> is (not). We can keep counties with <em>phisp</em> greater than 0.5 <strong>and</strong> <em>medinc</em> greater than 50000 percent using <code>&amp;</code>.</p>
 <pre class="r"><code>filter(cacounty2, phisp &gt; 0.5 &amp; medinc &gt; 50000)</code></pre>
-<p>Use <code>|</code> to keep counties with a <em>GEOID</em> of 6067 (Sacramento) <strong>or</strong> 6113 (Yolo) <strong>or</strong> 6075 (San Francisco)</p>
-<pre class="r"><code>filter(cacounty2, GEOID == 6067 | GEOID == 6113 | GEOID == 6075)</code></pre>
+<p>Use <code>|</code> to keep counties with a <em>GEOID</em> of 06067 (Sacramento) <strong>or</strong> 06113 (Yolo) <strong>or</strong> 06075 (San Francisco)</p>
+<pre class="r"><code>filter(cacounty2, GEOID == &quot;06067&quot; | GEOID == &quot;06113&quot; | GEOID == &quot;06075&quot;)</code></pre>
 <p>You’ve now earned another Tidy badge. Congratulations!</p>
 <center>
 <p><img src="dplyr.png" style="width:25.0%" /></p>

@@ -1,0 +1,724 @@
+---
+title: "Lab 3: Spatial Data in R"
+subtitle: <h4 style="font-style:normal">CRD 230 - Spatial Methods in Community Research</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">January 19, 2021</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #bdced6;
+padding: 10px;
+border: 0px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+
+In this guide you will acquire the skills needed to process and present spatial data in R.  The objectives of the guide are as follows 
+
+
+1. Understand how spatial vector data are processed in R.
+2. Learn spatial operations on polygon shapefile data.
+3. Learn how to use areal interpolation to attach census data to non census boundaries.
+4. Learn how to make a map.
+
+
+This lab guide follows closely and supplements the material presented in Chapters 2.1, 4.2, and 8 in the textbook [Geocomputation with R](https://geocompr.robinlovelace.net/) (GWR) and the Spatial Data class handout .  This guide focuses exclusively on polygon data.  You will have the opportunity to handle and examine point data in Lab 4.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+You'll need to install the following packages in R.  You only need to do this once, so if you've already installed these packages, skip the code.  Also, don't put these `install.packages()` in your R Markdown document.  Copy and paste the code in the R Console.  We'll talk about what functions these packages provide as their relevant functions come up in the guide.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+install.packages("rmapshaper")
+install.packages("tigris")
+install.packages("sf")
+install.packages("tmap")
+install.packages("areal")
+install.packages("leaflet")
+```
+
+You'll need to load the following packages.  Unlike installing, you will *always* need to load packages whenever you start a new R session. You'll always need to use `library()` in your R Markdown file. 
+
+```{r warning = FALSE, message = FALSE}
+library(tidyverse)
+library(tidycensus)
+library(sf)
+library(tigris)
+library(rmapshaper)
+library(tmap)
+library(areal)
+library(leaflet)
+```
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Spatial data in R**
+\
+
+There are two main packages for dealing with spatial data in R: **sp** and **sf**.
+
+* **sp** has been around since 2005, and thus has a rich ecosystem of tools built on top of it. However, it uses a rather complex data structure, which can make it challenging to use.
+* **sf** is newer (first released in 2016!) so it doesn’t have such a rich ecosystem. However, it’s much easier to use and fits in very naturally with the tidyverse.  The trend is gradually shifting towards the use of **sf** as the primary spatial package.
+
+Processing spatial data is very similar to nonspatial data thanks to the package **sf**, which is *tidy friendly*.  The non-tidy package **sp** is still used quite a bit, and you'll be relying on this package to do more complicated spatial analyses in future labs.  However, because R spatial is trending towards **sf**, we will use it over **sp** whenever possible.
+
+**sf** stands for simple features.  The [Simple Features standard](https://en.wikipedia.org/wiki/Simple_Features) defines a simple feature as a representation of a real world object by a point or points that may or may not be connected by straight line segments to form lines or polygons. A feature is thought of as a thing, or an object in the real world, such as a building or a tree.  A county can be a feature. As can a city and a neighborhood.   Features have a geometry describing where on Earth the features are located, and they have attributes, which describe other properties. Think back to Lab 2 - we were working with counties.  The difference between what we were doing last week and what we will be doing in this lab is that counties in Lab 2 had attributes (e.g. percent Hispanic, total population), but they did not have geometries. This is what separates nonspatial and spatial data in R.  
+
+<div style="margin-bottom:25px;">
+</div>
+## **Bringing in spatial data**
+\
+
+We'll be primarily working with object (or vector) data in shapefile format in this class.  [Shapefiles](https://en.wikipedia.org/wiki/Shapefile) are not the only type of spatial data, but they are the most commonly used. Let's be clear here: **sf** objects are R specific and shapefiles are a general format of spatial data.  This is like tibbles are R specific and csv files are a general format of non spatial data. 
+
+There are two major packages for bringing in Census geographic boundary shapefiles into R: **tidycensus** and **tigris**.  These packages allow users to directly download and use [TIGER Line shapefiles](https://www.census.gov/geo/maps-data/data/tiger-line.html) from the Census Bureau. If you need a reminder of the major Census geographies, review Handout 1.
+
+<div style="margin-bottom:25px;">
+</div>
+### **tidycensus**
+\
+
+In Week 2's lab, we worked with the **tidycensus** package and the Census API to bring in Census data into R.  We can use the same commands to bring in Census geography. If you haven't already, make sure to [sign up for and install your Census API key](https://crd230.github.io/lab2.html#Using_the_Census_API).
+  Use the `get_acs()` command to bring in California tract-level race/ethnicity counts, total population, and total number of households. How did I find the variable IDs? Check [Lab 2](https://crd230.github.io/lab2.html#Using_the_Census_API). Since we want tracts, we'll use the `geography = "tract"` argument.
+
+```{r warning=FALSE, results="hide", message=FALSE}
+ca.tracts <- get_acs(geography = "tract", 
+              year = 2018,
+              variables = c(tpopr = "B03002_001", 
+                            nhwhite = "B03002_003", nhblk = "B03002_004", 
+                            nhasn = "B03002_006", hisp = "B03002_012",
+                            tothhs = "B11001_001"), 
+              state = "CA",
+              survey = "acs5",
+              geometry = TRUE)
+```
+
+The only difference between the code above and what we used in Week 2 is we have one additional argument added to the `get_acs()` command: `geometry = TRUE`.  This tells R to bring in the spatial features associated with the geography you specified in the command, in the above case California tracts. Lets take a look at our data.
+
+```{r}
+ca.tracts
+```
+
+The object looks much like a basic tibble, but with a few differences.  
+
+* You'll find that the description of the object now indicates that it is a simple feature collection with 48,342 features (tracts-by-variable) with 5 fields (attributes or columns of data).  
+* The `geometry_type` indicates that the spatial data are in `MULTIPOLYGON` form (as opposed to points or lines, the other basic vector data forms).  
+* `bbox` stands for bounding box, which indicates the spatial extent of the features (from left to right, for example, California tracts go from a longitude of -124.4096 to -114.1312).  
+* `epsg` and `proj4string` are related to the coordinate reference system, which we'll touch on in next week's lab.  
+* The final difference is that the data frame contains the column *geometry*.  This column (a [list-column](https://r4ds.had.co.nz/many-models.html#list-columns-1)) contains the geometry for each observation.  
+
+At its most basic, an **sf** object is a collection of simple features that includes attributes and geometries in the form of a data frame. In other words, it is a data frame (or tibble) with rows of features, columns of attributes, and a special column always named *geometry* that contains the spatial aspects of the features. 
+
+If you want to peek behind the curtain and learn more about the nitty gritty details about simple features, check out the official **sf** [vignette](https://r-spatial.github.io/sf/articles/sf1.html). 
+
+
+<div style="margin-bottom:25px;">
+</div> 
+### **tigris package**
+\
+
+Another package that allows us to bring in census geographic boundaries is **tigris**.  [Here](https://github.com/walkerke/tigris/blob/master/README.md) is a list of all the boundaries you can download through this package.  Let's use the function `core_based_statistical_areas()` to bring in boundaries for all [metropolitan and micropolitan areas](https://www.census.gov/programs-surveys/metro-micro/about.html) in the United States.
+
+```{r warning=FALSE, message=FALSE, results = FALSE}
+cb <- core_based_statistical_areas(year = 2018, cb = TRUE)
+```
+
+The `cb = TRUE`  argument tells R to download a [generalized cartographic boundary](https://www.census.gov/programs-surveys/geography/technical-documentation/naming-convention/cartographic-boundary-file.html) file, which drastically reduces the size of the data (compare the file size when you don't include `cb = TRUE`).  The argument `year=2018` tells R to bring in the boundaries for that year (census geographies can change from year to year). When using the multi-year ACS, best to use the end year of the period. In the `get_acs()` command above we used `year=2018`, so also use `year=2018` in the `core_based_statistical_areas()` command.
+
+We then use `filter()` to keep the Sacramento metropolitan area.  In order to do this, we can use the function `grepl()` within the `filter()` function. 
+
+```{r}
+sac.metro <- filter(cb, grepl("Sacramento", NAME))
+```
+
+The function `grepl()` tells the command `filter()` to find features (rows) with the value "Sacramento" somewhere in their value for the variable *NAME*. This is useful when we don't know the exact name of an area (the full name of the Sacramento metro area is "Sacramento--Roseville--Arden-Arcade, CA").
+
+Let's also bring in the boundaries for Sacramento city.  Use the `places()` function to get all [places](https://www2.census.gov/geo/pdfs/reference/GARM/Ch9GARM.pdf) in California.
+
+```{r warning=FALSE, message=FALSE, results = FALSE}
+pl <- places(state = "CA", year = 2018, cb = TRUE)
+```
+
+Then use `filter()` to keep Sacramento.
+
+```{r warning=FALSE, message=FALSE, results = FALSE}
+sac.city <- filter(pl, NAME == "Sacramento")
+```
+
+I use `NAME ==` here instead of `grepl()` because I already know the full name of Sacramento and I didn't want to include West Sacramento.  Note that unlike the **tidycensus** package, **tigris** does not allow you to attach attribute data (e.g. percent Hispanic, total population, etc.) to geometric features.  However, **tigris** has one important advantage: you get a badge for learning about it.  Hooray!
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/tigris_sticker.png){ width=25% }
+
+</center>
+
+<div style="margin-bottom:25px;">
+</div> 
+### **Reading from your hard drive**
+\
+
+Directly reading spatial files using an API is great, but doesn't exist for many spatial data sources. You'll often have to download a spatial data set, save it onto your hard drive and read it into R.  The function for reading spatial files is `st_read()`.
+
+I downloaded a [Sacramento Council Districts](https://www.cityofsacramento.org/-/media/Corporate/Files/GIS/Maps/Council_All_A.pdf?la=en) shapefile from Sacramento's [open data portal](http://data.cityofsacramento.org/).  I zipped up the file and uploaded it onto Github.  Set your working directory to an appropriate folder (type `getwd()` to see your current working directory and `setwd()` to set the working directory) and use the following code to download and unzip the file.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+setwd("insert your pathway here")
+download.file(url = "https://raw.githubusercontent.com/crd230/data/master/Council_Districts.zip", destfile = "Council_Districts.zip")
+unzip(zipfile = "Council_Districts.zip")
+```
+
+```{r warning = FALSE, message = FALSE, include = FALSE}
+download.file(url = "https://raw.githubusercontent.com/crd230/data/master/Council_Districts.zip", destfile = "Council_Districts.zip")
+unzip(zipfile = "Council_Districts.zip")
+```
+
+Don't worry if you don't understand these commands - they are more for you to simply copy and paste so that you can download files that I zipped up and uploaded onto GitHub.  You can look at the help documentation for each function if you are curious.
+
+You should see the *Council_Districts* files in your working directory folder. Bring in the council district boundary file using `st_read()`.  You'll need to add the *.shp* extension so that the function knows it's reading in a shapefile.
+
+```{r warning = FALSE, message = FALSE, results = "hide"}
+cdist <- st_read("Council_Districts.shp")
+```
+
+We'll be using *cdist* a little later in the lab guide.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Data Wrangling**
+\
+
+There is a lot of stuff [behind the curtain](https://www.jessesadler.com/post/simple-feature-objects/) of how R handles spatial data as simple features, but the main takeaway is that **sf** objects are data frames.  This means you can use many of the **tidyverse** functions we've learned in the past lab to manipulate **sf** objects, including the pipe `%>%` operator. For example, let's do the following data wrangling tasks on *ca.tracts*.
+
+1. Drop the *moe* variable
+2. Convert the dataset from long to wide
+3. Break up the column *NAME* into separate tract, county and state variables
+
+We do all of this in one line of continuous code using the pipe operator `%>%`
+
+```{r}
+ca.tracts <- ca.tracts %>%
+              select(-(moe)) %>%
+              spread(key = variable, value = estimate) %>%
+              separate(NAME, c("Tract", "County", "State"), sep = ", ")
+```
+
+Another important data wrangling operation is to join attribute data to an **sf** object.  For example, let's say you wanted to add tract level median household income, which is located in a csv file I've uploaded on GitHub, to the file *ca.tracts *.  Read the file in using the following code.
+
+```{r warning=FALSE, message=FALSE}
+ca.inc <- read_csv("https://raw.githubusercontent.com/crd230/data/master/ca_med_inc_2018.csv")
+```
+
+Remember, an *sf* object is a data frame, so we can use `left_join()`, which we covered in [Lab 2](https://crd230.github.io/lab2.html#Joining_tables), to join the files *ca.inc* and *ca.tracts*
+
+```{r results = "hide"}
+ca.tracts <- ca.tracts %>%
+  left_join(ca.inc, by = "GEOID")
+
+glimpse(ca.tracts)
+```  
+
+We use the function `tm_shape()` from the **tmap** package to map the data. We'll go into more detail on how to use `tm_shape()` for mapping later in this guide, so for now just type in
+
+```{r}
+tm_shape(ca.tracts) +
+  tm_polygons()
+```
+
+You've made your first map in R (at least in this class). Whoopee! 
+
+
+<p class="comment">**Exercise**: Map tracts just in Yolo County</p>
+
+```{r echo = FALSE, results = "hide", fig.show='hide'}
+ca.tracts %>%
+  filter(County == "Yolo County") %>%
+  tm_shape() +
+  tm_polygons()
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Spatial Data Wrangling**
+\
+
+There is Data Wrangling and then there is *Spatial Data Wrangling*. Cue [dangerous sounding music](https://www.youtube.com/watch?v=cphNpqKpKc4). Well, it's not that dangerous or scary. Spatial Data Wrangling involves cleaning or altering your data set based on the geographic location of features. The **sf** package offers a suite of functions unique to wrangling spatial data.  Most of these functions start out with the prefix `st_`.  To see all of the functions, type in
+
+```{r, results="hide"}
+methods(class = "sf")
+```
+
+We won't go through all of these functions as the list is quite extensive.  You can take a look at Chapters 4 and 5 of GWR to see some examples of these functions.  We'll also go through spatial wrangling specific to points in Lab 4. But, we'll go through a few relevant spatial operations for this class below.  The function we will be primarily using is `st_join()`.
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Intersect**
+\
+
+A common spatial data wrangling issue is to subset a set of spatial objects based on their location relative to another spatial object.  In our case, we want to keep California tracts that are in the Sacramento metro area.  Think of what were doing here as something similar to taking a cookie cutter shaped like the Sacramento metro area (in our case, the **sf** object *sac.metro*) and cutting out the metro area from a cookie dough of census tracts (*ca.tracts*).   We can do this using the `st_join()` function and specify  `join = st_intersects` 
+
+```{r warning=FALSE, message=FALSE, results = "hide"}
+sac.metro.tracts.int <- st_join(ca.tracts, sac.metro, 
+                                join = st_intersects, left=FALSE)
+```
+
+The above code tells R to identify the polygons in *ca.tracts* that intersect with the polygon *sac.metro*.  We indicate we want a polygon intersection by specifying `join = st_intersects`.  The option `left=FALSE` tells R to eliminate the polygons from *ca.tracts* that do not intersect (make it `TRUE` and see what happens). Plotting our tracts, we get
+
+```{r}
+tm_shape(sac.metro.tracts.int) +
+  tm_polygons(col = "blue") +
+tm_shape(sac.metro) +  
+  tm_borders(col = "red")
+```
+
+<p class="comment">**Exercise**: The opposite of `st_intersects is st_disjoint`. If two geometries are disjoint, they do not intersect, and vice-versa. Replace `join = st_intersects` with `join = st_disjoin` and see what you get.</p>
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Within**
+\
+
+
+Do you see an issue with the tracts *sac.metro.tracts.int*?  Using `join = st_intersects` returns all tracts that **intersect** *sac.metro*, which include those that **touch** the metro's boundary. No bueno, dudes. We can instead use the argument  `join = st_within` to return tracts that are completely *within* the metro. 
+
+```{r warning=FALSE, message=FALSE}
+sac.metro.tracts.w <- st_join(ca.tracts, sac.metro, join = st_within, left=FALSE)
+
+tm_shape(sac.metro.tracts.w) +
+  tm_polygons(col = "blue") +
+tm_shape(sac.metro) +
+  tm_borders(col = "red")
+```
+
+Now it works! Huzzah!
+
+
+If you look at the at *sac.metro.tracts.w*'s attribute table, you'll see it includes all the variables from both *ca.tracts* and *sac.metro*. We don't need these variables, so use `select()` to eliminate them.  You'll also notice that if variables from two data sets share the same name, R will keep both and attach a *.x* and *.y*  to the end. For example, *GEOID* was found in both *ca.tracts* and *sac.metro*, so R named one *GEOID.x* and the other that was merged in was named *GEOID.y*.
+
+```{r}
+names(sac.metro.tracts.w)
+```
+
+Keep the necessary variables and rename *GEOID.x* back to *GEOID*.
+
+```{r warning=FALSE, message=FALSE}
+sac.metro.tracts.w <- sac.metro.tracts.w %>%
+      select(GEOID.x:tpopr) %>%
+      rename(GEOID = "GEOID.x")
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Clipping**
+\
+
+Census tracts neatly fall within a metropolitan area's boundary, as it does for counties and states.  In other words, tracts don't spill over.  But, it does spill over for cities (remember the census geography hierarchy diagram from Handout 1).  The left diagram in the figure below is an example of a metro area in red and tracts in black - all the tracts fall neatly into the metro boundary.  In contrast, the right diagram is an example of a city - one tract falls neatly inside (top left), but the other three spill out.
+
+
+<center>
+![Tracts falling in (Metro) and out (City) of boundaries](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/example1.png)
+
+</center>
+
+If we use `st_join()` with `st_within` for Sacramento city, we'll produce the following plot
+
+```{r warning=FALSE, message=FALSE}
+sac.city.tracts.w = st_join(ca.tracts, sac.city, join = st_within, left=FALSE)
+
+tm_shape(sac.city.tracts.w) +
+  tm_polygons(col = "blue") +
+tm_shape(sac.city) +
+  tm_borders(col = "red")
+```
+
+Can you guess what is going on here?
+
+The blue polygons are the tracts we kept. You'll notice that the city is empty around some of the edges of its boundary.  In these cases, only portions of census tracts are within the boundary. `st_within` keeps tracts only if they are *completely within* the boundary.  
+
+You can designate tracts as being a part of a city if it's only within the boundaries.  But, there are other ways.  One way is to clip the portion of the tract that is inside the boundary.  Clipping keeps just the portion of the tract inside the city boundary and discards the rest of the tract.  We use the function `ms_clip()` which is in the [**rmapshaper**](https://cran.r-project.org/web/packages/rmapshaper/rmapshaper.pdf) package.  In the code below, `target = ca.tracts` tells R to cut out *ca.tracts* using the *sac.city* boundaries, which we specify in the `clip =` argument.
+
+```{r warning=FALSE, message=FALSE}
+sac.city.tracts.c <- ms_clip(target = ca.tracts, clip = sac.city, remove_slivers = TRUE)
+
+tm_shape(sac.city.tracts.c) +
+  tm_polygons(col = "blue") +
+tm_shape(sac.city) +
+  tm_borders(col = "red")
+```
+
+Now, the city is filled in with tracts. To be clear what a clip is doing, the figure below shows a clip of the city example shown in the conceptual figure above.  One tract is not clipped because it falls completely within the city (the top left tract). But, the other three are clipped - the portions that are within the boundary are kept (in blue), and the rest (with hash marks) are discarded from the map.  Basically, clipping keeps any tract that is either within or crosses the city boundary, clipping out the portion of the tract that is outside of the boundary.
+
+Because spatial data are not always precise, when you clip you'll sometimes get unwanted [sliver polygons](https://en.wikipedia.org/wiki/Sliver_polygon). The argument `remove_slivers = TRUE` removes these slivers.
+
+<center>
+![Clipping tracts](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/clip.png)
+
+</center>
+
+
+The function `st_overlaps` is the opposite of `st_within`.  Replace `join = st_within` with `join = st_overlaps` to see what this spatial operation produces.  Play around with the other `st_` options and see what you get (type in `? st_join` to find all the options).
+
+<div style="margin-bottom:25px;">
+</div>
+### **Areal Interpolation**
+\
+
+The traditional measure of neighborhoods in the United States is the census tract.  However, other non-Census boundary definitions exist.  Examples include school attendance boundaries, electoral boundaries, and police districts. More often than not, these boundaries won't have demographic information attached to them.  Moreover, census tracts (or blocks) are not completely nested inside, so you can't just simply add them up. The problem is we want to attach resident characteristics derived from the census to these non-traditional boundaries. Areal interpolation is a common method for dealing with this issue.  
+
+Let's use Sacramento Council Districts, the main local governing body in the city, as an example. There are [eight districts](https://www.cityofsacramento.org/-/media/Corporate/Images/GIS/PreviewImage/Council_All_large.jpg?la=en) in Sacramento and tracts do not neatly nest within these districts.  Some tracts overlap two or more districts.  The goal is to estimate the total population, the population by race/ethnicity, and median household income in each council district.  We already downloaded and brought into R a council district shapefile. Map it.
+
+```{r warning = FALSE, message = FALSE, results = "hide"}
+tm_shape(cdist) +
+  tm_polygons()
+```
+
+
+In order to proceed, we need to have the *ca.tracts* and *cdist* data sets in the same Coordinate Reference System (CRS). Don't worry yet about what this means - we will cover it in the next lab.  If you are curious, I uploaded a pdf - Coordinate_Reference_Systems.pdf - in the Other Resources folder on Canvas in case you want to jump ahead and find out what a CRS is. Briefly, a CRS refers to the way in which spatial data that represent the earth’s surface (which is round and three dimensional) are flattened so that you can "Draw" them on a 2-dimensional surface (like a map). In other words, a CRS is a coordinate-based local, regional or global system used to locate geographical entities. We're going to use UTM Zone 10/NAD83 as the CRS for *ca.tracts* and *cdist*.  To change the CRS of spatial data (known as reprojecting), use the `st_transform()` function.
+
+```{r}
+ca.tracts <- st_transform(ca.tracts, crs = "+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80")
+cdist <- st_transform(cdist, crs = "+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80")
+```
+
+Note that the only spaces allowed when specifying the `crs` is in between each argument.  For example, there should be no space in between `+` and `datum` or `datum` and `=` or `=` and `NAD83`.  They should be all together.  On the other hand, there should be a space between `NAD83` and `+ellps=GRS80`.
+
+Areal interpolation matches census tract data to districts using the following general steps:
+
+1.  All your demographic variables should be counts where possible.  That is, you will be interpolating the number of black residents not percent black.  For variables that you cannot get counts for like median household income, you'll have to convert it to an aggregate count. For median household income, this would involve multiplying median income by total households to get an estimated count of total income dollars.
+
+```{r}
+ca.tracts <- ca.tracts %>%
+              mutate(incagg = medinc*tothhs)
+```
+
+2. Calculate the proportion of the tract that is within a district.  This is your areal interpolation weight.
+    + If tract 1's area is 1,000 and half of the tract is in district 1 and the other half is in district 2, then tract 1-district 1 and tract 1-district 2 have weights of 0.5.
+3. Multiply the count characteristics by the areal interpolation weight.  
+    + If tract 1's total black population is 1,000, you would multiply 1,000 by 0.5.  You are allocating 500 of tract 1's black population to district 1 and the other 500 to district 2. 
+4. Sum up each tract's contribution to the district to get the areal weighted estimated count for that district.
+    + If district 1 also contains tract 2, and tract 2's total black population is 500 and its areal weight is 0.25, then the black population from tract 2 that is allocated to district 1 is 500 x 0.25 = 125.  District 1's total black population is then 500 + 125 = 625.
+
+Rather than doing all of this manually, we can use the function `aw_interpolate()` which is a part of the **areal** package.
+
+```{r}
+cdist.aw <- aw_interpolate(cdist, tid = DISTNUM, source = ca.tracts, sid = GEOID, weight = "total", output = "sf", extensive = c("hisp", "nhasn", "nhblk", "nhwhite", "tpopr", "incagg", "tothhs"))
+```
+
+The first argument is the **sf** object you want to interpolate to, in our case *cdist*.  `tid` is the unique ID variable in *cdist*. `source =` is the **sf** object with that data to be interpolated to *cdist*, in our case *ca.tracts*.  `sid` is the unique ID variable in *ca.tracts*. The argument `weight =` characterizes the nature of the data, the relationship between the source and target features, and thus how the areal weight is calculated. The *total* approach to calculating weights assumes that, if a source feature is only covered by 99.88% of the target features, only 99.88% of the source target’s data should be allocated to target features in the interpolation. The other option is the *sum* approach, which assumes that 100% of the source data should be divided among the target features.  The argument `output = "sf"` tells R that we want the resulting interpolated object to be an **sf** object.  Finally, `extensive` identifies the count variables in *ca.tracts* we want to interpolate. If you would like to go deeper into interpolation methods, check out the `aw_interpolate()` [vignette](https://cran.r-project.org/web/packages/areal/vignettes/areal-weighted-interpolation.html).
+
+Take a glimpse of the object
+
+```{r}
+glimpse(cdist.aw)
+```
+
+We've got counts at the council district level. To calculate the proportions of race/ethnicity and median income, use the `mutate()` function
+
+```{r}
+cdist.aw <- cdist.aw %>%
+            mutate(phisp = hisp/tpopr, pasian = nhasn/tpopr, pblack = nhblk/tpopr,
+                   pwhite = nhwhite/tpopr, medinc = incagg/tothhs)
+```
+
+
+We're done! Go ahead, click it.
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/easy.jpg)
+
+</center>
+
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Saving shapefiles**
+\
+
+To save an **sf** object, we use the function `st_write()` and specify at least two arguments, the object and a file name in quotes with the file extension. You'll also need to specify `delete_layer = TRUE` which overwrites the existing file if it already exists in your current working directory folder.  Make sure you've set your directory to the folder you want your file to be saved in.  
+
+```{r message=FALSE, results = "hide"}
+st_write(sac.city.tracts.c, "saccitytracts.shp", delete_layer = TRUE)
+```
+
+You can save your **sf** object in a number of different data formats other than `shp`.  We won't be concerned too much with these other formats, but you can see a list of them [here](https://www.gdal.org/ogr_formats.html).
+
+<div style="margin-bottom:25px;">
+</div>
+## **Mapping in R**
+\
+
+There are several functions in R that can be used for mapping.  We won't go through all of them, but GWR outlines the range of mapping packages available in Table 8.1.  We'll go through two of them: **tmap** and **leaflet** 
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **tmap**
+\
+
+**tmap** is a series of functions that build on one another. The foundation is `tm_shape()`.  You then build on `tm_shape()` by adding one or more elements such as `tm_polygons()` for polygons, `tm_borders()` for lines, and `tm_dots()` for points. All additional functions take on the form of `tm_`.  Check the full list of `tm_` elements [here](https://www.rdocumentation.org/packages/tmap/versions/2.0/topics/tmap-element).
+
+Let's make a static choropleth map of median household income in Sacramento city.
+
+```{r}
+tm_shape(sac.city.tracts.c) +
+  tm_polygons(col = "medinc", style = "quantile")
+```
+
+You first put the dataset *sac.city.tracts.c* inside `tm_shape()`. Because you are plotting polygons, you use `tm_polygons()` next. The argument `col = "medinc"` tells R to shade (or color) the tracts by the variable *medinc*.  The argument `style = "quantile"` tells R to break up the shading into quantiles, or equal groups of 5.   **tmap** allows users to specify algorithms to automatically create breaks with the `style` argument.  Seven of the most useful break styles are described in GWR 8.2.4.
+
+
+We can change the color scheme using arguments within `tm_polygons()`. The argument `palette =` defines the color ranges associated with the bins and determined by the `style` arguments.  Below we use the color scheme "Reds". 
+
+
+```{r}
+tm_shape(sac.city.tracts.c) +
+  tm_polygons(col = "medinc", style = "quantile",palette = "Reds") 
+```
+
+The current tract border color makes it difficult to see the changes in color from one tract to the next, especially in areas where there are a lot of smaller tracts.  We can make the borders transparent using the `border.alpha` argument.
+
+```{r}
+tm_shape(sac.city.tracts.c) +
+  tm_polygons(col = "medinc", style = "quantile",palette = "Reds", 
+              border.alpha = 0) 
+```
+
+We set `border.alpha` to 0 to indicate totally transparent. This eliminates the border colors between tracts. 
+
+See Ch. 8.2.4 in GWR for a fuller discussion on color and other schemes you can specify.
+
+<div style="margin-bottom:25px;">
+</div>
+### **Scale bar and arrow**
+\
+
+We need to add other key elements to the map.  First, the scale bar, which you can add using the function `tm_scale_bar()`
+
+```{r}
+tm_shape(sac.city.tracts.c, unit = "mi") +
+  tm_polygons(col = "medinc", style = "quantile",palette = "Reds", 
+              border.alpha = 0) +
+  tm_scale_bar(breaks = c(0, 2, 4), text.size = 0.75, position = c("left", "bottom")) 
+```
+
+The argument `breaks` tells R the distances to break up and end the bar.  The argument `position` places the scale bar on the bottom left part of the map. Note that the scale is in miles (were in America!).  The default is in kilometers (the rest of the world!), but you can specify the units within `tm_shape()` using the argument `unit`. `text.size` scales the size of the bar smaller (below 1) or larger (above 1).
+  
+Next element is the north arrow, which we can add using the function `tm_compass()`.  You can control for the type, size and location of the arrow within this function.  I place a 4-star arrow on the top right of the map.
+
+```{r}
+tm_shape(sac.city.tracts.c, unit = "mi") +
+  tm_polygons(col = "medinc", style = "quantile",palette = "Reds", 
+              border.alpha = 0) +
+  tm_scale_bar(breaks = c(0, 2, 4), text.size = 0.75, position = c("left", "bottom")) +
+  tm_compass(type = "4star", position = c("right", "top")) 
+```
+
+<div style="margin-bottom:25px;">
+</div>
+### **Map layout**
+\
+
+We can make the map *prettier* by changing a variety of layout settings using the function `tm_layout()`.  Let's change a few things to our map.
+
+```{r, message=FALSE, warning = FALSE, results = "hide"}
+sac.map <- tm_shape(sac.city.tracts.c, unit = "mi") +
+  tm_polygons(col = "medinc", style = "quantile",palette = "Reds", 
+              border.alpha = 0, title = "Median income") +
+  tm_scale_bar(breaks = c(0, 2, 4), text.size = 0.75, position = c("left", "bottom")) +
+  tm_compass(type = "4star", position = c("right", "bottom")) + 
+  tm_layout(main.title = "Median income in Sacramento City Tracts",
+            main.title.size = 0.95, frame = FALSE,
+            legend.outside = TRUE, legend.outside.position = "right")
+sac.map
+```
+
+Let me summarize what I did:
+
+* I added a title using the argument `main.title` in `tm_layout()`
+* I made sure the title fits inside the map using `main.title.size` in `tm_layout()`
+* I eliminated the frame around the map using the argument `frame = FALSE` in `tm_layout()`
+* I put the legend outside of the frame of the map using `legend.outside = TRUE` and `legend.outside.position = "right"` in `tm_layout()`. 
+* I moved the north arrow to the bottom right in `tm_compass()`
+* I created a legend title using `title =` in `tm_polygons()`
+
+Also notice that I saved the map into an object called *sac.map*.  R is an object-oriented program, so *everything* you *make* in R are objects that can be saved for future manipulation.  This includes maps.  And future manipulations of a saved map includes adding more `tm_*` functions to the saved object, such as `sac.map + tm_layout(your changes here)`. Check the help documentation for `tm_layout()` to see the complete list of settings.  Also see examples in Ch. 8.2.5 in GWR.
+
+<p class="comment">**Exercise**: Map median household income for council districts. </p>
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Interactive maps**
+\
+
+So far we've created static maps. That is, maps that don't "move".  But, we're all likely used to Google or Bing maps - maps that we can move around, zoom in and out of, create pop ups and labels, and highlight/select regions. 
+
+To make your tmap object interactive, use the function `tmap_mode()` and type in "view" as an argument. 
+
+```{r, warning = FALSE, message = FALSE}
+tmap_mode("view")
+```
+
+Now that the interactive mode has been ‘turned on’, all maps produced with `tm_shape()` will launch.
+
+```{r}
+sac.map
+```
+
+You can zoom in and out and pan left, right, up and down. Besides interactivity, another important benefit of `tmap_mode()` is that it provides a basemap.  The function of a basemap is to provide background detail necessary to orient the location of the map.  In the static maps we produced above, Sacramento was sort of floating in white space.  As you can see in the interactive map above we've added geographic context to the surrounding area. 
+
+The default basemap in `tmap_mode()` is CartoDB.Positron.  You can change the basemap through the `tm_basemap()` function.  For example, let's change the basemap to an [OpenStreetMap](https://www.openstreetmap.org/).
+
+```{r warning=FALSE, message=FALSE}
+sac.map + tm_basemap("OpenStreetMap")
+```
+
+For a complete list of basemaps with previews, see [here](http://leaflet-extras.github.io/leaflet-providers/preview/).  There are a lot of cool ones, so please test them out.
+
+To switch back to plotting mode (noninteractive), type
+
+```{r}
+tmap_mode("plot")
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **leaflet**
+\
+
+You can also make interactive maps in R using the package **leaflet**.  It is used by many news organizations and tech websites to visualize geographic data (like [this one](https://www.nytimes.com/projects/elections/2013/nyc-primary/mayor/map.html)).  Similar to **tmap**, leaflet maps are built using layers. The first argument you need to include is `leaflet()`, which initializes a map widget.  You then add layers to the map.  To add census tracts, which are polygons, you use the `addPolygons()` function. Let's map Sacramento city tracts.
+
+```{r}
+leaflet() %>%
+  addPolygons(data = sac.city.tracts.c, 
+              color = "gray", 
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1.0,
+              fillOpacity = 0.5,
+              highlightOptions = highlightOptions(color = "white",
+                                                  weight = 2,
+                                                  bringToFront = TRUE))
+```
+
+The first several arguments adjust the appearance of each polygon region (e.g. color, opacity, border thickness). `highlightOptions` emphasizes the currently moused-over polygon.
+
+Unlike interactive **tmap**, there is no default basemap. To add a basemap, include the function `addTiles()` after `leaflet()`
+
+```{r}
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = sac.city.tracts.c, 
+              color = "gray", 
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1.0,
+              fillOpacity = 0.5,
+              highlightOptions = highlightOptions(color = "white",
+                                                  weight = 2,
+                                                  bringToFront = TRUE))
+```
+
+To create a choropleth map, adjust the `color =` argument within `addPolygons()`.  Let's map quintiles of median household income using the `colorQuantile()` function.  
+
+```{r}
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = sac.city.tracts.c, 
+              color = ~colorQuantile("Reds", medinc, n = 5)(medinc),
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1.0,
+              fillOpacity = 0.5,
+              highlightOptions = highlightOptions(color = "white",
+                                                  weight = 2,
+                                                  bringToFront = TRUE))
+```
+
+We specify a red color scheme using the argument "Reds", breaking up the variable *medinc* into quintiles `n = 5`.
+
+We'll circle back to **leaflet** in Week 5 when we will use the package to map spatial access.  If you want to dive deeper before then, the official **leaflet** [documentation](https://rstudio.github.io/leaflet/) provides handy walkthroughs for creating leaflet maps.
+
+
+<div style="margin-bottom:25px;">
+</div>    
+### **Saving maps**
+\
+
+You can save your maps a couple of ways.
+
+1. On the plotting screen where the map is shown, click on *Export* and save it as either an image or pdf file.
+2. Use the function `tmap_save()`
+
+For option 2, we can save the map object *sac.map* as such
+
+```{r eval = FALSE, warning=FALSE, message=FALSE}
+tmap_save(sac.map, "saccityinc.jpg")
+```
+
+Specify the **tmap** object and a filename with an extension. It supports `pdf`, `eps`, `svg`, `wmf`, `png`, `jpg`, `bmp` and `tiff`.  The default is `png`.  Also make sure you've set your directory to the folder that you want your map to be saved in.  
+
+You've completed your introduction to **sf**. Whew! Badge? Yes, please, you earned it!  Time to [celebrate](https://www.youtube.com/watch?v=3GwjfUFyY6M)!
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/sf.gif){ width=25% }
+
+</center>
+
+
+***
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)

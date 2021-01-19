@@ -633,14 +633,14 @@ The first argument in the parentheses of this command is the name of the data fr
 
 
 ```r
-filter(cacounty2, GEOID == 6067)
+filter(cacounty2, GEOID == "06067")
 ```
 
 The double equal operator `==` means equal to.  We can also explicitly exclude cases and keep everything else by using the not equal operator `!=`.  The following code *excludes* Sacramento county.
 
 
 ```r
-filter(cacounty2, GEOID != 6067)
+filter(cacounty2, GEOID != "06067")
 ```
 
 
@@ -672,11 +672,11 @@ In addition to comparison operators, filtering may also utilize logical operator
 filter(cacounty2, phisp > 0.5 & medinc > 50000)
 ```
 
-Use `|` to keep counties with a *GEOID* of 6067 (Sacramento) **or** 6113 (Yolo) **or** 6075 (San Francisco)
+Use `|` to keep counties with a *GEOID* of 06067 (Sacramento) **or** 06113 (Yolo) **or** 06075 (San Francisco)
 
 
 ```r
-filter(cacounty2, GEOID == 6067 | GEOID == 6113 | GEOID == 6075)
+filter(cacounty2, GEOID == "06067" | GEOID == "06113" | GEOID == "06075")
 ```
 
 
