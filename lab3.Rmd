@@ -275,7 +275,7 @@ tm_shape(ca.tracts) +
 You've made your first map in R (at least in this class). Whoopee! 
 
 
-<p class="comment">**Exercise**: Map tracts just in Yolo County</p>
+<p class="comment">**Practice Exercise**: Map tracts just in Yolo County</p>
 
 ```{r echo = FALSE, results = "hide", fig.show='hide'}
 ca.tracts %>%
@@ -320,7 +320,7 @@ tm_shape(sac.metro) +
   tm_borders(col = "red")
 ```
 
-<p class="comment">**Exercise**: The opposite of `st_intersects is st_disjoint`. If two geometries are disjoint, they do not intersect, and vice-versa. Replace `join = st_intersects` with `join = st_disjoin` and see what you get.</p>
+<p class="comment">**Practice Exercise**: The opposite of `st_intersects is st_disjoint`. If two geometries are disjoint, they do not intersect, and vice-versa. Replace `join = st_intersects` with `join = st_disjoin` and see what you get.</p>
 
 
 <div style="margin-bottom:25px;">
@@ -596,7 +596,7 @@ Let me summarize what I did:
 
 Also notice that I saved the map into an object called *sac.map*.  R is an object-oriented program, so *everything* you *make* in R are objects that can be saved for future manipulation.  This includes maps.  And future manipulations of a saved map includes adding more `tm_*` functions to the saved object, such as `sac.map + tm_layout(your changes here)`. Check the help documentation for `tm_layout()` to see the complete list of settings.  Also see examples in Ch. 8.2.5 in GWR.
 
-<p class="comment">**Exercise**: Map median household income for council districts. </p>
+<p class="comment">**Practice Exercise**: Map median household income for council districts. </p>
 
 
 <div style="margin-bottom:25px;">
