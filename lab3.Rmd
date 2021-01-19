@@ -121,8 +121,13 @@ There are two major packages for bringing in Census geographic boundary shapefil
 ### **tidycensus**
 \
 
-In Week 2's lab, we worked with the **tidycensus** package and the Census API to bring in Census data into R.  We can use the same commands to bring in Census geography. If you haven't already, make sure to [sign up for and install your Census API key](https://crd230.github.io/lab2.html#Using_the_Census_API).
-  Use the `get_acs()` command to bring in California tract-level race/ethnicity counts, total population, and total number of households. How did I find the variable IDs? Check [Lab 2](https://crd230.github.io/lab2.html#Using_the_Census_API). Since we want tracts, we'll use the `geography = "tract"` argument.
+In Week 2's lab, we worked with the **tidycensus** package and the Census API to bring in Census data into R.  We can use the same commands to bring in Census geography. If you haven't already, make sure to [sign up for and install your Census API key](https://crd230.github.io/lab2.html#Using_the_Census_API). If you could not install your API key, you'll need to use `census_api_key()` to activate it.
+
+```{r eval=FALSE, warning=FALSE, results="hide"}
+census_api_key("YOUR API KEY GOES HERE")
+```
+
+Use the `get_acs()` command to bring in California tract-level race/ethnicity counts, total population, and total number of households. How did I find the variable IDs? Check [Lab 2](https://crd230.github.io/lab2.html#Using_the_Census_API). Since we want tracts, we'll use the `geography = "tract"` argument.
 
 ```{r warning=FALSE, results="hide", message=FALSE}
 ca.tracts <- get_acs(geography = "tract", 
