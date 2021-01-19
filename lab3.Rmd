@@ -277,12 +277,6 @@ You've made your first map in R (at least in this class). Whoopee!
 
 <p class="comment">**Practice Exercise**: Map tracts just in Yolo County</p>
 
-```{r echo = FALSE, results = "hide", fig.show='hide', eval = FALSE}
-ca.tracts %>%
-  filter(County == "Yolo County") %>%
-  tm_shape() +
-  tm_polygons()
-```
 
 
 <div style="margin-bottom:25px;">
