@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 4b: Mapping Twitter Data</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 230: Winter 2021</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+    <li>
+      <a href="lab2.html">Lab 2</a>
+    </li>
+    <li>
+      <a href="lab3.html">Lab 3</a>
+    </li>
+    <li>
+      <a href="lab4a.html">Lab 4a</a>
+    </li>
+    <li>
+      <a href="lab4b.html">Lab 4b</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R tips</a>
+    </li>
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+    <li>
+      <a href="nhgis.html">NHGIS</a>
+    </li>
+    <li>
+      <a href="policymap.html">PolicyMap</a>
+    </li>
+    <li>
+      <a href="censusgeography.html">Census Geographies</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Lab 4b: Mapping Twitter Data</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+CRD 230 - Spatial Methods in Community Research
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+January 28, 2021
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #bdced6;
+padding: 10px;
+border: 0px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this lab you will learn how to bring in, clean, analyze and map social media data accessed from Twitter in R. You will use the Twitter <a href="https://developer.twitter.com/en/docs/api-reference-index">RESTful API</a> to access data about both twitter users and what they are tweeting about. The objectives of this guide are</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to sign up for a Twitter developer account</li>
+<li>Learn how bring in Twitter user and tweet data using Twitter’s API</li>
+<li>Learn how to map Twitter user locations and geotagged tweets</li>
+</ol>
+<p>To achieve these objectives, we will bring in and map tweets containing the words “biden” and “trump”.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>You’ll need to install the following packages in R. You only need to do this once, so if you’ve already installed these packages, skip the code. Also, don’t put these <code>install.packages()</code> in your R Markdown document. Copy and paste the code in the R Console.</p>
+<pre class="r"><code>install.packages(&quot;rtweet&quot;)
+install.packages(&quot;tidytext&quot;)</code></pre>
+<p>You’ll need to load the following packages. Unlike installing, you will <em>always</em> need to load packages whenever you start a new R session. You’ll also always need to use <code>library()</code> in your R Markdown file.</p>
+<pre class="r"><code>library(tidyverse)
+library(sf)
+library(leaflet)
+library(tigris)
+library(rtweet)
+library(tidytext)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="read-in-census-geography" class="section level2">
+<h2><strong>Read in census geography</strong></h2>
+<p><br />
+</p>
+<p>We will be mapping tweet locations within the Los Angeles metropolitan area. As such, we’ll need to bring its boundaries into R using the function <code>core_based_statistical_areas()</code>, which we learned about in <a href="https://crd230.github.io/lab3.html#tigris_package">Lab 3</a>.</p>
+<pre class="r"><code>cb &lt;- core_based_statistical_areas(year = 2018, cb = TRUE)
+
+la.metro &lt;- filter(cb, grepl(&quot;Los Angeles&quot;, NAME))</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="signing-up-for-a-twitter-api" class="section level2">
+<h2><strong>Signing up for a Twitter API</strong></h2>
+<p><br />
+</p>
+<p>Signing up for a Census API was fairly easy and required only an email address. Signing up for a Twitter API is a little more comprehensive. Below are the steps.</p>
+<ol style="list-style-type: decimal">
+<li><p>Set up a twitter account if you don’t have one already.</p></li>
+<li><p>Using your account, apply for a developer account <a href="https://developer.twitter.com/en">here</a>.</p></li>
+<li><p>On the developer account splash page, click on “Apply” and then “Apply for a developer account”</p></li>
+<li><p>The next screen asks you to describe yourself. I chose “Academic” and then “Academic researcher.” Click on “Get Started.”</p></li>
+<li><p>You will then need to add a valid phone number if you did not supply one when you signed up for Twitter. You will need to give the verification code that will be sent to your phone. Fill out the rest of the page and click Next.</p></li>
+<li><p>The next page will ask you to fill out several text boxes on how you will use the Twitter API for Twitter Data.<br />
+</p></li>
+</ol>
+<ul>
+<li>For the first text box, your response will need to be a minimum of 200 characters. Make sure you provide a thorough response (e.g. mention you are using it for a graduate class you are taking. You can also provide the link to the site).<br />
+</li>
+<li>The next text box asks you to describe how you will analyze Twitter data including any analysis of Tweets or Twitter users (you can say something like you will be making bar graphs and maps of tweets containing certain keywords).</li>
+<li>The third text box asks you whether you will use Tweet, Retweet, Like, Follow or Direct Message functionality. I would make this option No.</li>
+<li>The next text box asks you to describe how and where Tweets and/or data about Twitter content will be displayed outside of Twitter. I recommend writing that you will be presenting Tweet data in lab and homework assignments. Of course, these are just my suggestions. If you plan on using tweet data for your final project or research outside of this class, please include that information.</li>
+<li>The final text box asks you to list all government entities you intend to provide Twitter content or derived information to under this use case. I recommend selecting the No option. Click Next to move on.</li>
+</ul>
+<ol start="7" style="list-style-type: decimal">
+<li><p>The next screen asks you to review all the information you provided. Once you’ve done so, click Next.</p></li>
+<li><p>The final screen asks you to read the developer agreement and policy. Click on the box located at the bottom of the agreement. Click on submit application.</p></li>
+<li><p>You’ll get an email approving your application. If you were not approved, you will get an email asking you to fill out more information. The process of getting approval should not take too long. For example, I was approved within an hour.</p></li>
+<li><p>Once you have acquired a developer account, you next need to create an app. Navigate to <a href="http://developer.twitter.com/en/apps">http://developer.twitter.com/en/apps</a>, click the blue button that says “Create a New App”, and then complete the form. App Name is what your app will be called. Click on “Complete”.</p></li>
+<li><p>Make sure you save or write down the Application API key (also known as the Consumer Key) and Application API secret key (also known as the API secret).</p></li>
+<li><p>You will also need to write down or save the Access token and Access secret. To get these, you can navigate to your newly created app under the <em>Project &amp; Apps</em> header on the left panel. Click on “Keys and tokens” The access token and secret are located at the bottom of the page.</p></li>
+</ol>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="authenticating-your-twitter-api" class="section level2">
+<h2><strong>Authenticating your Twitter API</strong></h2>
+<p><br />
+</p>
+<p>We’ll be using the R package <strong>rtweet</strong> to access tweet data from Twitter. The first thing you need to establish is your authentication. When you set up your app in Twitter, you were provided 5 unique identification elements:</p>
+<ul>
+<li>App name</li>
+<li>API key</li>
+<li>API secret key</li>
+<li>Access token</li>
+<li>Access secret token</li>
+</ul>
+<p>You feed these items into the function <code>create_token()</code> to get authenticated.</p>
+<pre class="r"><code># whatever name you assigned to your created app.  Mine is crd230
+appname &lt;- &quot;crd230&quot;
+
+## api key 
+key &lt;- &quot;INSERT YOUR KEY HERE&quot;
+
+## api secret 
+secret &lt;- &quot;INSERT YOUR SECRET KEY HERE&quot;
+
+access_token &lt;- &quot;INSERT YOUR ACCESS TOKEN HERE&quot;
+
+access_secret &lt;- &quot;INSERT YOUR SECRET TOKEN HERE&quot;
+
+twitter_token &lt;- create_token(
+  app = appname,
+  consumer_key = key,
+  consumer_secret = secret,
+  access_token = access_token,
+  access_secret = access_secret)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="loading-in-tweets" class="section level2">
+<h2><strong>Loading in Tweets</strong></h2>
+<p><br />
+</p>
+<p>To send a request for tweets to Twitter’s API use the function <code>search_tweets()</code>. Let’s collect the 10,000 most recent tweets that contain the word “biden”.</p>
+<pre class="r"><code>biden_tweets &lt;- search_tweets(q=&quot;biden&quot;, n = 10000,
+                               include_rts = FALSE, lang = &quot;en&quot;,
+                             geocode = lookup_coords(&quot;usa&quot;))</code></pre>
+<p>The argument <code>q =</code> specifies the words you want to search for in quotes. You can search for multiple words by using “AND” or “OR.” For example, to search for tweets with the words “biden” or “kamala”, use <code>q = "biden OR kamala</code>. To search for tweets that contain both “biden” and “kamala”, use <code>q = "biden AND kamala"</code>.</p>
+<p>The argument <code>n =</code> specifies the number of tweets you want to bring in. Twitter rate limits cap the number of search results returned to 18,000 every 15 minutes. To request more than that, simply set <code>retryonratelimit = TRUE</code> and <strong>rtweet</strong> will wait for rate limit resets for you. However, don’t go overboard. Bringing in, say, 50,000+ tweets may requires multiple hours if not days to complete.</p>
+<p>The argument <code>include_rts = FALSE</code> excludes retweets. The argument <code>lang = "en"</code> collects tweets in the English language. The argument <code>geocode = lookup_coords("usa")</code> collects tweets sent from the United States. Take a look at the data.</p>
+<pre class="r"><code>glimpse(biden_tweets)</code></pre>
+<p>Note that the Twitter API returns data from only the past 6-9 days.</p>
+<p>Let’s collect tweets containing the word “trump”.</p>
+<pre class="r"><code>trump_tweets &lt;- search_tweets(q=&quot;trump&quot;, n = 10000,
+                              include_rts = FALSE, lang = &quot;en&quot;,
+                              geocode = lookup_coords(&quot;usa&quot;))</code></pre>
+<p>Check the data.</p>
+<pre class="r"><code>glimpse(trump_tweets)</code></pre>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>
