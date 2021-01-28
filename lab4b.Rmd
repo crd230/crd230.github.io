@@ -194,10 +194,10 @@ twitter_token <- create_token(
 ## **Loading in Tweets**
 \
 
-To send a request for tweets to Twitter's API use the function `search_tweets()`.  Let's collect the 10,000 most recent tweets that contain the word "biden".
+To send a request for tweets to Twitter's API use the function `search_tweets()`.  Let's collect the 8,000 most recent tweets that contain the word "biden".
 
 ```{r}
-biden_tweets <- search_tweets(q="biden", n = 10000,
+biden_tweets <- search_tweets(q="biden", n = 8000,
                                include_rts = FALSE, lang = "en",
                              geocode = lookup_coords("usa"))
 ```
@@ -217,7 +217,7 @@ Note that the Twitter API returns data from only the past 6-9 days.
 Let's collect tweets containing the word "trump".
 
 ```{r}
-trump_tweets <- search_tweets(q="trump", n = 10000,
+trump_tweets <- search_tweets(q="trump", n = 8000,
                               include_rts = FALSE, lang = "en",
                               geocode = lookup_coords("usa"))
 ```
@@ -228,6 +228,234 @@ Check the data.
 glimpse(trump_tweets)
 ```
 
+
+<div style="margin-bottom:25px;">
+</div>
+## **Visualizing Tweet Locations**
+\
+
+The data set contains 90 variables.  These variables include the user (handle and name) who sent the tweet, the tweet text itself, hashtags used in the tweet, how many times the tweet has been retweeted, and much much more. See [here](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet) for the data dictionary.
+
+We're interested in determining where these tweets are coming from. There are four sources of geographic information.  First, you have geographic information embedded within the tweet itself.  You can use `search_tweets()` to find all tweets that refer to a specific place (e.g. a city such as "los angeles" or a neighborhood such as Sacramento's "oak park").  
+
+Second, the user sets a place with a name such as "Los Angeles" in their tweet.  In other words, the user tweets something and adds a place to where this tweet is being tweeted from.  The variable containing the tweet place is *place_full_name*.  How many unique places are captured by tweets containing the word "biden"?
+
+```{r}
+length(unique(biden_tweets$place_full_name))
+```
+
+We can create a table of the top 10 places tweeting about biden using the following code.  The code `is.na(place_full_name) == FALSE & place_full_name != ""` within `filter()` keeps tweets without NA and blank place names.  The function `top_n()` only keeps the top 10 places by count.
+
+```{r}
+biden_tweets %>% 
+  filter(is.na(place_full_name) == FALSE & place_full_name != "") %>% 
+  count(place_full_name, sort = TRUE) %>% 
+  slice(1:10)
+```
+
+We can visualize this distribution using our best bud `ggplot()`
+
+```{r}
+biden_tweets %>%
+  count(place_full_name, sort = TRUE) %>%
+  mutate(location = reorder(place_full_name,n)) %>%
+  na.omit() %>%
+  top_n(10) %>%
+  ggplot(aes(x = location,y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "Place",
+       y = "Count",
+       title = "Biden Tweets - unique locations ")
+```
+
+What about "trump"?
+
+```{r}
+trump_tweets %>%
+  count(place_full_name, sort = TRUE) %>%
+  mutate(location = reorder(place_full_name,n)) %>%
+  na.omit() %>%
+  top_n(10) %>%
+  ggplot(aes(x = location,y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "Place",
+       y = "Count",
+       title = "Trump Tweets - unique locations ")
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Extracting Tweet Geographic Coordinates**
+\
+
+The third source for geographic information is the geotagged precise location point coordinates of where the tweet was tweeted. To extract the longitudes and latitudes of the tweet locations use the function `lat_lng()`.
+
+```{r}
+biden_tweets <- lat_lng(biden_tweets)
+```
+
+The function creates two new columns in the data set, *lat* and *lng*, which represent the latitude and longitude coordinates, respectively.
+
+Not all tweets are geotagged.  Let's keep the tweets with lat/long info using the `filter()` command.
+
+```{r}
+biden_tweets.geo <- biden_tweets %>%
+                    filter(is.na(lat) == FALSE & is.na(lng) == FALSE)
+```
+
+Let's do the same for *trump_tweets*
+
+```{r}
+trump_tweets <- lat_lng(trump_tweets)
+
+trump_tweets.geo <- trump_tweets %>%
+  filter(is.na(lat) == FALSE & is.na(lng) == FALSE)
+```
+
+An important issue to note is that starting in 2019, Twitter requires users to decide whether they want to opt into allowing the company to collect geotagged information on their tweets.  Before 2019, the default was an automatic opt in.  The change is good for privacy, but not so good for social scientists interested in conducting spatial analysis of tweets.  As a result of the change, less than 10\% of tweets have geographic coordinate information. 
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Mapping Tweets**
+\
+
+Now that we have the longitudes and latitudes of the tweets, we can map them.  To do so, let's follow [Lab 4a]() and convert the non-spatial data frames *biden_tweets.geo* and  *trump_tweets.geo* into **sf** objects using the `st_as_sf()` command.  
+
+```{r}
+biden_tweets.geo.sf <- st_as_sf(biden_tweets.geo, coords = c("lng", "lat"), crs = "+proj=longlat +datum=WGS84 +ellps=WGS84")
+
+trump_tweets.geo.sf <- st_as_sf(trump_tweets.geo, coords = c("lng", "lat"), crs = "+proj=longlat +datum=WGS84 +ellps=WGS84")
+```
+
+Let's use `leaflet()` to map the points. You can also use `tm_shape()` from the **tmap** package, which we learned about in  [Lab 3](https://crd230.github.io/lab3.html#Mapping_in_R).  First, let's map the Biden tweets.
+
+```{r}
+leaflet() %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addCircles(data = biden_tweets.geo.sf, 
+             color = "blue")
+```
+
+Next, let's map the Trumpy tweets.
+
+```{r}
+leaflet() %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addCircles(data = trump_tweets.geo.sf, 
+             color = "red")
+```
+
+Rather than the entire United States, let's map tweets located within the Los Angeles Metropolitan Area.  To do this, we'll need to make sure the the **sf** object *la.metro* has the same CRS as *biden_tweets.geo.sf*.
+
+```{r}
+st_crs(la.metro) == st_crs(biden_tweets.geo.sf)
+```
+
+Let's reproject *la.metro* into the same CRS as *biden_tweets.geo.sf* using the function `st_transform()`, which we learned about in [Lab 4a]().
+
+```{r}
+la.metro <-st_transform(la.metro, crs = st_crs(biden_tweets.geo.sf)) 
+```
+
+Let's keep the Biden and Trump tweets within the metro area using the `st_within` option in the `st_join()` command, which we learned about in [Lab 3]().
+
+```{r}
+biden_tweets.geo.la <- st_join(biden_tweets.geo.sf, la.metro, join = st_within, left=FALSE)
+trump_tweets.geo.la <- st_join(trump_tweets.geo.sf, la.metro, join = st_within, left=FALSE)
+```
+
+Finally, use `leaflet()` to map the tweets on top of the metro area boundary.
+
+```{r}
+leaflet() %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addPolygons(data = la.metro, 
+              color = "gray", 
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1.0,
+              fillOpacity = 0.2) %>%
+  addCircles(data = biden_tweets.geo.la, 
+             color = "blue") %>%
+  addCircles(data = trump_tweets.geo.la, 
+             color = "red")
+```
+
+You might be thinking that you can directly get tweets in Los Angeles using `geocode = lookup_coords("los angeles, CA")` in `search_tweets()`.  You can but only if you have a [Google Maps API Key](https://developers.google.com/maps/documentation/geocoding/get-api-key), which requires you to provide a credit card number (to pay in case you go over their free limit).  **rtweet**  only allows you to narrow the  tweets to the United States without a Google Maps API Key.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Mapping Twitter User Locations**
+\
+
+The fourth source for Twitter geographic information is the location specified by the user in their account profile.  This information is stored in the variable *location*.  Let's plot the top 10 locations of users who tweeted "biden"
+
+```{r}
+biden_tweets %>%
+  count(location, sort = TRUE) %>%
+  mutate(location = reorder(location,n)) %>%
+  na.omit() %>%
+  top_n(10) %>%
+  ggplot(aes(x = location,y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "Place",
+       y = "Count",
+       title = "Biden Tweet users - unique locations ")
+```
+
+And Trumpy
+
+```{r}
+trump_tweets %>%
+  count(location, sort = TRUE) %>%
+  mutate(location = reorder(location,n)) %>%
+  na.omit() %>%
+  top_n(10) %>%
+  ggplot(aes(x = location,y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "Place",
+       y = "Count",
+       title = "Trump Tweet users - unique locations ")
+```
+
+You can also search for users (not tweets) using the function `search_users()`. Twitter will look for matches in user names, screen names, and profile bios. Let's look for users with the words "maga" somewhere in their profile bios, user names or screen names. The maximum number of users a single call returns is 1,000.
+
+```{r}
+# what users are tweeting with maga
+users <- search_users("maga",
+                      n = 1000)
+```
+
+and their locations (eliminating NA and blank values)
+
+````{r}
+users %>%
+  count(location, sort = TRUE) %>%
+  mutate(location = reorder(location,n)) %>%
+  filter(is.na(location) == FALSE & location != "") %>%
+  top_n(20) %>%
+  ggplot(aes(x = location,y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "Location",
+       y = "Count",
+       title = "MAGA users - unique locations ")
+```
+
+You can repeat the process of getting Longitude and Latitude coordinates of "MAGA" users and map them across the United States and within the Los Angeles Metropolitan Area.
+
+You've completed the lab guide on how to use the package **rtweet** to bring in Twitter data. Hey, you know what? You earned a badge! Woohoo!
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/rtweet.png){ width=25% }
+
+</center>
 
 ***
 
