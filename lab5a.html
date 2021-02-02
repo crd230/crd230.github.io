@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 5a: Spatial Accessibility</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 230: Winter 2021</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+    <li>
+      <a href="lab2.html">Lab 2</a>
+    </li>
+    <li>
+      <a href="lab3.html">Lab 3</a>
+    </li>
+    <li>
+      <a href="lab4a.html">Lab 4a</a>
+    </li>
+    <li>
+      <a href="lab4b.html">Lab 4b</a>
+    </li>
+    <li>
+      <a href="lab5a.html">Lab 5a</a>
+    </li>
+    <li>
+      <a href="lab5b.html">Lab 5b</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R tips</a>
+    </li>
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+    <li>
+      <a href="nhgis.html">NHGIS</a>
+    </li>
+    <li>
+      <a href="policymap.html">PolicyMap</a>
+    </li>
+    <li>
+      <a href="censusgeography.html">Census Geographies</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Lab 5a: Spatial Accessibility</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+CRD 230 - Spatial Methods in Community Research
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+February 2, 2021
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #bdced6;
+padding: 10px;
+border: 0px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>Spatial accessibility broadly refers to the ease with which residents of a given neighborhood can reach amenities. In this guide, you will learn how to estimate spatial accessibility in R using the following methods:</p>
+<ol style="list-style-type: decimal">
+<li>Points-in-polygon</li>
+<li>Buffer analysis</li>
+<li>Distance to nearest amenity</li>
+<li>Floating Catchment Area</li>
+<li>Two-step Floating Catchment Area</li>
+</ol>
+<p>Our lab example will cover spatial access to full service banks in the City of Los Angeles. There is much work examining the presence of <a href="https://www.kcet.org/shows/city-rising/bank-deserts-nearly-one-in-five-la-county-neighborhoods-lack-bank-or-credit-union">“bank deserts”</a>. Much of this work shows that certain neighborhoods, specifically low-income and majority-minority neighborhoods, are spatially inaccessible to a nearby financial institution. What are the consequences? Residents without access to banking services often do not have a savings account to save for their future. They are unable to access affordable credit to purchase a home, pay for higher education, or replace an older vehicle. When residents lack access to banking services they often turn to payday loans, check-cashing services, auto title loans, and other non-traditional forms of credit that charge high-interest rates and expensive fees. The methods covered in this lab follow those discussed in Handout 4. We will cover isochrone maps in Lab 5b.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>You’ll need to install the following packages in R. You only need to do this once, so if you’ve already installed these packages, skip the code. Also, don’t put these <code>install.packages()</code> in your R Markdown document. Copy and paste the code in the R Console.</p>
+<pre class="r"><code>install.packages(&quot;matrixStats&quot;)
+install.packages(&quot;SpatialAcc&quot;)</code></pre>
+<p>You’ll need to load the following packages. Unlike installing, you will <em>always</em> need to load packages whenever you start a new R session. You’ll also always need to use <code>library()</code> in your R Markdown file.</p>
+<pre class="r"><code>library(sf)
+library(tidyverse)
+library(tmap)
+library(tidycensus)
+library(tigris)
+library(rmapshaper)
+library(matrixStats)
+library(SpatialAcc)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="read-in-census-tract-data" class="section level2">
+<h2><strong>Read in census tract data</strong></h2>
+<p><br />
+</p>
+<p>We will need to bring in census tract polygon features and racial composition data using the Census API and keep tracts within Los Angeles city boundaries. The code for accomplishing these tasks is below. We won’t go through each line of code in detail because we’ve covered all of these operations and functions in prior labs. I’ve embedded comments within the code that briefly explain what each chunk is doing, but go back to prior guides (or RDS/GWR) if you need further help. Note the use of <code>output = wide</code> in <code>get_acs()</code> to start out with a wide rather than a long dataset.</p>
+<pre class="r"><code>#load in your Census API Key
+census_api_key(&quot;YOUR API KEY GOES HERE&quot;)</code></pre>
+<pre class="r"><code># Bring in census tract data. 
+ca.tracts &lt;- get_acs(geography = &quot;tract&quot;, 
+              year = 2019,
+              variables = c(tpop = &quot;B01003_001&quot;, tpopr = &quot;B03002_001&quot;, 
+                            nhwhite = &quot;B03002_003&quot;, nhblk = &quot;B03002_004&quot;,
+                             nhasn = &quot;B03002_006&quot;, hisp = &quot;B03002_012&quot;,
+                            medinc = &quot;B19013_001&quot;),
+              state = &quot;CA&quot;,
+              survey = &quot;acs5&quot;,
+              output = &quot;wide&quot;,
+              geometry = TRUE)
+# Make the data tidy, calculate percent race/ethnicity, and keep essential vars.
+ca.tracts &lt;- ca.tracts %&gt;% 
+  mutate(pnhwhite = nhwhiteE/tpoprE, pnhasn = nhasnE/tpoprE, 
+              pnhblk = nhblkE/tpoprE, phisp = hispE/tpoprE) %&gt;%
+  rename(tpop = tpopE, medinc = medincE) %&gt;%
+  dplyr::select(c(GEOID,tpop, pnhwhite, pnhasn, pnhblk, phisp, medinc))  
+
+# Bring in city boundary data in CA
+pl &lt;- places(state = &quot;CA&quot;, year = 2019, cb = TRUE)
+
+# Keep LA city
+la.city &lt;- filter(pl, NAME == &quot;Los Angeles&quot;)
+
+#Clip tracts using LA boundary
+la.city.tracts &lt;- ms_clip(target = ca.tracts, clip = la.city, remove_slivers = TRUE)
+
+#reproject to UTM NAD 83
+la.city.tracts.utm &lt;-st_transform(la.city.tracts, 
+                                 crs = &quot;+proj=utm +zone=11N +datum=NAD83 +ellps=GRS80&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="read-in-the-bank-data" class="section level2">
+<h2><strong>Read in the bank data</strong></h2>
+<p><br />
+</p>
+<p>Let’s next bring in a shapefile of full-service banks and credit unions in Los Angeles as of 2020. I zipped up the file and uploaded it onto Github. Use the following code to download and unzip the file.</p>
+<pre class="r"><code>download.file(url = &quot;https://raw.githubusercontent.com/crd230/data/master/los_angeles_banks.zip&quot;, destfile = &quot;los_angeles_banks.zip&quot;)
+unzip(zipfile = &quot;los_angeles_banks.zip&quot;)</code></pre>
+<p><br></p>
+<p>Don’t worry if you don’t understand these commands - they are more for you to simply copy and paste so that you can download files that I zipped up and uploaded onto GitHub. You can look at the help documentation for each function if you are curious. Bring the data into R using <code>st_read()</code>.</p>
+<pre class="r"><code>banks &lt;-st_read(&quot;los_angeles_banks.shp&quot;)</code></pre>
+<p>The data are already in a spatial format, but if they came in street addresses or latitudes and longitudes, you would follow the methods described in <a href="https://crd230.github.io/lab4a.html">Lab 4a</a> to convert them to a spatial format.</p>
+<p>Bank branch data come from the <a href="https://www.fdic.gov/bank/statistical/guide/data.html">Federal Deposit Insurance Corporation</a>. A bank branch is a physical location of a banking corporation, such as Chase, Bank of America or Wells Fargo. These buildings are technically referred to as “brick-and-mortar” branches, and they provide face-to-face service for customers of a bank. Credit union branch data come from the <a href="https://www.ncua.gov/analysis/credit-union-corporate-call-report-data/quarterly-data">National Credit Union Administration</a>. A credit union is a nonprofit financial institution that’s owned by the people who use its financial products. Credit union members can access the same kinds of products and services as offered by a traditional bank, such as credit cards, checking and savings accounts and loans. Members elect a board of directors to manage the credit union to ensure that their best interests are represented.</p>
+<p>Take a look at the data</p>
+<pre class="r"><code>glimpse(banks)</code></pre>
+<pre><code>## Rows: 616
+## Columns: 8
+## $ name     &lt;chr&gt; &quot;MUFG Union Bank, National Association&quot;, &quot;MUFG Union Bank, N…
+## $ Address  &lt;chr&gt; &quot;120 South San Pedro Street&quot;, &quot;3060 Crenshaw Boulevard&quot;, &quot;14…
+## $ City     &lt;chr&gt; &quot;Los Angeles&quot;, &quot;Los Angeles&quot;, &quot;Panorama City&quot;, &quot;Woodland Hil…
+## $ State    &lt;chr&gt; &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, …
+## $ zipcode  &lt;chr&gt; &quot;90012&quot;, &quot;90016&quot;, &quot;91402&quot;, &quot;91367&quot;, &quot;91436&quot;, &quot;90012&quot;, &quot;90008…
+## $ deposits &lt;dbl&gt; 279.954, 63.514, 112.858, 289.353, 234.795, 149.829, 51.791,…
+## $ creditu  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ geometry &lt;POINT [m]&gt; POINT (385459.1 3768403), POINT (376750.7 3765979), PO…</code></pre>
+<p>Make sure the tract and bank Coordinate Reference Systems are the same and in UTM.</p>
+<pre class="r"><code>st_crs(la.city.tracts.utm)$proj4string</code></pre>
+<pre><code>## [1] &quot;+proj=utm +zone=11 +datum=NAD83 +units=m +no_defs&quot;</code></pre>
+<pre class="r"><code>st_crs(banks)$proj4string</code></pre>
+<pre><code>## [1] &quot;+proj=utm +zone=11 +datum=NAD83 +units=m +no_defs&quot;</code></pre>
+<p>Let’s map the banks on top of the city’s tracts using our pal <code>tm_shape()</code></p>
+<pre class="r"><code>tm_shape(la.city.tracts.utm) +
+  tm_polygons() +
+  tm_shape(banks) +
+  tm_dots(col = &quot;red&quot;)</code></pre>
+<p><img src="lab5a_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="points-in-polygon" class="section level2">
+<h2><strong>Points in polygon</strong></h2>
+<p><br />
+</p>
+<p>In its most basic form, spatial accessibility factors in the supply of an amenity, the demand for that supply, and the distance facilitating or impeding the linkage between supply and demand. A simple approach to measuring spatial access is to count the number of amenities located within neighborhood boundaries. We already covered how to do this in <a href="https://crd230.github.io/lab4a.html#Mapping_point_patterns">Lab 4a</a>. To get the count of banks by census tract, we use <code>st_join()</code> to perform a spatial join of the banks to the tracts and then <code>group_by()</code> and <code>sumarize()</code> to execute the count.</p>
+<pre class="r"><code>la.city.tracts.banks &lt;- banks  %&gt;% 
+        st_join(la.city.tracts.utm) %&gt;%
+        group_by(GEOID) %&gt;% 
+        summarize(banks = n()) </code></pre>
+<p>We’ll join <em>la.city.tracts.banks</em> back to the original tract file. We have to first drop <em>la.city.tracts.banks</em>’s geometry because you cannot join two <strong>sf</strong> objects together using <code>left_join()</code>.</p>
+<pre class="r"><code>la.city.tracts.banks &lt;- st_drop_geometry(la.city.tracts.banks)</code></pre>
+<p>Now, use <code>left_join()</code> and assign a 0 to tracts with no banks using the <code>replace_na()</code> function within <code>mutate()</code>.</p>
+<pre class="r"><code>la.city.tracts.utm &lt;- la.city.tracts.utm %&gt;%
+                      left_join(la.city.tracts.banks, by = &quot;GEOID&quot;) %&gt;%
+                      mutate(banks = replace_na(banks, 0))</code></pre>
+<p>The number of banks represents the supply. Distance is captured by banks residing within tract boundaries. The demand can take on many forms, but one common proxy is the resident population size. Let’s calculate the number of banks per resident population, multiplying the ratio by 10,000 to get more meaningful accessibility ratio sizes.</p>
+<pre class="r"><code>la.city.tracts.utm&lt;-la.city.tracts.utm %&gt;%
+                  mutate(banksperpop = (banks/tpop)*10000)</code></pre>
+<p>What does the distribution of this variable look like?</p>
+<pre class="r"><code>summary(la.city.tracts.utm$banksperpop)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
+##   0.000   0.000   0.000   1.783   0.000 105.263       4</code></pre>
+<p>Let’s create a choropleth map of banks per 10,000 population.</p>
+<pre class="r"><code>tm_shape(la.city.tracts.utm, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;banksperpop&quot;, style = &quot;jenks&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;Banks per\n10k population&quot;) +
+  tm_scale_bar(position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+    tm_layout(main.title = &quot;Bank spatial accessibility in Los Angeles City&quot;,
+            main.title.size = 0.95, frame = FALSE,
+            legend.outside = TRUE, legend.outside.position = &quot;right&quot;) </code></pre>
+<p><img src="lab5a_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="point-proximity-buffers" class="section level2">
+<h2><strong>Point proximity buffers</strong></h2>
+<p><br />
+</p>
+<p>The points-in-polygon approach treats neighborhood boundaries as impermeable as if banks right outside boundary lines are unreachable to residents. Another approach to measuring access is to capture distance from the nearest amenities. There are several ways to account for distance. One method involves counting the number of amenities within <em>r</em> miles of the neighborhood. The number of amenities within <em>r</em> refers to the cumulative opportunity, or, in other words, to the availability provided by the immediate surroundings.</p>
+<p>The process involves generating a circle with a radius <em>r</em> (i.e. a circular buffer of size <em>r</em>) around existing geographic features. You connect other features to the points based on whether they fall inside or outside the boundary of the buffer. The buffer defines this filtering window as that location’s catchment area. Accessibility is measured as the ratio of amenities to residents (or supply to demand) located within the buffer.</p>
+<p>The first task is to create buffers of radius <em>r</em> around each neighborhood. We draw a buffer around the neighborhood centroid, which is the point on the middle of a tract. To generate centroids, use the <strong>sf</strong> function <code>st_centroid()</code></p>
+<pre class="r"><code>tract.centroids &lt;- st_centroid(la.city.tracts.utm)</code></pre>
+<p>Plot the centroids on top of the tracts so we know what we produced</p>
+<pre class="r"><code>tm_shape(la.city.tracts.utm) +
+  tm_polygons(col = &quot;blue&quot;) +
+  tm_shape(tract.centroids) +
+  tm_dots(col = &quot;red&quot;)</code></pre>
+<p><img src="lab5a_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
+<p>We then create circular buffers of distance <em>r</em> around each tract’s centroid. The size of the buffer radius depends on the city you are examining and the context of your question. To start, let’s use 1-mile or 1609-meter buffers.</p>
+<p>We use the <strong>sf</strong> function <code>st_buffer()</code> to create buffers. The required arguments are your <strong>sf</strong> object and the distance <code>dist =</code>. Remember that the units for UTM is meters, so specifying <code>dist = 1609</code> means 1609 meters.</p>
+<pre class="r"><code>tract.buff  &lt;-st_buffer(tract.centroids, dist = 1609)
+tract.buff</code></pre>
+<p>You’ll see that <em>tract.buff</em> is a polygon object like a census tract. To be clear regarding what a buffer is, let’s extract one tract, GEOID = 06037262501 , and its 1-mile buffer.</p>
+<pre class="r"><code>ex1 &lt;- filter(tract.buff, GEOID == &quot;06037262501&quot;)
+ex2 &lt;- filter(la.city.tracts.utm, GEOID == &quot;06037262501&quot;)</code></pre>
+<p>And let’s map it onto tracts with the banks.</p>
+<pre class="r"><code>tmap_mode(&quot;view&quot;)
+
+tm_shape(la.city.tracts.utm) +
+          tm_polygons() +
+        tm_shape(tract.centroids) +
+          tm_dots(size = 0.01) +
+          tm_shape(ex1) +
+          tm_borders(col=&quot;red&quot;) +  
+        tm_shape(ex2) +
+          tm_dots(col = &quot;red&quot;) </code></pre>
+<p>The tract we are mapping is located in the West Los Angeles area along the coast. If you zoom in, you’ll see that the centroid is right in the middle of the tract and the buffer is a one-mile circle surrounding the tract. The buffer contains not just tract 06037262501, but touches other nearby tracts.</p>
+<p>We want to count the number of banks located within the buffers. Remember that <em>tract.buff</em> is a polygon. Counting the number of banks inside a buffer is a points-in-polygons operation, which we already did above. We’ll calculate the number of banks per 10,000 resident population.</p>
+<pre class="r"><code>buff.banks &lt;- banks  %&gt;% 
+        st_join(tract.buff) %&gt;%
+        group_by(GEOID) %&gt;% 
+        summarize(banks1m = n()) 
+
+buff.banks &lt;- st_drop_geometry(buff.banks)
+
+la.city.tracts.utm &lt;- la.city.tracts.utm %&gt;%
+                      left_join(buff.banks, by = &quot;GEOID&quot;) %&gt;%
+                      mutate(banks1m = replace_na(banks1m, 0)) %&gt;%
+                      mutate(banksbuff1m = (banks1m/tpop)*10000)</code></pre>
+<p>We can then use <code>summarize()</code> to find the mean number of banks that occur within 1 mile of a tract.</p>
+<pre class="r"><code>la.city.tracts.utm %&gt;%
+  summarize(Mean = mean(banks1m, na.rm=TRUE)) %&gt;%
+  st_drop_geometry()</code></pre>
+<pre><code>##       Mean
+## 1 6.903904</code></pre>
+<p>There are on average 6.9 banks within 1 mile of tracts in Los Angeles. This is likely not representative given that there are a small number of tracts with a lot of banks within a 1-mile radius, as demonstrated by the histogram below (the tract with 70+ banks is in the financial district). It’s common practice to test the sensitivity of your results by choosing different buffer sizes.</p>
+<pre class="r"><code>ggplot(la.city.tracts.utm) + 
+  geom_histogram(mapping = aes(x=banks1m), na.rm = TRUE) +
+  xlab(&quot;Banks in Los Angeles Tracts&quot;)</code></pre>
+<p><img src="lab5a_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
+<p>Let’s create a choropleth map of banks per population within a 1-mile radius.</p>
+<pre class="r"><code>tmap_mode(&quot;plot&quot;)
+
+tm_shape(la.city.tracts.utm, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;banksbuff1m&quot;, style = &quot;jenks&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;Banks per\n10k population&quot;) +
+  tm_scale_bar(position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+    tm_layout(main.title = &quot;Bank spatial accessibility in Los Angeles City&quot;,
+            main.title.size = 0.95, frame = FALSE,
+            legend.outside = TRUE, legend.outside.position = &quot;right&quot;)</code></pre>
+<p><img src="lab5a_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="distance-to-nearest-bank" class="section level2">
+<h2><strong>Distance to nearest bank</strong></h2>
+<p><br />
+</p>
+<p>We limit ourselves a bit by capturing banks just within a radius distance. Why not calculate the distance to all banks and summarize that distribution? Distance is typically measured in Euclidean distance. Euclidean distance, also referred to as straight-line distance or “as the crow flies,” is the distance between two points connected by a straight line on a flat surface. To calculate the distance (in meters) from each tract’s centroid to each bank we use the <strong>sf</strong> function <code>st_distance()</code>.</p>
+<pre class="r"><code>bank.dist&lt;-st_distance(tract.centroids, banks)</code></pre>
+<p>For the object <em>bank.dist</em>, the rows represent the tracts and the columns are the banks. You can check this by comparing dimensions</p>
+<pre class="r"><code>#number of tracts is 999
+dim(tract.centroids)</code></pre>
+<pre><code>## [1] 999  10</code></pre>
+<pre class="r"><code>#number of banks is 622
+dim(banks)</code></pre>
+<pre><code>## [1] 616   8</code></pre>
+<pre class="r"><code>#999 by 622
+dim(bank.dist)</code></pre>
+<pre><code>## [1] 999 616</code></pre>
+<p>What we have with <em>bank.dist</em> is a distance matrix. That is, we have each tracts’s distance to each bank. Note that <code>st_distance()</code> will calculate distance using the Coordinate Reference System’s units, in this case meters. A common spatial accessibility measure is the distance to the closest amenity (e.g. nearest bank). It allows one to evaluate the immediate proximity to the bank. We can use the function <code>rowMins()</code> in the package <strong>matrixStats</strong> to calculate the shortest distance.</p>
+<p>The function <code>rowMins()</code> does exactly what you think it would do - get the minimum value across columns for each row. For <em>bank.dist</em>, this means we get the minimum distance to a bank for each neighborhood. Note that the order of tracts in <em>bank.dist</em> is the same as in <em>la.city.tracts.utm</em>. Therefore, we can run <code>rowMins()</code> within <code>mutate()</code> to save the resulting value in our main data set <em>la.city.tracts.utm</em>.</p>
+<pre class="r"><code>la.city.tracts.utm &lt;- la.city.tracts.utm %&gt;%
+                      mutate(bankmin = rowMins(bank.dist))</code></pre>
+<p>We can use <code>summarize()</code> to find the mean minimum distance to banks.</p>
+<pre class="r"><code>la.city.tracts.utm %&gt;%
+  summarize(meanmin = mean(bankmin, na.rm=TRUE)) %&gt;%
+  st_drop_geometry()</code></pre>
+<pre><code>##    meanmin
+## 1 1135.956</code></pre>
+<p>The closest bank to a neighborhood in Los Angeles is on average 1,136 meters, or about 3/4 a mile.</p>
+<p>Let’s create a choropleth map of nearest bank distance.</p>
+<pre class="r"><code>tm_shape(la.city.tracts.utm, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;bankmin&quot;, style = &quot;jenks&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;Distance to nearest \nbank (m)&quot;) +
+  tm_scale_bar(position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+    tm_layout(main.title = &quot;Bank spatial accessibility in Los Angeles City&quot;,
+            main.title.size = 0.95, frame = FALSE,
+            legend.outside = TRUE, legend.outside.position = &quot;right&quot;)</code></pre>
+<p><img src="lab5a_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
+<p>Rather than calculating the distance to the nearest amenity, another approach is to measure the mean distance to the <em>n</em> closest services. This approach conceptualizes accessibility as the average cost to reach a diversity of options rather than a single option.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="floating-catchment-area" class="section level2">
+<h2><strong>Floating Catchment Area</strong></h2>
+<p><br />
+</p>
+<p>The Floating Catchment Area (FCA) method extends the buffer approach by incorporating the demand of other nearby tracts for an amenity. Similar to the basic buffer approach, FCA draws a circle (or buffer) of radius <em>d</em> around a tract’s centroid and defines this filtering window as that location’s catchment area. In contrast to the simple buffer method, FCA accounts for not just the number of amenities that fall inside the buffer, but also the centroids of other nearby tracts. The method accounts for competition for services among residents in other neighborhoods (competing demand).</p>
+<p>We’ve already calculated the FCA numerator in the buffer analysis (<em>banks1m</em>). We apply the buffer analysis to count tract centroids <em>tract.centroids</em> rather than banks within a 1 mile buffer of each tract <em>tract.buff</em>. We sum up the populations of tracts whose centroids fall in each buffer.</p>
+<pre class="r"><code>buff.tracts &lt;- tract.centroids  %&gt;% 
+        select(tpop) %&gt;% #we don&#39;t need other variables
+        st_join(tract.buff) %&gt;%
+        group_by(GEOID) %&gt;% 
+        summarize(buffpop = sum(tpop.x)) %&gt;%
+        ungroup()
+
+buff.tracts &lt;- st_drop_geometry(buff.tracts)</code></pre>
+<p>The variable <em>buffpop</em> in <em>buff.tracts</em> reflects the total population of tracts whose centroids fall into a tract’s 1-mile buffer. We join this variable back into our main tibble.</p>
+<p>We next create the variable <em>fca</em> by dividing the number of banks in the buffer’s tract by the tract’s population <strong>and</strong> the population of nearby tracts whose centroids fall inside the buffer. We multiply by 10,000 to make it a per 10,000 population rate.</p>
+<pre class="r"><code>la.city.tracts.utm &lt;- la.city.tracts.utm %&gt;%
+                      left_join(buff.tracts, by = &quot;GEOID&quot;) %&gt;%
+                      mutate(buffpop = replace_na(buffpop, 0)) %&gt;%
+                      mutate(fca = (banks1m/buffpop)*10000)</code></pre>
+<p>Map it. Higher values indicates greater spatial accessibility.</p>
+<pre class="r"><code>tm_shape(la.city.tracts.utm, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;fca&quot;, style = &quot;jenks&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;FCA&quot;) +
+  tm_scale_bar(position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+    tm_layout(main.title = &quot;Bank spatial accessibility in Los Angeles City&quot;,
+            main.title.size = 0.95, frame = FALSE,
+            legend.outside = TRUE, legend.outside.position = &quot;right&quot;)</code></pre>
+<p><img src="lab5a_files/figure-html/unnamed-chunk-35-1.png" /><!-- --></p>
+<p>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="two-step-floating-catchment-area" class="section level2">
+<h2><strong>Two-step Floating Catchment Area</strong></h2>
+<p><br />
+</p>
+<p>The basic Floating Catchment Area method calculates access strictly from the demand (resident population) perspective. The method does not take into account the service area of the supplier (bank). The two-step Floating Catchment Area (2SFCA) method remedies this issue by calculating catchment areas for both supplier and consumer.</p>
+<p>To calculate 2SFCA ratios, we use the function <code>ac()</code> which is part of the <strong>SpatialAcc</strong> package. There are five inputs you need to supply <code>ac()</code>. First, a matrix of distances between tracts to banks. We already did that above when we constructed <em>bank.dist</em>, but the resulting object is not a matrix, but has class “units”</p>
+<pre class="r"><code>class(bank.dist)</code></pre>
+<pre><code>## [1] &quot;units&quot;</code></pre>
+<p>Let’s instead use the function <code>distance()</code> which is part of the <strong>SpatialAcc</strong> package. In order to use this function, you will need to first get the coordinates of the tract centroids and banks. Use the <strong>sf</strong> function <code>st_coordinates()</code>.</p>
+<pre class="r"><code>centroid.coords &lt;- st_coordinates(tract.centroids)
+bank.coords &lt;- st_coordinates(banks)</code></pre>
+<p>Then plug these into the function <code>distance()</code>, specifying <code>type = "euclidean"</code> to calculate euclidean distances.</p>
+<pre class="r"><code>dist.matrix &lt;- distance(centroid.coords, bank.coords, type = &quot;euclidean&quot;)
+class(dist.matrix)</code></pre>
+<pre><code>## [1] &quot;matrix&quot; &quot;array&quot;</code></pre>
+<p>In addition to the distance matrix, we also need to specify measures of demand <code>p</code> and supply <code>n</code> in the function <code>ac()</code>. The measures we’ve used so far proxy the demand for banks as total resident population. What about supply? In the basic Floating Catchment Area method, we treated every bank equally. In other words, we assumed that capacity and quality are equal across banks. This is likely not true. One measure of bank capacity (less about quality) is the number of its deposits in dollars. This is measured by the variable <em>deposits</em> in the file <em>banks</em>, which measures the amount of deposits in millions. Plug these demand and supply values into <code>ac()</code> to get 2SFCA measures of accessibility.</p>
+<pre class="r"><code>TSFCA &lt;- ac(p = la.city.tracts.utm$tpop, 
+           n = banks$deposits, 
+           D = dist.matrix, d0 = 1609, family = &quot;2SFCA&quot;)</code></pre>
+<p>We also had to specify the threshold distance that defines the catchment area (like the buffer radius <em>r</em>). Here, we use 1609 meters, or one mile. The resulting object is a vector of 2SFCA values. Save the results in <em>la.city.tracts.utm</em>.</p>
+<pre class="r"><code>la.city.tracts.utm &lt;- la.city.tracts.utm %&gt;%
+                mutate(TSFCA = TSFCA)</code></pre>
+<p>Then mapificate</p>
+<pre class="r"><code>tm_shape(la.city.tracts.utm, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;TSFCA&quot;, style = &quot;jenks&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;2SFCA&quot;) +
+  tm_scale_bar(position = c(&quot;left&quot;, &quot;bottom&quot;)) +
+    tm_layout(main.title = &quot;Bank spatial accessibility in Los Angeles City&quot;,
+            main.title.size = 0.95, frame = FALSE,
+            legend.outside = TRUE, legend.outside.position = &quot;right&quot;)</code></pre>
+<p><img src="lab5a_files/figure-html/unnamed-chunk-42-1.png" /><!-- --></p>
+<p>Higher values of <em>TSFCA</em> equals greater spatial access.</p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>

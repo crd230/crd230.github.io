@@ -21,6 +21,10 @@ navbar:
           href: lab4a.html 
         - text: "Lab 4b"
           href: lab4b.html 
+        - text: "Lab 5a"
+          href: lab5a.html 
+        - text: "Lab 5b"
+          href: lab5b.html          
     - text: "Other"
       menu: 
         - text: "R tips"
