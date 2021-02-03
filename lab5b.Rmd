@@ -209,7 +209,7 @@ Using Leaflet’s `addPolygons()` function, we can add the isochrones to our Map
 ```{r}
 pal <- colorNumeric("viridis", isos$time, na.color = "transparent")
 
-ucdmedmap <- mapbox_map %>%
+mapbox_map %>%
   addPolygons(data = isos,
               fillColor = ~pal(time),
               stroke = FALSE,
@@ -217,8 +217,6 @@ ucdmedmap <- mapbox_map %>%
   addLegend(values = isos$time,
             pal = pal,
             title = "Drive-time to UCD Med")
-
-mapbox_map
 ```
 
 The result illustrates some of the wide differences in accessibility between various parts of the region. One notable issue with this visualization approach, however, is that the layering of isochrones in the interior of Sacramento makes it difficult to view the basemap beneath them. This can be resolved by converting to a raster dataset and generating an “accessibility surface” for improved visualization.  We'll do this in the next section.
@@ -348,7 +346,7 @@ Let's complete these steps
 
 ```{r}
 low_access_dareas <- sac.tracts %>%
-    st_transform(4326) %>%
+    st_transform(crs = 4326) %>%
   filter(ppoor >= 30) %>%
   st_difference(
     st_union(driving_isos)
