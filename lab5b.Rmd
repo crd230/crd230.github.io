@@ -1,0 +1,383 @@
+---
+title: "Lab 5b: Spatial Accessibility in Mapbox"
+subtitle: <h4 style="font-style:normal">CRD 230 - Spatial Methods in Community Research</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">February 4, 2020</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #bdced6;
+padding: 10px;
+border: 0px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+In [Lab 5a](https://crd230.github.io/lab5a.html), we went through various methods for measuring spatial accessibility.  In this lab, we complete the journey by learning how to create isochrone maps using the Mapbox platform in R. [Mapbox](https://www.mapbox.com/) is a mapping and location cloud platform for developers. In this lab, you will
+
+1. Learn about making maps using Mapbox in R
+2. Learn how to visualize spatial accessibility using isochrones
+3. Learn how to identify vulnerable neighborhoods with low access using a spatial overlay
+
+Our case study for this lab is spatial access to hospitals in the City of Sacramento. This lab guide follows material presented in Chapter 5 in the textbook [Geocomputation with R](https://geocompr.robinlovelace.net/) (GWR) and class Handout 4.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+
+You'll need to install the following packages in R.  You only need to do this once, so if you've already installed these packages, skip the code.  Also, don't put these `install.packages()` in your R Markdown document.  Copy and paste the code in the R Console.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+install.packages("mapboxapi", dependencies = TRUE)
+install.packages("fasterize")
+```
+
+You'll need to load the following packages.  Unlike installing, you will *always* need to load packages whenever you start a new R session. You'll also always need to use `library()` in your R Markdown file.
+
+```{r}
+library(tidyverse)
+library(tidycensus)
+library(tigris)
+library(rmapshaper)
+library(sf)
+library(leaflet)
+library(mapboxapi)
+library(fasterize)
+```
+
+<div style="margin-bottom:25px;">
+</div>
+## **Setting up your Mapbox account**
+\
+
+To access Mapbox services in R, you’ll need a valid Mapbox account with an access token. To get the token, you will need to set up an account. Visit https://account.mapbox.com/auth/signup/ to establish an account - all you need to provide is an email address to sign up! Fill out the form and verify your account through the email Mapbox sends you; you’ll be taken directly to your Mapbox account dashboard page.
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/mapbox.png)
+
+</center>
+
+<br>
+
+Nothing you’ll do today will be intensive enough to incur charges - but to access premium content, including mapping a very large file (e.g. all tracts in the United States) you will need to pay. Scroll down to the Access Tokens section. Copy the default public token that appears on your screen to your clipboard, then return to R.
+
+Now that you have your Mapbox token in hand, you can set it up in R! Save the token into an R object
+
+```{r eval = FALSE}
+my_token <- "YOUR TOKEN GOES HERE"
+```
+
+And install it using the function `mb_access_token()`, which is a part of the **mapboxapi** package.
+
+```{r eval = FALSE}
+mb_access_token(my_token, install = TRUE)
+```
+
+```{r echo = FALSE, results = "hide"}
+#my_token <- "pk.eyJ1IjoibmJyYXppbCIsImEiOiJja2l0Zmh4bzIwMGp3MnhvOGV6OXByc2ttIn0.blLuceqhORGLypCXyrZMYg"
+#mb_access_token(my_token)
+```
+
+<br>
+
+The optional argument `install = TRUE` saves the token to your .Renviron, allowing you to use **mapboxapi** functions in the future without having to worry about setting your token (similar to the Census API token).  To use this feature, **you will have to restart your R session now.**  If this is giving you trouble, take this argument out of `mb_access_token()`.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Read in census tract data**
+\
+
+We will need to bring in census tract polygon features and socioeconomic data using the Census API and keep tracts within Sacramento city boundaries.  The code for accomplishing these tasks is below.  We won't go through each line of code in detail because we've covered all of these operations and functions in prior labs.  I've embedded comments within the code that briefly explain what each chunk is doing, but go back to prior guides (or RDS/GWR) if you need further help.
+
+```{r eval=FALSE, warning=FALSE, results="hide"}
+#load in your Census API Key
+census_api_key("YOUR API KEY GOES HERE")
+```
+
+```{r warning=FALSE, results = "hide", message=FALSE}
+# Bring in census tract data. 
+ca.tracts <- get_acs(geography = "tract", 
+              year = 2019,
+              variables = c("B17020_002", "B17020_001","DP04_0058P"),
+              state = "CA",
+              survey = "acs5",
+              output = "wide",
+              geometry = TRUE)
+# Calculate percent race/ethnicity, and keep essential vars.
+ca.tracts <- ca.tracts %>% 
+  mutate(ppoor = 100*(B17020_002E/B17020_001E)) %>%
+  rename(pnocar = "DP04_0058PE") %>%
+  select(c(GEOID,ppoor, pnocar))  
+
+# Bring in city boundary data
+pl <- places(state = "CA", cb = TRUE)
+
+# Keep Sacramento city
+sac.city <- filter(pl, NAME == "Sacramento")
+
+#Clip tracts using Sacramento boundary
+sac.tracts <- ms_clip(target = ca.tracts, clip = sac.city, remove_slivers = TRUE)
+```
+
+<div style="margin-bottom:25px;">
+</div>
+## **Mapbox maps in R**
+\
+
+The **mapboxapi** package is an R package that interfaces with [Mapbox web services APIs](https://docs.mapbox.com/api/). Its purpose is to help R users incorporate the suite of Mapbox tools into their spatial data science projects.  The most well-known feature of Mapbox services is its ability to create stunning web maps which are used on applications all around the world. Mapbox maps are accessed through styles, which are custom design configurations applied to OpenStreetMap or even user-generated vector map tilesets. Mapbox provides a number of their styles to all users with a Mapbox access token. The most recent versions of these styles are as follows:
+
+* streets-v11: [The core Mapbox Streets basemap](https://www.mapbox.com/maps/streets)
+* outdoors-v11: [A basemap designed for outdoor recreation uses](https://www.mapbox.com/maps/outdoors)
+* light-v10: [A light, greyscale background suitable for thematic overlay](https://www.mapbox.com/maps/light)
+* dark-v10: [A dark basemap suitable for thematic overlay](https://www.mapbox.com/maps/dark)
+* satellite-v9: [A global satellite basemap derived from MODIS, Landsat, & proprietary imagery sources](https://www.mapbox.com/maps/satellite)
+
+Mapping using Mapbox in R relies on **leaflet** functions, which we covered in [Lab 3](https://crd230.github.io/lab3.html#leaflet). Let's get a browseable Leaflet map using Mapbox tiles as a basemap. To add a Mapbox tile, use the function `addMapboxTiles()`.
+
+```{r}
+mapbox_map <- leaflet() %>%
+  addMapboxTiles(style_id = "streets-v11",
+                 username = "mapbox") 
+
+mapbox_map
+```
+
+<div style="margin-bottom:25px;">
+</div>
+## **Visualizing spatial access**
+\
+
+Mapbox has a lot of tools, but most pertinent to this week's labs is its ability to visualize spatial access.  Mapbox uses the [Mapbox Isochrone API](https://docs.mapbox.com/api/navigation/#isochrone) to draw isochrones around specified locations, which represent the reachable area from those locations within a given travel time by a given travel mode. An isochrone, from the Greek root words iso (equal) and chrone (time), is a line that connects points of equal travel time around a given location. The Mapbox Isochrone API computes areas that are reachable within a specified amount of time from a location, and returns the reachable regions as contours of polygons or lines that you can display on a map.
+
+Creating and visualizing isochrones is straightforward with the `mb_isochrone()` function. Supported travel profiles include driving (with no traffic), cycling, and walking. `mb_isochrone()` by default returns a simple features polygon object that can be used for visualization. 
+
+Let’s draw isochrones around the UC Davis medical center in Sacramento. `mb_isochrone()` accepts as an input a coordinate pair, a location description as a character string, or an **sf** object.  Here, we plug in the med center's address. We specify `profile = "driving"` to specify driving as the form of travel. The argument `time =` is a vector of isochrone contours, specified in minutes. Defaults to c(5, 10, 15). The maximum time supported is 60 minutes.  Here, we create isochrones for each minute from 1 to 45 minutes.
+
+```{r}
+isos <- mb_isochrone(
+  location = "2315 Stockton Blvd, Sacramento, CA 95817",
+  profile = "driving",
+  time = 1:45
+)
+
+isos
+```
+
+An **sf** object of 45 polygons is returned with a time column representing the travel-time around the location. Time is organized in descending order to ensure that overlapping isochrones are plotted correctly, with the shortest time visualized last (on top).
+
+Using Leaflet’s `addPolygons()` function, we can add the isochrones to our Mapbox basemap with a mostly-transparent fill opacity.  We use the `colorNumeric()` function to cut the *time* variable into bins, which we color using the *viridis* scheme.
+
+```{r}
+pal <- colorNumeric("viridis", isos$time, na.color = "transparent")
+
+ucdmedmap <- mapbox_map %>%
+  addPolygons(data = isos,
+              fillColor = ~pal(time),
+              stroke = FALSE,
+              fillOpacity = 0.1) %>%
+  addLegend(values = isos$time,
+            pal = pal,
+            title = "Drive-time to UCD Med")
+
+mapbox_map
+```
+
+The result illustrates some of the wide differences in accessibility between various parts of the region. One notable issue with this visualization approach, however, is that the layering of isochrones in the interior of Sacramento makes it difficult to view the basemap beneath them. This can be resolved by converting to a raster dataset and generating an “accessibility surface” for improved visualization.  We'll do this in the next section.
+
+<p class="comment">**Practice Exercise**: Now that you’ve learned how to use isochrone services in **mapboxapi**, try it out for yourself! Create an isochrone map around a location of your choice. Times can be specified at 1-minute intervals all the way up to 60 minutes using a vector.</p>
+
+<div style="margin-bottom:25px;">
+</div>
+## **Making an accessibility surface**
+\
+
+Accessibility surfaces are commonly used in geographic information systems applications to identify the distance from any particular location to a geographic feature of interest. We can apply this concept to network-based accessibility by using **mapboxapi** tools. To create the accessibility surface, we will convert our isochrones *isos*, which is an **sf** polygon object, to a raster object using the **fasterize** package. We discussed the raster view of spatial data in Handout 2. Raster datasets represent geographic information as grid cells defined by a cell size. Higher-resolution raster datasets are represented with smaller cell sizes.
+
+To generate the accessibility surface raster, we will need to reproject *isos* into a coordinate reference system (CRS) with meters as distance units. Meters is not the distance unit for the current CRS of *isos*.
+
+```{r}
+st_crs(isos)$units
+```
+
+We discussed coordinate reference systems in [Lab 4a](https://crd230.github.io/lab4a.html#Coordinate_Reference_System). Here, we reproject *isos* into UTM. This will allow us to specify the raster’s resolution in meters. 
+
+```{r}
+isos_proj <- st_transform(isos, crs = 32611)
+```
+
+We then generate a 100m resolution raster using the `raster()` function.  This raster represents a "template raster" object defining the extent, resolution and CRS of the output for `fasterize()`.
+
+```{r}
+template <- raster(isos_proj, resolution = 100)
+```
+
+Then use the `fasterize()` function to allocate the minimum overlapping value from our isochrones to each grid cell. The argument `fun =` specifies the name of a function by which to combine overlapping polygons.  The argument `field = ` specifies the ID in **isos_proj** providing a value for each of the polygons rasterized.
+
+```{r}
+iso_surface <- fasterize(isos_proj, template, field = "time", fun = "min")
+```
+
+The result can then be mapped with Leaflet’s `addRasterImage()` function.
+
+```{r}
+mapbox_map %>%
+  addRasterImage(iso_surface, colors = pal, opacity = 0.5) %>%
+  addLegend(values = isos$time, pal = pal,
+            title = "Drive-time to UCD Med")
+```
+
+Comparing to the accessibility map from the prior section, accessibility is now represented in a similar way, but with a clearer view of the basemap around the UCD Medical center.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Identifying low-access neighborhoods**
+\
+
+The previous example illustrated how to model and visualize accessibility in Sacramento; however, it does not speak directly to **who** may have difficulties accessing Hospitals.  Earlier, we brought in tract poverty rates from the 2015-2019 American Community Survey.  Our task in this section is to find neighborhoods with limited access to hospitals in Sacramento, and cross-reference this with the city's neighborhood poverty rates.  We revert back to using polygon objects in this section.
+
+Let's bring in Hospital locations in Sacramento city, downloaded from the Health Resources and Services Administration [Geospatial Data Warehouse](https://data.hrsa.gov/). I zipped up the file and uploaded it onto Github.  Use the following code to download and unzip the file. 
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+download.file(url = "https://raw.githubusercontent.com/crd230/data/master/sacramento_hospitals.zip", destfile = "sacramento_hospitals.zip")
+unzip(zipfile = "sacramento_hospitals.zip")
+```
+
+<br>
+
+Bring in the data using `st_read()`.
+
+```{r results = "hide"}
+hospitals <-st_read("sacramento_hospitals.shp")
+
+glimpse(hospitals)
+```
+
+We’ll measure accessibility using isochrones as above, and consider a 10 minute drive-time around each hospital location. `mb_isochrone()` can accept **sf** objects as input, and will retain an ID from the input **sf** object if the column name is specified (in our case, the variable for the ID is *name*).  Here, we will create an isochrone representing a 10-minute driving time `time = 10`.
+
+```{r}
+driving_isos <- mb_isochrone(
+  hospitals,
+  profile = "driving",
+  time = 10,
+  id = "name"
+)
+```
+
+These results can be visualized on our Mapbox map:
+
+```{r}
+mapbox_map %>%
+  addPolygons(data = driving_isos,
+              popup = ~id)
+```
+
+The map represents the reachable area to a hospital within a 10-minute drive, modeled at average driving speed assuming no traffic.
+
+<p class="comment">**Practice Question**: Which spatial data pitfall discussed in Handout 2 might we run into with this analysis?</p>
+
+We want to find the neighborhoods that have low access to hospitals *and* contains a vulnerable population, which we measure using the poverty rate.   Let’s visualize neighborhood poverty in Sacramento on our Mapbox map:
+
+```{r}
+driving_pal <- colorNumeric("viridis", sac.tracts$ppoor)
+
+mapbox_map %>%
+  addPolygons(data = sac.tracts,
+              fillColor = ~driving_pal(ppoor),
+              fillOpacity = 0.5,
+              stroke = FALSE,
+              smoothFactor = 0.1,
+              label = ~round(ppoor, 1)) %>%
+  addLegend(values = sac.tracts$ppoor,
+            pal = driving_pal,
+            title = "% poor")
+```
+
+Next, let's conduct a spatial overlay of our hospital accessibility layer on Sacramento neighborhood poverty. Spatial overlay is a very common operation when working with spatial data. It can be used to determine which features in one spatial layer overlap with another spatial layer, or extract data from a layer based on geographic information. 
+
+In our example, we want to determine the areas in Sacramento city with the greatest proportion of poor households that also are beyond a 10 minute drive from a hospital. To do this, we use the following steps:
+
+1. We transform the coordinate reference system of our *sac.tracts* dataset to 4326, the same CRS used by the isochrones;
+
+```{r}
+st_crs(driving_isos)$epsg
+```
+
+2.  We extract only those Census tracts with a percentage of poor households that is [30 percent or above](https://www.cbpp.org/research/housing/where-families-with-children-use-housing-vouchers);
+3. We use the `st_difference()` and `st_union()` functions from the **sf** package to “cut out” or clip areas from those Census tracts that overlap the 10-minute driving isochrones.
+
+Let's complete these steps 
+
+```{r}
+low_access_dareas <- sac.tracts %>%
+    st_transform(4326) %>%
+  filter(ppoor >= 30) %>%
+  st_difference(
+    st_union(driving_isos)
+  )
+```
+
+We can visualize the result on our Mapbox map.
+
+```{r}
+mapbox_map %>%
+  addPolygons(data = low_access_dareas)
+```
+
+As the map illustrates, there are several areas that are located beyond a 10-minute drive from a hospital and are high poverty. Notable clusters of neighborhoods that meet this criteria are located in North Sacramento and near Del Paso. Granted, this analysis is not definitive, but gives us some insights into potential issues with hospital accessibility and how we might resolve them.
+
+Guess what? You earned a badge! Hip Hip Hooray!
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/mapboxbadge.png){ width=25% }
+
+</center>
+
+***
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
+
+
+
