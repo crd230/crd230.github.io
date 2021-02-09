@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 6a: Residential Segregation</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 230: Winter 2021</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+    <li>
+      <a href="lab2.html">Lab 2</a>
+    </li>
+    <li>
+      <a href="lab3.html">Lab 3</a>
+    </li>
+    <li>
+      <a href="lab4a.html">Lab 4a</a>
+    </li>
+    <li>
+      <a href="lab4b.html">Lab 4b</a>
+    </li>
+    <li>
+      <a href="lab5a.html">Lab 5a</a>
+    </li>
+    <li>
+      <a href="lab5b.html">Lab 5b</a>
+    </li>
+    <li>
+      <a href="lab6a.html">Lab 6a</a>
+    </li>
+    <li>
+      <a href="lab6b.html">Lab 6b</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R tips</a>
+    </li>
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+    <li>
+      <a href="nhgis.html">NHGIS</a>
+    </li>
+    <li>
+      <a href="policymap.html">PolicyMap</a>
+    </li>
+    <li>
+      <a href="censusgeography.html">Census Geographies</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Lab 6a: Residential Segregation</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+CRD 230 - Spatial Methods in Community Research
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+February 9, 2021
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #bdced6;
+padding: 10px;
+border: 0px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this guide you will learn how to calculate neighborhood segregation and diversity measures using R. The objectives of the guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Calculate the following measures of regional level racial residential segregation: Dissimilarity, Interaction and Entropy</li>
+<li>Calculate the following measure of neighborhood level racial diversity: Entropy scores</li>
+</ol>
+<p>To accomplish these objectives, you will be working with Census tract data for the six largest metropolitan areas in California (excluding Sacramento): Los Angeles, San Diego, San Jose, San Francisco, Riverside/San Bernardino, and Fresno. This lab guide follows closely and supplements the material presented in Handout 5a.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>We will not be using any new packages in this lab. Hooray!</p>
+<p>You’ll need to load the following packages. Unlike installing, you will always need to load packages whenever you start a new R session. You’ll also always need to use <code>library()</code> in your R Markdown file.</p>
+<pre class="r"><code>library(sf)
+library(tidyverse)
+library(tidycensus)
+library(tigris)
+library(tmap)
+library(knitr)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-tract-data" class="section level2">
+<h2><strong>Bringing in tract data</strong></h2>
+<p><br />
+</p>
+<p>The following code uses the Census API to bring in 2015-2019 American Community Survey demographic and socioeconomic tract-level data for the six most populated metropolitan areas in California: Los Angeles, San Diego, San Jose, San Francisco, Riverside/San Bernardino, and Fresno. We won’t go through each line of code in detail because we’ve covered all of these operations and functions in prior labs. I’ve embedded comments within the code that briefly explains what each chunk is doing. Go back to prior guides (or RDS/GWR) if you need further help.</p>
+<pre class="r"><code># Bring in census tract data using the Census API 
+ca.tracts &lt;- get_acs(geography = &quot;tract&quot;, 
+              year = 2019,
+              variables = c(tpop = &quot;B01003_001&quot;, tpopr = &quot;B03002_001&quot;, 
+                            nhwhite = &quot;B03002_003&quot;, nhblk = &quot;B03002_004&quot;,
+                            nhasn = &quot;B03002_006&quot;, hisp = &quot;B03002_012&quot;),
+              state = &quot;CA&quot;,
+              survey = &quot;acs5&quot;,
+              output = &quot;wide&quot;,
+              geometry = TRUE)
+
+# Make the data tidy, calculate and keep essential vars. Also take out zero population tracts
+#rename_with takes out the E at the end of the estimate variable names
+ca.tracts &lt;- ca.tracts %&gt;% 
+  rename_with(~ sub(&quot;E$&quot;, &quot;&quot;, .x), everything()) %&gt;%
+  mutate(pnhwhite = nhwhite/tpopr, pnhasn = nhasn/tpopr, 
+        pnhblk = nhblk/tpopr, phisp = hisp/tpopr, oth = tpopr - (nhwhite+nhblk+nhasn+hisp), 
+        poth = oth/tpopr, nonwhite = tpopr-nhwhite, pnonwhite = nonwhite/tpopr) %&gt;%
+  select(c(GEOID,tpop, tpopr, pnhwhite, pnhasn, pnhblk, phisp,
+           nhwhite, nhasn, nhblk, hisp, nonwhite, pnonwhite, oth, poth))  %&gt;%
+  filter(tpop != 0)
+
+# Bring in metro area boundary
+cb &lt;- core_based_statistical_areas(cb = TRUE)
+
+# Keep six largest metros in CA (excluding Sacramento)
+large.metros &lt;- filter(cb, grepl(c(&quot;Los Angeles|San Diego|San Jose|San Francisco|Riverside|Fresno&quot;), NAME))
+
+#Keep tracts in large metros. Drop unnecessary variables
+large.tracts &lt;- st_join(ca.tracts, large.metros, join = st_within, left=FALSE) %&gt;%
+                select(-(c(ALAND, AWATER, AFFGEOID)))</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="mapping" class="section level2">
+<h2><strong>Mapping</strong></h2>
+<p><br />
+</p>
+<p>Before calculating segregation measures, you should map neighborhood racial/ethnic composition in order to gain a visual understanding of how race/ethnic groups are spatially distributed in your study region. For example, let’s map percent non-Hispanic black in Fresno</p>
+<pre class="r"><code>large.tracts %&gt;%
+  filter(GEOID.y == 23420) %&gt;%
+tm_shape(unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;pnhblk&quot;, style = &quot;quantile&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 0.75, position = c(&quot;center&quot;, &quot;bottom&quot;)) +  tm_layout(main.title = &quot;Percent Black in Fresno Metro Tracts&quot;,
+            frame = FALSE)</code></pre>
+<p><img src="lab6a_files/figure-html/unnamed-chunk-3-1.png" /><!-- --></p>
+<p>How does the distribution compare to percent non-Hispanic white?</p>
+<pre class="r"><code>large.tracts %&gt;%
+  filter(GEOID.y == 23420) %&gt;%
+tm_shape(unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;pnhwhite&quot;, style = &quot;quantile&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 0.75, position = c(&quot;center&quot;, &quot;bottom&quot;)) +  tm_layout(main.title = &quot;Percent White in Fresno Metro Tracts&quot;,
+            frame = FALSE)</code></pre>
+<p><img src="lab6a_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
+<p>Map the other two race/ethnic groups in Fresno and all the groups in the other five metropolitan areas.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="residential-segregation" class="section level2">
+<h2><strong>Residential segregation</strong></h2>
+<p><br />
+</p>
+<p>Measures of segregation and other indices of place-based inequality have been fundamental to documenting and understanding the causes and consequences of residential patterns of racial separation. Let’s calculate the two most common measures of racial segregation: Dissimilarity, which captures residential evenness, and Interaction, which measures exposure. The Dissimilarity and Interaction indices are two-group measures of segregation. We will also calculate the Entropy Index, a multi-group measure of segregation.</p>
+<p>Segregation operationalized as disparities in residential contact with White households is a convention that dominates the literature. It is widely understood that neighborhood resources important for more favorable life chances and social mobility often tend to positively correlate with neighborhood percent White (Alba and Logan 1993). Predominantly White neighborhoods typically hold more advantages and resources due to the power and status leveraged by White neighborhoods, particularly affluent White neighborhoods. Additionally, there is an important technical benefit, which is that neighborhood percent White is a key component of all widely used indices of residential segregation where segregation is conceptualized as residential separation from the dominant group. Accordingly, we calculate segregation using White households as the reference based on its relevance for social stratification dynamics in U.S. urban areas and its technical centrality in segregation measurement. I do not endorse normative prescriptions implying that living in White neighborhoods should or would be preferable as a goal in itself. Rather, I take neighborhood percent White as an important outcome for measuring and understanding residential segregation in both its patterns and consequences.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="dissimilarity-index" class="section level3">
+<h3><strong>Dissimilarity Index</strong></h3>
+<p><br />
+</p>
+<p>The most common measure of residential evenness is the Dissimilarity Index <em>D</em>. To calculate <em>D</em>, we’ll follow the Dissimilarity index formula on page 3 of Handout 5a. We will calculate Black/White, Hispanic/White, Asian/White, and non-White/White Dissimilarity. We first need to calculate the total population by race/ethnicity for each metro. This is the value <span class="math inline">\(T_m\)</span> and <span class="math inline">\(T_k\)</span> in the formula. We do this by using the <code>group_by()</code> and <code>mutate()</code> functions.</p>
+<pre class="r"><code>large.tracts &lt;- large.tracts %&gt;%
+      group_by(NAME) %&gt;%
+      mutate(nhwhitec = sum(nhwhite), nonwhitec = sum(nonwhite), 
+             nhasnc = sum(nhasn), nhblkc = sum(nhblk), othc = sum(oth),
+             hispc = sum(hisp), tpoprc = sum(tpopr)) %&gt;%
+      ungroup()</code></pre>
+<p>The <code>group_by()</code> function tells R that all future functions on <em>large.tracts</em> will be grouped according to the variable <em>NAME</em>, which is the metro name. We use the <code>sum()</code> function within the <code>mutate()</code> function to sum up, for example, the non-Hispanic white population <em>nhwhite</em> for each metro. We name this variable <em>nhwhitec</em>. If you type in <code>View(large.tracts)</code>, you should find that the variable <em>nhwhitec</em> provides the same value for all tracts within the same metro. We do this for all the other race/ethnic groups.</p>
+<p>The function <code>ungroup()</code> at the end of the code tells R to stop the grouping. For example, we see the results after grouping by <em>NAME</em></p>
+<pre class="r"><code>large.tracts %&gt;%
+    group_by(NAME)</code></pre>
+<pre><code>## Simple feature collection with 5910 features and 27 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -123.0241 ymin: 32.53416 xmax: -114.1312 ymax: 38.32121
+## geographic CRS: NAD83
+## # A tibble: 5,910 x 28
+## # Groups:   NAME [6]
+##    GEOID.x  tpop tpopr pnhwhite pnhasn  pnhblk phisp nhwhite nhasn nhblk  hisp
+##    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 060133…  2850  2850  0.433   0.189  1.30e-1 0.195    1235   540   371   557
+##  2 060014…  5496  5496  0.176   0.546  3.89e-2 0.184     969  3000   214  1010
+##  3 060374…  5617  5617  0.0324  0.196  8.37e-3 0.761     182  1100    47  4272
+##  4 060371…  5828  5828  0.0130  0.364  1.72e-4 0.623      76  2120     1  3631
+##  5 060372…  3037  3037  0.147   0.433  9.52e-2 0.246     447  1316   289   748
+##  6 060372…  6567  6567  0.0754  0.177  1.07e-1 0.554     495  1163   701  3639
+##  7 060376…  4856  4856  0.192   0.147  7.68e-2 0.550     933   715   373  2670
+##  8 060379…  6895  6895  0.332   0.111  1.38e-2 0.514    2288   765    95  3544
+##  9 060374…  5558  5558  0.0419  0.0768 7.66e-2 0.789     233   427   426  4387
+## 10 060375…  5934  5934  0.00758 0      2.18e-1 0.770      45     0  1294  4567
+## # … with 5,900 more rows, and 17 more variables: nonwhite &lt;dbl&gt;,
+## #   pnonwhite &lt;dbl&gt;, oth &lt;dbl&gt;, poth &lt;dbl&gt;, CSAFP &lt;chr&gt;, CBSAFP &lt;chr&gt;,
+## #   GEOID.y &lt;chr&gt;, NAME &lt;chr&gt;, LSAD &lt;chr&gt;, geometry &lt;MULTIPOLYGON [°]&gt;,
+## #   nhwhitec &lt;dbl&gt;, nonwhitec &lt;dbl&gt;, nhasnc &lt;dbl&gt;, nhblkc &lt;dbl&gt;, othc &lt;dbl&gt;,
+## #   hispc &lt;dbl&gt;, tpoprc &lt;dbl&gt;</code></pre>
+<p>that the tibble <em>large.tracts</em> is grouped (<em>Groups: NAME [6]</em>), which represents the 6 metro areas. Use <code>ungroup()</code> to, well, ungroup the tibble.</p>
+<pre class="r"><code>large.tracts %&gt;%
+    group_by(NAME) %&gt;%
+    ungroup()</code></pre>
+<pre><code>## Simple feature collection with 5910 features and 27 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -123.0241 ymin: 32.53416 xmax: -114.1312 ymax: 38.32121
+## geographic CRS: NAD83
+## # A tibble: 5,910 x 28
+##    GEOID.x  tpop tpopr pnhwhite pnhasn  pnhblk phisp nhwhite nhasn nhblk  hisp
+##    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 060133…  2850  2850  0.433   0.189  1.30e-1 0.195    1235   540   371   557
+##  2 060014…  5496  5496  0.176   0.546  3.89e-2 0.184     969  3000   214  1010
+##  3 060374…  5617  5617  0.0324  0.196  8.37e-3 0.761     182  1100    47  4272
+##  4 060371…  5828  5828  0.0130  0.364  1.72e-4 0.623      76  2120     1  3631
+##  5 060372…  3037  3037  0.147   0.433  9.52e-2 0.246     447  1316   289   748
+##  6 060372…  6567  6567  0.0754  0.177  1.07e-1 0.554     495  1163   701  3639
+##  7 060376…  4856  4856  0.192   0.147  7.68e-2 0.550     933   715   373  2670
+##  8 060379…  6895  6895  0.332   0.111  1.38e-2 0.514    2288   765    95  3544
+##  9 060374…  5558  5558  0.0419  0.0768 7.66e-2 0.789     233   427   426  4387
+## 10 060375…  5934  5934  0.00758 0      2.18e-1 0.770      45     0  1294  4567
+## # … with 5,900 more rows, and 17 more variables: nonwhite &lt;dbl&gt;,
+## #   pnonwhite &lt;dbl&gt;, oth &lt;dbl&gt;, poth &lt;dbl&gt;, CSAFP &lt;chr&gt;, CBSAFP &lt;chr&gt;,
+## #   GEOID.y &lt;chr&gt;, NAME &lt;chr&gt;, LSAD &lt;chr&gt;, geometry &lt;MULTIPOLYGON [°]&gt;,
+## #   nhwhitec &lt;dbl&gt;, nonwhitec &lt;dbl&gt;, nhasnc &lt;dbl&gt;, nhblkc &lt;dbl&gt;, othc &lt;dbl&gt;,
+## #   hispc &lt;dbl&gt;, tpoprc &lt;dbl&gt;</code></pre>
+<p>and the grouping is gone! It’s always good practice to <code>ungroup()</code> a data set if you are saving it for future use (rather than using it as a summary table as we’ve doing so far in the class).</p>
+<p>We’ve got the values for <span class="math inline">\(T_m\)</span>, <span class="math inline">\(T_k\)</span>, <span class="math inline">\(t_{im}\)</span>, and <span class="math inline">\(t_{ik}\)</span>, so we can calculate the rest of the formula, breaking it down piece-by-piece like we did in the handout and in class. The following code calculates the Dissimilarity indices</p>
+<pre class="r"><code>large.tracts %&gt;%
+      group_by(NAME) %&gt;%
+      mutate(d.wb = abs(nhblk/nhblkc-nhwhite/nhwhitec),
+              d.wa = abs(nhasn/nhasnc-nhwhite/nhwhitec), 
+              d.wh = abs(hisp/hispc-nhwhite/nhwhitec),
+              d.wnw = abs(nonwhite/nonwhitec-nhwhite/nhwhitec)) %&gt;%
+      summarize(BWD = 0.5*sum(d.wb, na.rm=TRUE), AWD = 0.5*sum(d.wa, na.rm=TRUE),
+                HWD = 0.5*sum(d.wh, na.rm=TRUE), NWWD = 0.5*sum(d.wnw, na.rm=TRUE))</code></pre>
+<pre><code>## Simple feature collection with 6 features and 5 fields
+## geometry type:  GEOMETRY
+## dimension:      XY
+## bbox:           xmin: -123.0241 ymin: 32.53416 xmax: -114.1312 ymax: 38.32121
+## geographic CRS: NAD83
+## # A tibble: 6 x 6
+##   NAME             BWD   AWD   HWD  NWWD                                geometry
+##   &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;                          &lt;GEOMETRY [°]&gt;
+## 1 Fresno, CA     0.530 0.385 0.460 0.414 POLYGON ((-119.9589 36.25794, -119.958…
+## 2 Los Angeles-L… 0.657 0.481 0.609 0.527 MULTIPOLYGON (((-118.6105 33.03294, -1…
+## 3 Riverside-San… 0.461 0.428 0.414 0.378 POLYGON ((-115.6775 33.42735, -115.682…
+## 4 San Diego-Chu… 0.517 0.490 0.483 0.412 POLYGON ((-117.0299 32.54221, -117.04 …
+## 5 San Francisco… 0.605 0.459 0.494 0.419 MULTIPOLYGON (((-122.4185 37.24852, -1…
+## 6 San Jose-Sunn… 0.460 0.434 0.472 0.379 POLYGON ((-121.4841 36.71431, -121.483…</code></pre>
+<p><br></p>
+<p>Let’s make the table more presentation ready by eliminating the geometry by using <code>st_drop_geometry()</code>. We also use the <code>kable()</code> function which is a part of the <strong>knitr</strong> package. Note that the table will not look <em>nice</em> in your console. It will look <em>nice</em> in your knitted document.</p>
+<pre class="r"><code>large.tracts %&gt;%
+      group_by(NAME) %&gt;%
+      mutate(d.wb = abs(nhblk/nhblkc-nhwhite/nhwhitec),
+              d.wa = abs(nhasn/nhasnc-nhwhite/nhwhitec), 
+              d.wh = abs(hisp/hispc-nhwhite/nhwhitec),
+              d.wnw = abs(nonwhite/nonwhitec-nhwhite/nhwhitec)) %&gt;%
+      summarize(BWD = 0.5*sum(d.wb, na.rm=TRUE), AWD = 0.5*sum(d.wa, na.rm=TRUE),
+                HWD = 0.5*sum(d.wh, na.rm=TRUE), NWWD = 0.5*sum(d.wnw, na.rm=TRUE)) %&gt;%
+  st_drop_geometry() %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">NAME</th>
+<th align="right">BWD</th>
+<th align="right">AWD</th>
+<th align="right">HWD</th>
+<th align="right">NWWD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Fresno, CA</td>
+<td align="right">0.530</td>
+<td align="right">0.385</td>
+<td align="right">0.460</td>
+<td align="right">0.414</td>
+</tr>
+<tr class="even">
+<td align="left">Los Angeles-Long Beach-Anaheim, CA</td>
+<td align="right">0.657</td>
+<td align="right">0.481</td>
+<td align="right">0.609</td>
+<td align="right">0.527</td>
+</tr>
+<tr class="odd">
+<td align="left">Riverside-San Bernardino-Ontario, CA</td>
+<td align="right">0.461</td>
+<td align="right">0.428</td>
+<td align="right">0.414</td>
+<td align="right">0.378</td>
+</tr>
+<tr class="even">
+<td align="left">San Diego-Chula Vista-Carlsbad, CA</td>
+<td align="right">0.517</td>
+<td align="right">0.490</td>
+<td align="right">0.483</td>
+<td align="right">0.412</td>
+</tr>
+<tr class="odd">
+<td align="left">San Francisco-Oakland-Berkeley, CA</td>
+<td align="right">0.605</td>
+<td align="right">0.459</td>
+<td align="right">0.494</td>
+<td align="right">0.419</td>
+</tr>
+<tr class="even">
+<td align="left">San Jose-Sunnyvale-Santa Clara, CA</td>
+<td align="right">0.460</td>
+<td align="right">0.434</td>
+<td align="right">0.472</td>
+<td align="right">0.379</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s break the code down so we’re all on the same page. We use <code>mutate()</code> to calculate the tract level contributions to the index, i.e. the value <span class="math inline">\(\left|\frac{t_{rm}}{T_m} - \frac{t_{rk}}{T_k}\right|\)</span> for each neighborhood <span class="math inline">\(i\)</span>. These are the values <em>d.wb</em>, <em>d.wa</em>, <em>d.wh</em>, and <em>d.wnw</em>. Next, we turn to <code>summarize()</code> to finish the rest of the job. Within <code>summarize()</code>, we use the function <code>sum()</code> to add the neighborhood specific values in Equation 1 in Handout 5a. In other words, <code>sum()</code> is performing the <span class="math inline">\(\sum\limits_{i}^{N}\)</span> that adds up <span class="math inline">\(\left|\frac{t_{rm}}{T_m} - \frac{t_{rk}}{T_k}\right|\)</span>. Finally, multiply the summed up value by 0.5 to get the final indices.</p>
+<p><br></p>
+<p>The resulting values provide the Dissimilarity indices for Black/White (<em>BWD</em>), Asian/White (<em>AWD</em>), Hispanic/White (<em>HWD</em>), Nonwhite/White (<em>NWWD</em>). In all of these cases, we calculate segregation from white residents, but you can calculate segregation for any race/ethnicity combination (e.g. Black/Hispanic). Instead of just copying and pasting the chunk of code above into your console, make sure you understand what each line of code is doing. Not only will it help you become a more seasoned R coder, but it will also help you better understand the underlying math behind the Dissimilarity index.</p>
+<p><br></p>
+<p>The Dissimilarity index for Black/White in Fresno is 0.53. The interpretation of this value is that 53% of black residents would need to move neighborhoods in order to achieve a uniform distribution of black residents across neighborhoods. How does this value compare to the other large California metropolitan areas? What about the metropolitan areas listed in the Logan and Stults (2011) reading?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="interaction-index" class="section level3">
+<h3><strong>Interaction Index</strong></h3>
+<p><br />
+</p>
+<p>The most common measure of exposure is the Interaction Index <span class="math inline">\(P^*\)</span>. Let’s calculate the exposure of black (<em>BWI</em>), Asian (<em>AWI</em>), Hispanic (<em>HWI</em>), and Non-white (<em>NWWI</em>) residents to white residents using the formula on page 6 of Handout 5a.</p>
+<pre class="r"><code>large.tracts %&gt;%
+      group_by(NAME) %&gt;%
+      mutate(i.wb = (nhblk/nhblkc)*(nhwhite/tpopr),
+              i.wa = (nhasn/nhasnc)*(nhwhite/tpopr), 
+              i.wh = (hisp/hispc)*(nhwhite/tpopr),
+              i.wnw = (nonwhite/nonwhitec)*(nhwhite/tpopr)) %&gt;%
+      summarize(BWI = sum(i.wb, na.rm=TRUE), AWI = sum(i.wa, na.rm=TRUE),
+                HWI = sum(i.wh, na.rm=TRUE), NWWI = sum(i.wnw, na.rm=TRUE)) %&gt;%
+  st_drop_geometry() %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">NAME</th>
+<th align="right">BWI</th>
+<th align="right">AWI</th>
+<th align="right">HWI</th>
+<th align="right">NWWI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Fresno, CA</td>
+<td align="right">0.246</td>
+<td align="right">0.301</td>
+<td align="right">0.217</td>
+<td align="right">0.237</td>
+</tr>
+<tr class="even">
+<td align="left">Los Angeles-Long Beach-Anaheim, CA</td>
+<td align="right">0.181</td>
+<td align="right">0.282</td>
+<td align="right">0.171</td>
+<td align="right">0.207</td>
+</tr>
+<tr class="odd">
+<td align="left">Riverside-San Bernardino-Ontario, CA</td>
+<td align="right">0.265</td>
+<td align="right">0.322</td>
+<td align="right">0.250</td>
+<td align="right">0.264</td>
+</tr>
+<tr class="even">
+<td align="left">San Diego-Chula Vista-Carlsbad, CA</td>
+<td align="right">0.346</td>
+<td align="right">0.384</td>
+<td align="right">0.324</td>
+<td align="right">0.351</td>
+</tr>
+<tr class="odd">
+<td align="left">San Francisco-Oakland-Berkeley, CA</td>
+<td align="right">0.265</td>
+<td align="right">0.314</td>
+<td align="right">0.288</td>
+<td align="right">0.307</td>
+</tr>
+<tr class="even">
+<td align="left">San Jose-Sunnyvale-Santa Clara, CA</td>
+<td align="right">0.300</td>
+<td align="right">0.262</td>
+<td align="right">0.245</td>
+<td align="right">0.262</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>mutate()</code> function is creating the tract specific values <span class="math inline">\(\frac{t_{im}}{T_m} * \frac{t_{ik}}{t_i}\)</span>. We then turn to <code>summarize()</code> to perform the <span class="math inline">\(\sum\limits_{i}^{N}\)</span>.</p>
+<p>The probability of a black resident “interacting” with a white person in his or her neighborhood is about 24.6% in Fresno We can also interpret this to mean that 25 of every 100 people a black person meets in his or her neighborhood will be white. Remember that interaction is not symmetric. Calculate the interaction of white residents with black residents in the metro areas and see if there are major differences with the values we calculated above.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="multigroup-entropy-index" class="section level3">
+<h3><strong>Multigroup Entropy Index</strong></h3>
+<p><br />
+</p>
+<p>The Dissimilarity and Interaction indices are measures of segregation between two groups. The Entropy index is a multigroup measure of segregation. This index is a measure of evenness.</p>
+<p>We learned in Handout 5a that there are basically three steps to calculating the Entropy index. First, you calculate Entropy scores at the neighborhood level. This is Equation 3 in Handout 5a. Remember, we’ll need to convert <span class="math inline">\(p_{ir}\)</span><span class="math inline">\(log(1/p_{ir})\)</span> to 0 if <span class="math inline">\(p_{ir}\)</span> is equal to 0. When <span class="math inline">\(p_{ir}\)</span> is equal to 0, we get an <code>NaN</code> value for <span class="math inline">\(log(1/p_{ir})\)</span>. NaN means “Not a Number.” We use the<code>replace()</code> and <code>is.nan()</code> functions to convert the <code>NaN</code> to a 0.</p>
+<pre class="r"><code>large.tracts &lt;- large.tracts %&gt;%
+      mutate(e1 =  pnhwhite*log(1/pnhwhite), e2 = pnhasn*log(1/pnhasn),
+             e3 = pnhblk*log(1/pnhblk), e4 = phisp*log(1/phisp),
+             e5 = poth*log(1/poth), 
+            e1 = replace(e1, is.nan(e1), 0), e2 = replace(e2, is.nan(e2), 0),
+            e3 = replace(e3, is.nan(e3), 0), e4 = replace(e4, is.nan(e4), 0),
+            e5 = replace(e5, is.nan(e5), 0),
+            ent = e1 + e2 + e3 + e4 +e5) %&gt;%
+      select(-c(e1:e5))</code></pre>
+<p>In the <code>mutate()</code> function, the first set of <code>e1 =</code> to <code>e5 =</code> arguments calculates <span class="math inline">\(p_{ir} log(\frac{1}{p_{ir}})\)</span> for each race/ethnic group. The next set of <code>e1 =</code> to <code>e5 =</code> arguments replaces any values with an <em>NaN</em> with a 0. The variable <em>ent</em> sums up the individual race/ethnic values (i.e. performs the <span class="math inline">\(\sum\limits_{r = 1}^{r}\)</span>) to obtain the neighborhood entropy score.</p>
+<p>You then need to calculate Entropy scores at the metro level. This is Equation 4 in the handout. We need to calculate the metro level race/ethnic proportions <span class="math inline">\(p_r\)</span>. These are the variables <em>pnhwhitec</em>, <em>pnhasnc</em>, <em>pnhblkc</em>, <em>pnhblkc</em>, and <em>phispc</em> in the code below. Then the <code>e1 =</code> to <code>e5 =</code> arguments calculate <span class="math inline">\(p_{r} log(\frac{1}{p_{r}})\)</span> for each race/ethnic group and replaces <em>NaN</em> with a 0. Finally we calculate the metro level entropy score <code>entc =</code> by performing the <span class="math inline">\(\sum\limits_{r = i}^{r}\)</span>.</p>
+<pre class="r"><code>large.tracts &lt;- large.tracts %&gt;%
+      group_by(NAME) %&gt;%
+      mutate(pnhwhitec = nhwhitec/tpoprc, pnhasnc = nhasnc/tpoprc, 
+             pnhblkc = nhblkc/tpoprc, pothc = othc/tpoprc, phispc = hispc/tpoprc,
+             e1 =  pnhwhitec*log(1/pnhwhitec), e2 = pnhasnc*log(1/pnhasnc),
+             e3 = pnhblkc*log(1/pnhblkc), e4 = phispc*log(1/phispc),
+             e5 = pothc*log(1/pothc), 
+            e1 = replace(e1, is.nan(e1), 0), e2 = replace(e2, is.nan(e2), 0),
+            e3 = replace(e3, is.nan(e3), 0), e4 = replace(e4, is.nan(e4), 0),
+            e5 = replace(e5, is.nan(e5), 0),
+            entc = e1 + e2 + e3 + e4 +e5) %&gt;%
+      select(-c(e1:e5)) %&gt;%
+      ungroup()</code></pre>
+<p>Finally, we calculate the Entropy index for each metro area. This is Equation 5 in the handout.</p>
+<pre class="r"><code>large.tracts %&gt;%
+      group_by(NAME) %&gt;%
+      summarize(H = sum((tpopr*(entc-ent)/(entc*tpoprc)), na.rm = TRUE)) %&gt;%
+  st_drop_geometry() %&gt;%
+  kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">NAME</th>
+<th align="right">H</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Fresno, CA</td>
+<td align="right">0.1602549</td>
+</tr>
+<tr class="even">
+<td align="left">Los Angeles-Long Beach-Anaheim, CA</td>
+<td align="right">0.2666992</td>
+</tr>
+<tr class="odd">
+<td align="left">Riverside-San Bernardino-Ontario, CA</td>
+<td align="right">0.1450064</td>
+</tr>
+<tr class="even">
+<td align="left">San Diego-Chula Vista-Carlsbad, CA</td>
+<td align="right">0.1796589</td>
+</tr>
+<tr class="odd">
+<td align="left">San Francisco-Oakland-Berkeley, CA</td>
+<td align="right">0.1816279</td>
+</tr>
+<tr class="even">
+<td align="left">San Jose-Sunnyvale-Santa Clara, CA</td>
+<td align="right">0.1670354</td>
+</tr>
+</tbody>
+</table>
+<p>Remember that the Entropy index goes from 0 to 1, with 0 indicating complete integration and 1 indicating complete segregation. Which metro is the most segregated? Least segregated?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="neighborhood-diversity" class="section level2">
+<h2><strong>Neighborhood Diversity</strong></h2>
+<p><br />
+</p>
+<p>The Dissimilarity, Interaction and Entropy indices are metro area (or city, county, …) indices. In the handout, we covered one neighborhood level measure: Entropy score, which captures neighborhood racial/ethnic diversity. A city may be highly segregated, but still exhibit diversity at the neighborhood level. The opposite can also happen. Here’s a nice <a href="https://fivethirtyeight.com/features/the-most-diverse-cities-are-often-the-most-segregated/">article</a> that discusses city vs. neighborhood differences in diversity. We will cover a measure of clustering in next week’s lab.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="entropy-score" class="section level3">
+<h3><strong>Entropy Score</strong></h3>
+<p><br />
+</p>
+<p>We already calculated the entropy score above. Because we used 5 race/ethnic groups, maximum entropy is</p>
+<pre class="r"><code>log(5)</code></pre>
+<pre><code>## [1] 1.609438</code></pre>
+<p>The higher the value, the greater the diversity. We can create a faceted map of neighborhood entropy for our 6 metro areas</p>
+<pre class="r"><code>tm_shape(large.tracts, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;ent&quot;, style = &quot;quantile&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;Entropy score&quot;) +
+    tm_facets(by = &quot;NAME&quot;, free.coords = TRUE)+
+    tm_style(&quot;grey&quot;)</code></pre>
+<p><img src="lab6a_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p>You can play around with the map to make the labels more readable. You can also use <code>tmap_mode("view")</code> to zoom in. Using either the map or, perhaps, the <code>arrange()</code> function, can you identify the least and most diverse neighborhoods in each metropolitan area?</p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "site_libs/mathjax-local/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

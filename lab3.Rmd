@@ -167,7 +167,7 @@ If you want to peek behind the curtain and learn more about the nitty gritty det
 
 Another package that allows us to bring in census geographic boundaries is **tigris**.  [Here](https://github.com/walkerke/tigris/blob/master/README.md) is a list of all the boundaries you can download through this package.  Let's use the function `core_based_statistical_areas()` to bring in boundaries for all [metropolitan and micropolitan areas](https://www.census.gov/programs-surveys/metro-micro/about.html) in the United States.
 
-```{r warning=FALSE, message=FALSE, results = FALSE}
+```{r, results =  "hide"}
 cb <- core_based_statistical_areas(year = 2018, cb = TRUE)
 ```
 
