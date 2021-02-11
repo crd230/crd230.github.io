@@ -1,0 +1,399 @@
+---
+title: "Lab 6b: Neighborhood Indices"
+subtitle: <h4 style="font-style:normal">CRD 230 - Spatial Methods in Community Research</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">February 11, 2021</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    mathjax: local
+    theme: cosmo
+    code_folding: show
+---
+
+
+
+<style>
+p.comment {
+background-color: #bdced6;
+padding: 10px;
+border: 0px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+
+In this guide you will learn how to create neighborhood indices of disadvantage using the methods outlined in Handout 5b. The objectives of the guide are as follows
+
+1. Calculate a neighborhood disadvantage index by standardizing and averaging variables
+2. Calculate a neighborhood disadvantage index Principal Components Analysis
+
+To accomplish these objectives, you will be working with Census tract data for the Sacramento Metropolitan Area. You will be creating the neighborhood concentrated disadvantage index developed by [Sampson, Raudenbush and Earls (1997)](https://science.sciencemag.org/content/277/5328/918/tab-pdf) and described in Handout 5b. This lab guide follows closely and supplements the material presented in Handout 5b.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+We will be introducing two packages in this lab. Install them.
+
+```{r eval = FALSE}
+install.packages("corrr")
+install.packages("VIM")
+```
+
+You’ll need to load the following packages. Unlike installing, you will always need to load packages whenever you start a new R session. You’ll also always need to use `library()` in your R Markdown file.
+
+```{r message = FALSE, warning=FALSE}
+library(sf)
+library(sp)
+library(tidyverse)
+library(tidycensus)
+library(tigris)
+library(tmap)
+library(corrr)
+library(VIM)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Bringing in tract data**
+\
+
+Sampson et al. (1997) created the Concentrated Disadvantage Index using the following variables from the U.S. Census.
+
+* Percent of households receiving public financial assistance
+* Percent of individuals living under the federal poverty line
+* Percent of the civilian labor force who are unemployed
+* Percent of female-headed households
+* Percent black
+* Percent of residents under 18 years old
+
+The following code uses the Census API to bring in tract-level data for these variables from the 2015-2019 American Community Survey for the Sacramento metropolitan area.  We won't go through each line of code in detail because we've covered all of these operations and functions in prior labs.  I've embedded comments within the code that briefly explains what each chunk is doing. Go back to prior guides (or RDS/GWR) if you need further help. 
+
+```{r warning=FALSE, results="hide", message=FALSE}
+
+# Bring in census tract data using the Census API 
+ca.tracts <- get_acs(geography = "tract", 
+              year = 2019,
+              variables = c(civlf = "B23025_003", unemp = "B23025_005", 
+                            povtot = "B17001_001", pov = "B17001_002",
+                            patot = "B19057_001", pa = "B19057_002",
+                            tpop = "B03002_001", nhblk = "B03002_004",
+                            age1 = "B01001_003", age2 = "B01001_004", 
+                            age3 = "B01001_005", age4 = "B01001_006", 
+                            age5 = "B01001_027", age6 = "B01001_028",
+                            age7 = "B01001_029", age8 = "B01001_030",
+                            femhhtot = "B11001_001", femhh = "B11001_006"),
+              state = "CA",
+              survey = "acs5",
+              output = "wide",
+              geometry = TRUE)
+
+# Make the data tidy, calculate and keep essential vars. Also take out zero population tracts
+#rename_with takes out the E at the end of the estimate variable names
+ca.tracts <- ca.tracts %>% 
+  rename_with(~ sub("E$", "", .x), everything()) %>%
+  mutate(punemp = unemp/civlf, ppov = pov/povtot, 
+         pblk = nhblk/tpop, pfemhh = femhh/femhhtot,
+         p18below = (age1+age2+age3+age4+age5+age6+age7+age8)/tpop,
+         ppa = pa/patot) %>%
+  select(c(GEOID, punemp, ppov, p18below, ppa, pfemhh, pblk, tpop))  %>%
+  filter(tpop != 0)
+
+# Bring in metro area boundary
+cb <- core_based_statistical_areas(cb = TRUE)
+
+# Keep sac metro. Drop unnecessary variables
+sac.metro <- filter(cb, grepl("Sacramento", NAME)) %>%
+              select(-c(CSAFP:GEOID, LSAD:AWATER))
+
+#Keep tracts in large metros. 
+sac.metro.tracts <- st_join(ca.tracts, sac.metro, join = st_within, left=FALSE) 
+```
+
+We want to examine the correlation of concentrated disadvantage with neighborhood-level measures of resident health in Sacramento city. We'll bring in two measures of neighborhood health: the 2017 crude prevalence of residents aged 18 years and older reporting that their mental health is not good and the 2017 crude prevalence of diagnosed diabetes among adults aged >= 18 years.  Data come from the Centers for Disease Control and Prevention (CDC) 500 cities project, which uses the [Behavioral Risk Factor Surveillance System (BRFSS)](https://www.cdc.gov/brfss/index.html) to estimate tract-level prevalence of health characteristics. The data were downloaded from the [CDC](https://chronicdata.cdc.gov/500-Cities/500-Cities-Census-Tract-level-Data-GIS-Friendly-Fo/k86t-wghb), which also includes the data's metadata.  I uploaded the file onto GitHub. Read it in using `read_csv()`.
+
+```{r}
+cdcfile <- read_csv("https://raw.githubusercontent.com/crd230/data/master/500_Cities__Census_Tract-level_Data__GIS_Friendly_Format___2019_release.csv")
+```
+
+Make sure to take a look at the data.
+
+```{r eval = FALSE}
+glimpse(cdcfile)
+```
+
+Keep the tract ID *TractFIPS* and the health measures *MHLTH_CrudePrev* and *DIABETES_CrudePrev*, which measure poor mental health and diabetes prevalence, respectively. Then join to *sac.metro.tracts*
+
+```{r}
+cdcfile <- cdcfile %>%
+            select(TractFIPS, MHLTH_CrudePrev, DIABETES_CrudePrev)
+
+#need to make GEOID numeric since ID in cdcfile is numeric
+sac.metro.tracts <- sac.metro.tracts %>%
+            mutate(GEOID = as.numeric(GEOID))
+
+sac.metro.tracts <- left_join(sac.metro.tracts, cdcfile, by = c("GEOID" = "TractFIPS"))
+```
+
+<div style="margin-bottom:25px;">
+</div>
+## **Standardize and Average**
+\
+
+A major motivation for creating an index is that a set of variables that capture various dimensions of disadvantage might be highly correlated, causing difficulties when you statistically model the associations between disadvantage and various ecological outcomes.
+
+Let's use the `correlate()` function from the **corrr** package to get a correlation matrix for the six variables used in the concentrated disadvantage index.  The function only takes in numeric variables. We need to select just the six concentrated disadvantage variables using `select()` and we also need to take out the geometry (i.e. make it no longer spatial) by using the function `st_drop_geometry()`
+
+```{r}
+sac.metro.tracts %>%
+  st_drop_geometry() %>%
+  select(punemp:pblk) %>%
+  correlate()
+```
+
+Although not every variable is highly correlated with one another, there are several correlations that appear quite high.  For example, percent poverty and percent on public assistance has a correlation of 0.573.  Including all of these variables into a single regression model will introduce multicollinearity.
+
+To deal with this issue, we can combine the variables into a single index. As fully discussed in Handout 5b, the basic workflow for creating an index using the standardizing and averaging approach is as follows
+
+1. Establish the theoretical framework based on an extensive literature review and, if possible, feedback from community members
+2. Collect data on variables that capture important contextual features of a neighborhood based on each subdomain
+3. Clean, process, and transform input variables
+4. Standardize each variable
+5. Construct subdomain and overall index by taking averages
+6. Map your index
+
+Sampson et al. (1997) and others have already done step 1 for us.  We accomplished step 2 above. We  converted all variable counts to percentages, ratios, and rates. Let's check for missingness to see if we need to filter out tracts. We can do this a number of ways, including using the basic `summary()` function, which will give us the number of tracts missing values by variable.
+
+```{r eval = FALSE}
+summary(sac.metro.tracts)
+```
+
+
+We can also use the functions within the package **VIM**.  Specifically, we use the `aggr()` function. Run the `aggr()` function as follows
+
+```{r warning=FALSE, message=FALSE}
+summary(aggr(sac.metro.tracts))
+```
+
+The results show two tables and two plots.  The left-hand side plot shows the proportion of cases that are missing values for each variable in the data set.  The right-hand side plot shows which combinations of variables are missing.  The first table shows the number of cases that are missing values for each variable in the data set. The second table shows the percent of cases missing values based on combinations of variables.  The results show that 274 tracts are missing values for the health measures, but that's because the CDC 500 cities project provides data only for the 500 largest cities, which includes only Sacramento in the Sacramento metropolitan area.  If we had missing values for any of the variables in our index,  when we calculate values like the mean or standard deviation, we would need to use the option `na.rm=TRUE` within the command. Also, we'll have gray areas designating tracts with missing data when we map.  Fortunately, we have no missing values, so we won't have to worry about these issues.
+
+Guess what - you earned a tidy badge.  Hip hip hooray!
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/corrlogo.png){ width=25% }
+
+</center>
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Standardizing variables**
+\
+
+In order to combine variables into an index, we need to standardize them, which is described in section 3.2.4 in Handout 5b.  We do this to get the variables onto the same scale.  A common approach to standardizing a variable is to calculate its z-score.  The z-score is a measure of distance from the mean, in this case the mean of all tracts in an area.  So, after standardizing, the variables will have the same units, specifically units of standard deviations.
+
+Let's calculate the z-score for the variable *punemp* using equation 1 in Handout 5b.  Relying on our compadre `mutate()`, we can create a variable named *punempz* that subtracts the total mean of *punemp* from each tract's value on *punemp* and then divide by the standard deviation of *punemp*. Because we are dealing with only one region (Sac metro area), we don't have to standardize using different regional means and standard deviations.
+
+
+```{r}
+sac.metro.tracts %>%
+  mutate(punempz = (punemp-mean(punemp, na.rm=TRUE))/sd(punemp, na.rm=TRUE)) %>%
+  select(GEOID,punempz)
+```
+
+Standardized values should have a mean of 0 and a standard deviation of 1.
+
+```{r}
+sac.metro.tracts %>%
+  mutate(punempz = (punemp-mean(punemp, na.rm=TRUE))/sd(punemp, na.rm=TRUE)) %>%
+  select(GEOID,punempz) %>%
+  summarize(Mean = mean(punempz), SD = sd(punempz)) %>%
+  st_drop_geometry()
+```
+
+We just standardized *punemp*, but we need to do this for all variables in the data set. Standardizing one variable at a time by repeating the code above is fine and dandy if you have a small number of variables to standardize.  But, for many  indices, you'll be dealing with a lot of variables.  Is there a more efficient way? 
+
+Why yes!  Tidyverse to the rescue!!
+
+Instead of writing out the above code for every variable, we can use a combination of the `scale()` function, which is a canned function that standardizes a variable, and `mutate()`'s hidden yet very powerful sister `mutate_at()`.  Let's create a new tibble called *sac.metro.tracts.std* that contains all variables standardized using the following code.
+
+```{r}
+sac.metro.tracts.std <- sac.metro.tracts %>%
+        mutate_at(~(scale(.) %>% as.vector(.)), .vars = vars(-c(GEOID, NAME, geometry)))
+```
+
+Let's break the above code down a bit so we're all on the same page. The function `mutate_at()` tells R to run a function on all variables in the dataset. The first argument is the name of our function `scale()`.  But, if you check the help documentation, `scale()` returns a matrix as opposed to a vector, so we send it to the function `as.vector()`.  So, the `~` tells R that we are performing multiple functions on each variable, in this case `scale()` and `as.vector()` in that order (our trusted pipe tells the order).
+
+We have multiple variables, numeric and character, in our dataset *sac.metro.tracts* that we don't need to standardize.  This is why we use the `.vars = vars()` argument above. The argument `.vars = vars(-c(GEOID, NAME, geometry))` tells `mutate_at()` that R will execute `scale()` and `as.vector()` for all variables in  *sac.metro.tracts* **except** *GEOID*, *NAME*, and *geometry*.
+
+Take a peek at the data to see what we produced
+
+```{r}
+glimpse(sac.metro.tracts.std)
+```
+
+<div style="margin-bottom:25px;">
+</div>
+### **Creating the index**
+\
+
+The next step in the workflow is to create subdomain indices, which we do not need to do here.  So, we now just take the average of the six variables to get our final index, which we name *DepInd1*.
+
+```{r}
+sac.metro.tracts.std <- sac.metro.tracts.std %>%
+  mutate(DepInd1 = (punemp+ppov+p18below+pblk+ppa+pfemhh)/6)
+```
+
+<div style="margin-bottom:25px;">
+</div>
+### **Mapping the indices**
+\
+
+Last step is to map the index. Use our friend `tm_shape()` to do this
+
+```{r warning = FALSE, message = FALSE}
+tmap_mode("view")
+
+sac.metro.tracts.std %>%
+  tm_shape() +
+  tm_polygons(col = "DepInd1", style = "jenks", palette = "Reds", 
+              border.alpha = 0, title = "Concentrated Disadvantage Index")
+```
+
+Darker red indicates higher disadvantage. Let's save *DepInd1* back into *sac.metro.tracts*.  We'll be turning back to this index later in the lab.
+
+```{r}
+sac.metro.tracts <- sac.metro.tracts %>%
+        left_join(select(st_drop_geometry(sac.metro.tracts.std), GEOID, DepInd1), 
+                  by = "GEOID")
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Principal Components Analysis**
+\
+
+Another method for creating an index is to use Principal Components Analysis (PCA), which is described in section 3.3 in Handout 5b. A couple of basic rules
+
+1. Always use z-scored variables when doing a PCA - scale is very important, as we want correlations going in, not covariances.  
+2. Generally, you use the **first** principal component as the index. However, always look at how much variation your component is capturing.
+
+To conduct a PCA in R, use the function `prcomp()`, which is a part of the package **stats**, a pre-installed package.
+
+```{r}
+pconcdis<-prcomp(~punemp+ppov+p18below+pblk+ppa+pfemhh, center=T, scale=T, data=sac.metro.tracts, na.action = na.exclude)
+```
+
+The first argument are the variables we want to include in the index, starting first with a tilde sign `~` then followed by each variable separated by a `+`.  The arguments `center=T` and `scale=T` effectively standardize our variables. And then `data` specifies the dataset. The argument `na.action = na.exclude` tells the function to exclude the observations with NA values, but retain them as NA when computing the scores (we did not need this here, but I show this if and when you do run into missingness when creating your own indices).
+
+What is the object type of *pconcdis*?
+
+```{r}
+class(pconcdis)
+```
+
+Hmmmm, not something we've come across before. Let's get a summary of this object.
+
+```{r}
+summary(pconcdis)
+```
+
+You obtain six principal components (because we have six variables), which we call PC1-PC6. Each of these explains a percentage of the total variation in the dataset. That is to say: PC1 explains 52% of the total variance, which means that one-half of the information in the dataset (6 variables) can be encapsulated by just that one Principal Component. PC2 explains 19% of the variance. So, by knowing the position of a sample in relation to just PC1 and PC2, you can get a very accurate view on where it stands in relation to other samples, as just PC1 and PC2 can explain 72% of the variance.
+
+Let's call `glimpse()` to have a looksie at our PCA object.
+
+```{r}
+glimpse(pconcdis)
+```
+
+I won't describe the results above in detail, but your PCA object contains the following information:
+
+* The center point (`$center`), scaling (`$scale`), standard deviation(`sdev`) of each principal component
+* The relationship (correlation) between the initial variables and the principal components (`$rotation`)
+* The principal components score (`$x`)
+
+The first principal component score is in `x[,1]`, which we save into our data set *sac.metro.tracts*
+
+```{r}
+sac.metro.tracts <- sac.metro.tracts %>%
+          mutate(DepInd2 = pconcdis$x[,1])
+```
+
+What is the correlation between this index *DepInd2*, the original variables and the index created using the basic averaging approach *DepInd1*?
+
+```{r}
+sac.metro.tracts %>%
+  st_drop_geometry() %>%
+  select(punemp:pblk, DepInd1, DepInd2) %>%
+  correlate()
+```
+
+The correlation is quite high between *DepInd1* and *DepInd2* (0.997).  Let's map the PCA index.
+
+```{r}
+sac.metro.tracts %>%
+  tm_shape() +
+  tm_polygons(col = "DepInd2", style = "jenks", palette = "Reds", 
+              border.alpha = 0, title = "Concentrated Disadvantage Index")
+
+```
+
+
+Darker red means greater disadvantage. How much does the index correlate with ecological health?
+
+```{r}
+sac.metro.tracts %>%
+  st_drop_geometry() %>%
+  select(MHLTH_CrudePrev, DIABETES_CrudePrev, DepInd1, DepInd2) %>%
+  correlate()
+```
+
+Both indices have correlations around 0.82 and 0.65 with poor mental health and diabetes prevalence, respectively.  Remember these correlations are just for the City of Sacramento.
+
+The downside of creating indices is that you lose interpretation.  All we know is that higher values on the index indicate more disadvantage.  You can't say much about what a one-unit increase in the indices practically mean.  That's why many practitioners convert the index into quartiles or quintiles (such as the Regional Opportunity Index or the California LIHTC Opportunity Map, both discussed in Handout 5b).  That way, you  would say something like "This neighborhood in South Sacramento is in the top quartile in neighborhood disadvantage".
+
+Another issue with the PCA is how to evaluate whether the first principal component score is enough. Why not include the second?  Well, you don't largely because you are trying to create a single index of disadvantage or opportunity.  There's also an element of art over science in the selection.  52% of explained variation is high, but ultimately we don't have a standard threshold to say exactly what is high. The high correlations with the first index and the individual variables give us some assurance that the PCA index is doing an OK job summarizing disadvantage across the dimensions captured by the six variables.
+
+
+***
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
