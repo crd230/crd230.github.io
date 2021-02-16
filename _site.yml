@@ -28,7 +28,9 @@ navbar:
         - text: "Lab 6a"
           href: lab6a.html 
         - text: "Lab 6b"
-          href: lab6b.html             
+          href: lab6b.html   
+        - text: "Lab 7"
+          href: lab7.html            
     - text: "Other"
       menu: 
         - text: "R tips"
