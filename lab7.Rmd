@@ -128,7 +128,7 @@ tm_shape(sac.tracts, unit = "mi") +
               border.alpha = 0, title = "") +
   tm_scale_bar(breaks = c(0, 10, 20), text.size = 1) +
   tm_compass(type = "4star", position = c("left", "bottom")) + 
-  tm_layout(main.title = "Eviction Rate in Sacramento Metropolitan Area Tracts",  
+  tm_layout(main.title = "Eviction Rates in Sacramento Metropolitan Area Tracts",  
             main.title.size = 0.95, frame = FALSE)
 ```  
   
