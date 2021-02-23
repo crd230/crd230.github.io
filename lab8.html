@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 8: Spatial Regression</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CRD 230: Winter 2021</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lab1.html">Lab 1</a>
+    </li>
+    <li>
+      <a href="lab2.html">Lab 2</a>
+    </li>
+    <li>
+      <a href="lab3.html">Lab 3</a>
+    </li>
+    <li>
+      <a href="lab4a.html">Lab 4a</a>
+    </li>
+    <li>
+      <a href="lab4b.html">Lab 4b</a>
+    </li>
+    <li>
+      <a href="lab5a.html">Lab 5a</a>
+    </li>
+    <li>
+      <a href="lab5b.html">Lab 5b</a>
+    </li>
+    <li>
+      <a href="lab6a.html">Lab 6a</a>
+    </li>
+    <li>
+      <a href="lab6b.html">Lab 6b</a>
+    </li>
+    <li>
+      <a href="lab7.html">Lab 7</a>
+    </li>
+    <li>
+      <a href="lab8.html">Lab 8</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R tips</a>
+    </li>
+    <li>
+      <a href="ndata.html">Data Sources</a>
+    </li>
+    <li>
+      <a href="nhgis.html">NHGIS</a>
+    </li>
+    <li>
+      <a href="policymap.html">PolicyMap</a>
+    </li>
+    <li>
+      <a href="censusgeography.html">Census Geographies</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Lab 8: Spatial Regression</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+CRD 230 - Spatial Methods in Community Research
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+February 23, 2021
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this lab, you will be learning how to run spatial regression models in R. We focus on how to model spatial dependence both as a nuisance to control for and as a process of theoretical interest. The objectives of the guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to run a linear regression model</li>
+<li>Learn the process for detecting spatial autocorrelation</li>
+<li>Learn how to run a spatial lag model</li>
+<li>Learn how to run a spatial error model</li>
+<li>Learn how to select the appropriate model</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will examine the association between neighborhood characteristics and poor mental health in the City of Seattle, WA. The methods covered in this lab follow those discussed in Handout 7.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="load-necessary-packages" class="section level2">
+<h2><strong>Load necessary packages</strong></h2>
+<p><br />
+</p>
+<p>We’ll be introducing the following packages in this lab. Install them using <code>install.packages()</code>.</p>
+<pre class="r"><code>install.packages(&quot;broom&quot;)
+install.packages(&quot;car&quot;)
+install.packages(&quot;stargazer&quot;)
+install.packages(&quot;spatialreg&quot;)</code></pre>
+<p>Load in the above packages and additional packages we’ve already installed and will need in this lab using <code>library()</code>.</p>
+<pre class="r"><code>library(sf)
+library(tidyverse)
+library(tidycensus)
+library(tmap)
+library(spdep)
+library(tigris)
+library(rmapshaper)
+library(broom)
+library(car)
+library(spatialreg)
+library(knitr)
+library(stargazer)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="read-in-the-data" class="section level2">
+<h2><strong>Read in the data</strong></h2>
+<p><br />
+</p>
+<p>The following code uses the Census API to bring in 2013-2017 American Community Survey (ACS) demographic and socioeconomic tract-level data for the City of Seattle. We won’t go through each line of code in detail because we’ve covered all of these operations and functions in prior labs. I’ve embedded comments within the code that briefly explains what each chunk is doing. Go back to prior guides (or RDS/GWR) if you need further help.</p>
+<pre class="r"><code># Bring in census tract data. 
+wa.tracts &lt;- get_acs(geography = &quot;tract&quot;, 
+              year = 2017,
+              variables = c(tpop = &quot;B01003_001&quot;, tpopr = &quot;B03002_001&quot;, 
+                            nhwhite = &quot;B03002_003&quot;, nhblk = &quot;B03002_004&quot;,
+                             nhasn = &quot;B03002_006&quot;, hisp = &quot;B03002_012&quot;,
+                            unemptt = &quot;B23025_003&quot;, unemp = &quot;B23025_005&quot;,
+                            povt = &quot;B17001_001&quot;, pov = &quot;B17001_002&quot;, 
+                            colt = &quot;B15003_001&quot;, col1 = &quot;B15003_022&quot;, 
+                            col2 = &quot;B15003_023&quot;, col3 = &quot;B15003_024&quot;, 
+                            col4 = &quot;B15003_025&quot;, mobt = &quot;B07003_001&quot;, 
+                            mob1 = &quot;B07003_004&quot;),
+              state = &quot;WA&quot;,
+              survey = &quot;acs5&quot;,
+              geometry = TRUE)
+
+# Make the data tidy, calculate percent race/ethnicity, and keep essential vars.
+wa.tracts &lt;- wa.tracts %&gt;% 
+  dplyr::select(-(moe)) %&gt;%
+  spread(key = variable, value = estimate) %&gt;%
+  mutate(pnhwhite = 100*(nhwhite/tpopr), pnhasn = 100*(nhasn/tpopr), 
+              pnhblk = 100*(nhblk/tpopr), phisp = 100*(hisp/tpopr),
+              unempr = 100*(unemp/unemptt),
+              ppov = 100*(pov/povt), 
+              pcol = 100*((col1+col2+col3+col4)/colt), 
+              pmob = 100-100*(mob1/mobt)) %&gt;%
+  dplyr::select(c(GEOID,tpop, pnhwhite, pnhasn, pnhblk, phisp, ppov,
+                  unempr, pcol, pmob))  
+
+# Bring in city boundary data
+pl &lt;- places(state = &quot;WA&quot;, year = 2017, cb = TRUE)
+
+# Keep Seattle city
+sea.city &lt;- filter(pl, NAME == &quot;Seattle&quot;)
+
+#Clip tracts using Seattle boundary
+sea.tracts &lt;- ms_clip(target = wa.tracts, clip = sea.city, remove_slivers = TRUE)
+
+#reproject to UTM NAD 83
+sea.tracts &lt;-st_transform(sea.tracts, 
+                                 crs = &quot;+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80&quot;)
+#make GEOID into numeric
+sea.tracts &lt;- sea.tracts %&gt;%
+              mutate(GEOID = as.numeric(GEOID))</code></pre>
+<p>Next, bring in a neighborhood-level measure of resident mental health. This measure is the 2017 crude prevalence of residents aged 18 years and older reporting that their mental health is not good. Data come from the Centers for Disease Control and Prevention (CDC) 500 cities project, which uses the <a href="https://www.cdc.gov/brfss/index.html">Behavioral Risk Factor Surveillance System (BRFSS)</a> to estimate tract-level prevalence of health characteristics. The data were downloaded from the <a href="https://chronicdata.cdc.gov/500-Cities/500-Cities-Census-Tract-level-Data-GIS-Friendly-Fo/k86t-wghb">CDC website</a>, which also includes the data’s metadata.</p>
+<p>I cleaned the file and uploaded it onto GitHub. Read it in using <code>read_csv()</code>.</p>
+<pre class="r"><code>cdcfile &lt;- read_csv(&quot;https://raw.githubusercontent.com/crd230/data/master/500_Cities__Census_Tract-level_Data__GIS_Friendly_Format___2019_release.csv&quot;)</code></pre>
+<p>Take a look at what we brought in.</p>
+<pre class="r"><code>glimpse(cdcfile)</code></pre>
+<p>Keep the tract ID <em>TractFIPS</em> and the mental health measure <em>MHLTH_CrudePrev</em>.</p>
+<pre class="r"><code>cdcfile &lt;- cdcfile %&gt;%
+            select(TractFIPS, MHLTH_CrudePrev)</code></pre>
+<p>Then join to <em>sea.tracts</em>.</p>
+<pre class="r"><code>sea.tracts &lt;- left_join(sea.tracts, cdcfile, by = c(&quot;GEOID&quot; = &quot;TractFIPS&quot;))</code></pre>
+<p>Look at your dataset to make sure the data wrangling went as expected.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2><strong>Exploratory Data Analysis</strong></h2>
+<p><br />
+</p>
+<p>We’re interested in examining the demographic and socioeconomic neighborhood characteristics associated with neighborhood-level poor mental health in Seattle. Specifically, we are interested in the relationship between poor mental health and the unemployment rate <em>unempr</em>, the percent of residents who moved in the past year <em>pmob</em>, percent of 25 year olds with a college degree <em>pcol</em>, percent poverty <em>ppov</em>, percent non-Hispanic black <em>pnhblk</em>, percent Hispanic <em>phisp</em>, and the log population size. Before running any model, we should conduct an Exploratory Data Analysis (EDA), an approach focused on descriptively understanding the data without employing any formal statistical modelling. EDA graphical and visual methods are used to identify data properties for purposes of pattern detection in data, hypothesis formulation from the data, and aspects of models assessment (e.g., goodness-of-fit). With EDA the emphasis is on descriptive methods rather than formal hypothesis testing.</p>
+<p>The central purpose of EDA is to numerically and visually summarize the data to get a broad understanding of the distribution and scale of each variable in the analysis. This includes examining basic summary statistics like the mean, median and standard deviation. For example, we can use our friend <code>summary()</code> to get standard summary statistics of our variables of interest.</p>
+<pre class="r"><code>sea.tracts %&gt;%
+  select(MHLTH_CrudePrev, unempr, pmob, pcol, ppov, pnhblk, phisp, tpop) %&gt;%
+  st_drop_geometry() %&gt;%
+  summary()</code></pre>
+<pre><code>##  MHLTH_CrudePrev     unempr            pmob             pcol      
+##  Min.   : 8.60   Min.   : 1.004   Min.   : 5.256   Min.   :12.48  
+##  1st Qu.:10.00   1st Qu.: 2.806   1st Qu.:14.156   1st Qu.:49.91  
+##  Median :10.90   Median : 4.146   Median :19.833   Median :65.86  
+##  Mean   :11.46   Mean   : 4.999   Mean   :22.384   Mean   :60.58  
+##  3rd Qu.:12.10   3rd Qu.: 6.036   3rd Qu.:28.095   3rd Qu.:74.01  
+##  Max.   :22.60   Max.   :24.397   Max.   :64.935   Max.   :87.44  
+##       ppov            pnhblk           phisp               tpop     
+##  Min.   : 1.298   Min.   : 0.000   Min.   : 0.03873   Min.   :1045  
+##  1st Qu.: 6.400   1st Qu.: 1.105   1st Qu.: 3.69254   1st Qu.:4051  
+##  Median : 9.595   Median : 3.098   Median : 5.24777   Median :4938  
+##  Mean   :13.161   Mean   : 6.934   Mean   : 6.48659   Mean   :5206  
+##  3rd Qu.:15.897   3rd Qu.: 9.669   3rd Qu.: 7.91549   3rd Qu.:6613  
+##  Max.   :58.707   Max.   :37.130   Max.   :34.55230   Max.   :8862</code></pre>
+<p>Summary statistics can provide a lot of information, but sometimes a picture is worth a thousand words (or numbers). As such, visualizations like charts and plots are also important tools in EDA. We learned about <strong>ggplot</strong> in <a href="https://crd230.github.io/lab2.html#Summarizing_variables_using_graphs">Lab 2</a>, which is the main <strong>tidyverse</strong> package for running visualizations. For example, we can visualize the distribution of our dependent variable <em>MHLTH_CrudePrev</em> using a histogram. This will help us to detect errors and outliers, and determine if we need to transform the variable to meet normality assumptions.</p>
+<pre class="r"><code>sea.tracts %&gt;%
+  ggplot() +
+    geom_histogram(aes(x=MHLTH_CrudePrev)) +
+    xlab(&quot;Crude prevalance of poor mental health&quot;)</code></pre>
+<p><img src="lab8_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
+<p>We can also create visuals descriptively showing the relationship between our independent variables and the dependent variable. For example, let’s examine a scatterplot of poor mental health and the unemployment rate.</p>
+<pre class="r"><code>sea.tracts %&gt;%
+  ggplot() +
+    geom_point(aes(x = unempr, y = MHLTH_CrudePrev)) +
+    xlab(&quot;Unemployment rate&quot;) +
+    ylab(&quot;Crude prevalance of poor mental health&quot;)</code></pre>
+<p><img src="lab8_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
+<p>We can pair the scatterplot with the correlation coefficient.</p>
+<pre class="r"><code>cor(sea.tracts$MHLTH_CrudePrev, sea.tracts$unempr)</code></pre>
+<pre><code>## [1] 0.7523409</code></pre>
+<p>That’s a pretty high value.</p>
+<p>EDA is typically taught in standard introductory statistics courses (and can be and often is taught as its own course). You just got a taste of EDA above. If you would like to see more, check out <a href="https://r4ds.had.co.nz/exploratory-data-analysis.html">Chapter 7</a> in RDS or Roger Peng’s online book <a href="https://bookdown.org/rdpeng/exdata/">Exploratory Data Analysis in R</a>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="standard-linear-regression" class="section level2">
+<h2><strong>Standard linear regression</strong></h2>
+<p><br />
+</p>
+<p>Our task is to examine the relationship between neighborhood socioeconomic and demographic characteristics and the prevalence of poor health at the neighborhood level. Let’s first run a simple linear regression. The outcome is poor mental health and the independent variable is unemployment rate <em>unempr</em> (I start with the unemployment rate for no special reason). We estimate regression models in R using the function <code>lm()</code>. We save the results of the model into the object <em>fit.ols.simple</em>.</p>
+<pre class="r"><code>fit.ols.simple &lt;- lm(MHLTH_CrudePrev ~ unempr, data = sea.tracts)</code></pre>
+<p>The first argument in <code>lm()</code> takes on a formula object. A formula is indicated by a tilde <code>~</code>. The dependent variable <em>MHLTH_CrudePrev</em> comes first, followed by the tilde <code>~</code>, and then the independent variables. You can run generalized linear models, which allows you to run different types of regression models (e.g. logit) using the function <code>glm()</code>.</p>
+<p>We can look at a summary of results using the <code>summary()</code> function</p>
+<pre class="r"><code>summary(fit.ols.simple)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = MHLTH_CrudePrev ~ unempr, data = sea.tracts)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.3314 -1.0164 -0.0149  0.9413  4.0382 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  8.84902    0.23835   37.13   &lt;2e-16 ***
+## unempr       0.52198    0.03993   13.07   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.502 on 131 degrees of freedom
+## Multiple R-squared:  0.566,  Adjusted R-squared:  0.5627 
+## F-statistic: 170.9 on 1 and 131 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>What does the value of the coefficient for <em>unempr</em> mean? Is the value statistically significant from 0? The summary also provides model fit statistics (e.g. R-squared, F stat).</p>
+<p>Let’s next run a multiple linear regression. In addition to the unemployment rate <em>unempr</em>, we will include the percent of residents who moved in the past year <em>pmob</em>, percent of 25 year olds with a college degree <em>pcol</em>, percent poverty <em>ppov</em>, percent non-Hispanic black <em>pnhblk</em>, percent Hispanic <em>phisp</em>, and the log population size. We save the results of the model into the object <em>fit.ols</em>.</p>
+<pre class="r"><code>fit.ols &lt;- lm(MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov + pnhblk + phisp + log(tpop), data = sea.tracts)</code></pre>
+<p>The independent variables are separated by the <code>+</code> sign. Note that I logged population size using the function <code>log()</code>. We can look at a summary of results using the <code>summary()</code> function</p>
+<pre class="r"><code>summary(fit.ols)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov + 
+##     pnhblk + phisp + log(tpop), data = sea.tracts)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.47690 -0.40419 -0.01758  0.42427  2.33766 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  9.088319   1.393019   6.524 1.53e-09 ***
+## unempr       0.090346   0.025929   3.484 0.000681 ***
+## pmob         0.004222   0.007091   0.595 0.552608    
+## pcol        -0.034845   0.006390  -5.453 2.54e-07 ***
+## ppov         0.149402   0.009736  15.346  &lt; 2e-16 ***
+## pnhblk      -0.015599   0.009847  -1.584 0.115693    
+## phisp        0.028165   0.015996   1.761 0.080719 .  
+## log(tpop)    0.222953   0.164192   1.358 0.176949    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.6642 on 125 degrees of freedom
+## Multiple R-squared:  0.919,  Adjusted R-squared:  0.9144 
+## F-statistic: 202.5 on 7 and 125 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>We can make the results look “tidy” by using the function <code>tidy()</code>, which is a part of the <strong>broom</strong> package.</p>
+<pre class="r"><code>tidy(fit.ols)</code></pre>
+<pre><code>## # A tibble: 8 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  9.09      1.39        6.52  1.53e- 9
+## 2 unempr       0.0903    0.0259      3.48  6.81e- 4
+## 3 pmob         0.00422   0.00709     0.595 5.53e- 1
+## 4 pcol        -0.0348    0.00639    -5.45  2.54e- 7
+## 5 ppov         0.149     0.00974    15.3   1.56e-30
+## 6 pnhblk      -0.0156    0.00985    -1.58  1.16e- 1
+## 7 phisp        0.0282    0.0160      1.76  8.07e- 2
+## 8 log(tpop)    0.223     0.164       1.36  1.77e- 1</code></pre>
+<p>A positive coefficient represents a positive association with poor mental health. We use a p-value threshold of 0.05 to indicate a significant result (e.g. a p-value less than 0.05 indicates that the coefficient is significantly different from 0 or no association). It appears that higher unemployment and poverty rates are associated with higher levels of poor mental health whereas higher percent college educated is associated with lower levels.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="diagnostics" class="section level3">
+<h3><strong>Diagnostics</strong></h3>
+<p><br />
+</p>
+<p>R has some useful commands for running diagnostics to see if a regression model has some problems, specifically if it’s breaking any of the OLS assumptions outlined in Handout 7. One assumption is that the errors are normally distributed. We can visually inspect for violations of this assumption using a number of different charts and plots. First, we can create a basic histogram of the residuals. To extract the residuals from the saved regression model, use the function <code>resid()</code>.</p>
+<pre class="r"><code>ggplot() + 
+  geom_histogram(mapping = aes(x=resid(fit.ols))) +
+  xlab(&quot;OLS residuals&quot;)</code></pre>
+<p><img src="lab8_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
+<p>Normally distributed residuals should show a bell curve pattern. One problem with the histogram is its sensitivity to the choice of breakpoints for the bars - small changes can alter the visual impression quite drastically in some cases.</p>
+<p>Another visual tool for checking normality is the quantile-quantile (Q-Q) plot, which plots the quantile of the residuals against the expected quantile of the standard normal distribution. We use the function <code>qqPlot()</code>, which is a part of the <strong>car</strong> package.</p>
+<pre class="r"><code>#QQ plot
+qqPlot(fit.ols)</code></pre>
+<p><img src="lab8_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
+<pre><code>## [1]  10 104</code></pre>
+<p>The above figure is a quantile-comparison plot, graphing for each observation its <code>fit.ols</code> model residual on the y axis and the corresponding quantile in the t-distribution on the x axis. In contrast to the histogram, the q-q plot is more straightforward and effective and it is generally easier to assess whether the points are close to the diagonal line. The dashed lines indicate 95% confidence intervals calculated under the assumption that the errors are normally distributed. If a significant number of observations fall outside this range, this is an indication that the normality assumption has been violated. It looks like the vast majority of our points are within the band.</p>
+<p>Another assumption is that errors are not heteroskedastic - that is the variance of residuals are constant. You can plot the residuals to explore the presence of heteroskedasticity. If we see the spread of the points narrow or widen from left to right, heteroskedasticity is present.</p>
+<pre class="r"><code>plot(resid(fit.ols))</code></pre>
+<p><img src="lab8_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
+<p>There appears to be no pattern, just a cloud of points, suggesting no presence of heteroskedasticity. Hooray!</p>
+<p>We won’t go through all the tools and approaches to testing the OLS assumptions (and other OLS issues) because it is beyond the scope of this course. In this lab, we’re interested in determining whether our models need to incorporate spatial dependency, an issue if not corrected will break assumptions 3 and 5 in Handout 7. We focus on this task in the following sections.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="exploratory-spatial-data-analysis" class="section level2">
+<h2><strong>Exploratory Spatial Data Analysis</strong></h2>
+<p><br />
+</p>
+<p>The above sections go through the steps conducted in non spatial regression analysis. The focus of this lab, however, is to account for spatial dependence in the error term and the dependent variable. Before doing any kind of spatial modelling, you should conduct an Exploratory Spatial Data Analysis (ESDA) to gain an understanding of how your data are spatially structured. ESDA is a subset of EDA methods that focus on the distinguishing characteristics of geographical data and, specifically, on spatial autocorrelation and spatial heterogeneity. ESDA techniques can help detect spatial patterns in data, lead to the formulation of hypotheses based on the geography of the data, and in assessing spatial models.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="map-your-data" class="section level3">
+<h3><strong>Map your data</strong></h3>
+<p><br />
+</p>
+<p>The first step in ESDA is to map your dependent variable. Let’s map neighborhood prevalence of poor mental health using our trusty friend <code>tm_shape()</code>. You want to visually detect for spatial dependency or autocorrelation in your outcome.</p>
+<pre class="r"><code>tm_shape(sea.tracts, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;MHLTH_CrudePrev&quot;, style = &quot;quantile&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 2, 4), text.size = 1, position = c(&quot;right&quot;, &quot;bottom&quot;)) +
+  tm_layout(main.title = &quot;Poor Mental Health Prevalence, Seattle 2017 &quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE, 
+            attr.outside = TRUE)</code></pre>
+<p><img src="lab8_files/figure-html/unnamed-chunk-20-1.png" /><!-- --></p>
+<p>Next, you’ll want to map the residuals from your regression model to see if there is visual evidence of spatial autocorrelation in the error. To extract the residuals from <em>fit.ols</em>, use the <code>resid()</code> function. Save it back into <em>sea.tracts</em>.</p>
+<pre class="r"><code>sea.tracts &lt;- sea.tracts %&gt;%
+              mutate(olsresid = resid(fit.ols))</code></pre>
+<p>Plot the residuals.</p>
+<pre class="r"><code>tm_shape(sea.tracts, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;olsresid&quot;, style = &quot;equal&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 2, 4), text.size = 1, position = c(&quot;right&quot;, &quot;bottom&quot;)) +
+  tm_layout(main.title = &quot;Residuals from linear regression in Seattle Tracts&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE,
+            attr.outside = TRUE)</code></pre>
+<p><img src="lab8_files/figure-html/unnamed-chunk-22-1.png" /><!-- --></p>
+<p>Both the outcome and the residuals appear to cluster. Let’s move forward then.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spatial-autocorrelation" class="section level3">
+<h3><strong>Spatial Autocorrelation</strong></h3>
+<p><br />
+</p>
+<p>There appears to be evidence of clustering based on the exploratory maps. Rather than eyeballing it, let’s formally test it by using a measure of spatial autocorrelation, which we covered in <a href="https://crd230.github.io/lab7.html">Lab 7</a>. Before we do so, we need to create a spatial weights matrix, which we also covered in <a href="https://crd230.github.io/lab7.html#Spatial_weights_matrix">Lab 7</a>. Let’s use Queen contiguity with row-standardized weights. First, create the neighbor <em>nb</em> object.</p>
+<pre class="r"><code>seab&lt;-poly2nb(sea.tracts, queen=T)</code></pre>
+<p>Then the <em>listw</em> weights object.</p>
+<pre class="r"><code>seaw&lt;-nb2listw(seab, style=&quot;W&quot;, zero.policy = TRUE)</code></pre>
+<p>Next, examine the Moran scatterplot, which we covered in <a href="https://crd230.github.io/lab7.html#Moran_Scatterplot">Lab 7</a>.</p>
+<pre class="r"><code>moran.plot(sea.tracts$MHLTH_CrudePrev, listw=seaw, xlab=&quot;Standardized Poor Mental Health Prevalence&quot;, ylab=&quot;Neighbors Standardized Poor Mental Health Prevalence&quot;,
+main=c(&quot;Moran Scatterplot for Poor Mental Health&quot;, &quot;in Seatte&quot;) )</code></pre>
+<p><img src="lab8_files/figure-html/unnamed-chunk-26-1.png" /><!-- --></p>
+<p>Does it look like there is an association? Yes.</p>
+<p>Finally, the Global Moran’s I. We use monte carlo simulation to get the p-value.</p>
+<pre class="r"><code>moran.mc(sea.tracts$MHLTH_CrudePrev, seaw, nsim=999)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  sea.tracts$MHLTH_CrudePrev 
+## weights: seaw  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.39728, observed rank = 1000, p-value = 0.001
+## alternative hypothesis: greater</code></pre>
+<p>Repeat for the OLS residuals using the <code>lm.morantest()</code> function.</p>
+<pre class="r"><code>lm.morantest(fit.ols, seaw)</code></pre>
+<pre><code>## 
+##  Global Moran I for regression residuals
+## 
+## data:  
+## model: lm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov +
+## pnhblk + phisp + log(tpop), data = sea.tracts)
+## weights: seaw
+## 
+## Moran I statistic standard deviate = 3.9687, p-value = 3.614e-05
+## alternative hypothesis: greater
+## sample estimates:
+## Observed Moran I      Expectation         Variance 
+##      0.175864778     -0.025326838      0.002570005</code></pre>
+<p>Both the dependent variable and the residuals indicate spatial autocorrelation, although the Moran’s I for the residuals is not strong (but significant).</p>
+<p>You should use other spatial weight matrices to test the robustness of your ESDA results. For example, do you get similar results using a 3-nearest neighbor definition? What about a 2000 meter definition?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="spatial-lag-model" class="section level2">
+<h2><strong>Spatial lag model</strong></h2>
+<p><br />
+</p>
+<p>Based on the exploratory mapping, Moran scatterplot, and the global Moran’s I, there appears to be spatial autocorrelation in the dependent variable. This means that if there is a spatial lag process going on and we fit an OLS model our coefficients will be biased and inefficient. That is, the coefficient sizes and signs are not close to their true value and its standard errors are underestimated. This means <a href="https://www.youtube.com/watch?v=FPzI4dpEcF8">trouble</a>. <a href="https://www.youtube.com/watch?v=cGIIhcMCquc">Big trouble</a>. <a href="https://www.youtube.com/watch?v=AXsBBqPb5YE">Real big trouble</a>.</p>
+<p>As outlined in Handout 7, there are two standard types of spatial regression models: a spatial lag model, which models dependency in the outcome, and a spatial error model, which models dependency in the residuals. A spatial lag model (SLM) can be estimated in R using the command <code>lagsarlm()</code>, which is a part of the <strong>spatialreg</strong> package.</p>
+<pre class="r"><code>fit.lag&lt;-lagsarlm(MHLTH_CrudePrev ~ unempr + pmob+ pcol + ppov + pnhblk  + phisp + log(tpop),  data = sea.tracts, listw = seaw) </code></pre>
+<p>The only real difference between the code for <code>lm()</code> and <code>lagsarlm()</code> is the argument <code>listw</code>, which you use to specify the spatial weights matrix. Get a summary of the results.</p>
+<pre class="r"><code>summary(fit.lag)</code></pre>
+<pre><code>## 
+## Call:lagsarlm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov + 
+##     pnhblk + phisp + log(tpop), data = sea.tracts, listw = seaw)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -1.494101 -0.412011 -0.012753  0.446070  2.279226 
+## 
+## Type: lag 
+## Coefficients: (asymptotic standard errors) 
+##               Estimate Std. Error z value  Pr(&gt;|z|)
+## (Intercept)  9.5003409  1.5662067  6.0658 1.313e-09
+## unempr       0.0904386  0.0251047  3.6025 0.0003152
+## pmob         0.0039999  0.0068667  0.5825 0.5602229
+## pcol        -0.0360700  0.0065844 -5.4781 4.299e-08
+## ppov         0.1516731  0.0100004 15.1666 &lt; 2.2e-16
+## pnhblk      -0.0161411  0.0095358 -1.6927 0.0905151
+## phisp        0.0277670  0.0155579  1.7848 0.0743011
+## log(tpop)    0.2280948  0.1590558  1.4341 0.1515565
+## 
+## Rho: -0.034898, LR test value: 0.38247, p-value: 0.53628
+## Asymptotic standard error: 0.055763
+##     z-value: -0.62583, p-value: 0.53142
+## Wald statistic: 0.39167, p-value: 0.53142
+## 
+## Log likelihood: -129.9789 for lag model
+## ML residual variance (sigma squared): 0.41332, (sigma: 0.6429)
+## Number of observations: 133 
+## Number of parameters estimated: 10 
+## AIC: 279.96, (AIC for lm: 278.34)
+## LM test for residual autocorrelation
+## test value: 14.719, p-value: 0.00012481</code></pre>
+<p>The unemployment rate, percent college educated and percent poverty continue to be statistically significant. The lag parameter is Rho, whose value is quite small at -0.035 and not statistically significant across all tests. This indicates that the spatial lag in the dependent variable is accounted for through the demographic and socioeconomic variables already included in the model. This likely shows that a spatial lag on the dependent variable is not needed. But, we’ll test this further later in the lab.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spatial-error-model" class="section level2">
+<h2><strong>Spatial error model</strong></h2>
+<p><br />
+</p>
+<p>The spatial error model (SEM) incorporates spatial dependence in the errors. If there is a spatial error process going on and we fit an OLS model our coefficients will be unbiased but inefficient. That is, the coefficient size and sign are asymptotically correct but its standard errors are underestimated.</p>
+<p>We can estimate a spatial error model in R using the command <code>errorsarlm()</code> also in the <strong>spatialreg</strong> package.</p>
+<pre class="r"><code>fit.err&lt;-errorsarlm(MHLTH_CrudePrev ~ unempr + pmob+ pcol + ppov + pnhblk  + phisp + log(tpop),  data = sea.tracts, listw = seaw) </code></pre>
+<p>A summary of the modelling results</p>
+<pre class="r"><code>summary(fit.err)</code></pre>
+<pre><code>## 
+## Call:errorsarlm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + 
+##     ppov + pnhblk + phisp + log(tpop), data = sea.tracts, listw = seaw)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -1.365103 -0.419244 -0.015275  0.413074  1.964454 
+## 
+## Type: error 
+## Coefficients: (asymptotic standard errors) 
+##               Estimate Std. Error z value  Pr(&gt;|z|)
+## (Intercept) 11.6061151  1.3058441  8.8878 &lt; 2.2e-16
+## unempr       0.0780587  0.0229153  3.4064 0.0006583
+## pmob         0.0147918  0.0077040  1.9200 0.0548564
+## pcol        -0.0429317  0.0068995 -6.2224 4.896e-10
+## ppov         0.1442649  0.0096688 14.9206 &lt; 2.2e-16
+## pnhblk      -0.0041949  0.0103829 -0.4040 0.6861972
+## phisp        0.0175817  0.0146865  1.1971 0.2312555
+## log(tpop)   -0.0286693  0.1502948 -0.1908 0.8487186
+## 
+## Lambda: 0.51295, LR test value: 14.233, p-value: 0.00016152
+## Asymptotic standard error: 0.098797
+##     z-value: 5.1919, p-value: 2.0814e-07
+## Wald statistic: 26.956, p-value: 2.0814e-07
+## 
+## Log likelihood: -123.0536 for error model
+## ML residual variance (sigma squared): 0.35148, (sigma: 0.59286)
+## Number of observations: 133 
+## Number of parameters estimated: 10 
+## AIC: 266.11, (AIC for lm: 278.34)</code></pre>
+<p>The unemployment rate, percent college educated and percent poverty continue to be statistically significant. The lag error parameter Lambda is positive and significant, indicating the need to control for spatial autocorrelation in the error.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="presenting-your-results" class="section level2">
+<h2><strong>Presenting your results</strong></h2>
+<p><br />
+</p>
+<p>An organized table of results is an essential component not just in academic papers, but in any professional report or presentation. Up till this point, we’ve been reporting results by simply summarizing objects, like the following</p>
+<pre class="r"><code>summary(fit.ols)</code></pre>
+<p>We also used the function <code>tidy()</code> above to create a tibble of modelling results. We can make these results prettier by using a couple of functions for making nice tables in R. First, there is the <code>kable()</code> function from the <strong>knitr</strong> package.</p>
+<pre class="r"><code>fit.ols %&gt;% 
+  tidy() %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">9.088</td>
+<td align="right">1.393</td>
+<td align="right">6.524</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">unempr</td>
+<td align="right">0.090</td>
+<td align="right">0.026</td>
+<td align="right">3.484</td>
+<td align="right">0.001</td>
+</tr>
+<tr class="odd">
+<td align="left">pmob</td>
+<td align="right">0.004</td>
+<td align="right">0.007</td>
+<td align="right">0.595</td>
+<td align="right">0.553</td>
+</tr>
+<tr class="even">
+<td align="left">pcol</td>
+<td align="right">-0.035</td>
+<td align="right">0.006</td>
+<td align="right">-5.453</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">ppov</td>
+<td align="right">0.149</td>
+<td align="right">0.010</td>
+<td align="right">15.346</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">pnhblk</td>
+<td align="right">-0.016</td>
+<td align="right">0.010</td>
+<td align="right">-1.584</td>
+<td align="right">0.116</td>
+</tr>
+<tr class="odd">
+<td align="left">phisp</td>
+<td align="right">0.028</td>
+<td align="right">0.016</td>
+<td align="right">1.761</td>
+<td align="right">0.081</td>
+</tr>
+<tr class="even">
+<td align="left">log(tpop)</td>
+<td align="right">0.223</td>
+<td align="right">0.164</td>
+<td align="right">1.358</td>
+<td align="right">0.177</td>
+</tr>
+</tbody>
+</table>
+<p>There are options within <code>kable()</code> to control whether row names are included or not, column alignment, and other options that depend on the output type.</p>
+<p>The table produced by <code>kable()</code>looks good. But what if we want to present results for more than one model, such as presenting <em>fit.ols</em>, <em>fit.lag</em>, and <em>fit.err</em> side by side? We can use the <code>stargazer()</code> function from the <strong>stargazer</strong> package to do this.</p>
+<pre class="r"><code>stargazer(fit.ols, fit.lag, fit.err, type = &quot;html&quot;,
+                    title=&quot;Title: Regression Results&quot;)</code></pre>
+<table style="text-align:center">
+<caption>
+<strong>Title: Regression Results</strong>
+</caption>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3">
+MHLTH_CrudePrev
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+<em>OLS</em>
+</td>
+<td>
+<em>spatial</em>
+</td>
+<td>
+<em>spatial</em>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+<em></em>
+</td>
+<td>
+<em>autoregressive</em>
+</td>
+<td>
+<em>error</em>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+unempr
+</td>
+<td>
+0.090<sup>***</sup>
+</td>
+<td>
+0.090<sup>***</sup>
+</td>
+<td>
+0.078<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.026)
+</td>
+<td>
+(0.025)
+</td>
+<td>
+(0.023)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+pmob
+</td>
+<td>
+0.004
+</td>
+<td>
+0.004
+</td>
+<td>
+0.015<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.007)
+</td>
+<td>
+(0.007)
+</td>
+<td>
+(0.008)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+pcol
+</td>
+<td>
+-0.035<sup>***</sup>
+</td>
+<td>
+-0.036<sup>***</sup>
+</td>
+<td>
+-0.043<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.006)
+</td>
+<td>
+(0.007)
+</td>
+<td>
+(0.007)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ppov
+</td>
+<td>
+0.149<sup>***</sup>
+</td>
+<td>
+0.152<sup>***</sup>
+</td>
+<td>
+0.144<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.010)
+</td>
+<td>
+(0.010)
+</td>
+<td>
+(0.010)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+pnhblk
+</td>
+<td>
+-0.016
+</td>
+<td>
+-0.016<sup>*</sup>
+</td>
+<td>
+-0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.010)
+</td>
+<td>
+(0.010)
+</td>
+<td>
+(0.010)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+phisp
+</td>
+<td>
+0.028<sup>*</sup>
+</td>
+<td>
+0.028<sup>*</sup>
+</td>
+<td>
+0.018
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.015)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+log(tpop)
+</td>
+<td>
+0.223
+</td>
+<td>
+0.228
+</td>
+<td>
+-0.029
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.164)
+</td>
+<td>
+(0.159)
+</td>
+<td>
+(0.150)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+9.088<sup>***</sup>
+</td>
+<td>
+9.500<sup>***</sup>
+</td>
+<td>
+11.606<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.393)
+</td>
+<td>
+(1.566)
+</td>
+<td>
+(1.306)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+133
+</td>
+<td>
+133
+</td>
+<td>
+133
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.919
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.914
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Log Likelihood
+</td>
+<td>
+</td>
+<td>
+-129.979
+</td>
+<td>
+-123.054
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+sigma<sup>2</sup>
+</td>
+<td>
+</td>
+<td>
+0.413
+</td>
+<td>
+0.351
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Akaike Inf. Crit.
+</td>
+<td>
+</td>
+<td>
+279.958
+</td>
+<td>
+266.107
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.664 (df = 125)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+202.528<sup>***</sup> (df = 7; 125)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Wald Test (df = 1)
+</td>
+<td>
+</td>
+<td>
+0.392
+</td>
+<td>
+26.956<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+LR Test (df = 1)
+</td>
+<td>
+</td>
+<td>
+0.382
+</td>
+<td>
+14.233<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="3" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+<p><br />
+</p>
+<p>There are a number of options you can tweak to make the table more presentation ready, such as adding footnotes and changing column and row labels.</p>
+<p>Note three things: First, if you ran the <code>stargazer()</code> function above directly in your R console, you’ll get output that won’t make sense. Knit the document and you’ll see your pretty table. Second, you will need to add <code>results = 'asis'</code> as an R Markdown chunk option (```<code>{r results = 'asis'}</code>).</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="picking-a-model" class="section level2">
+<h2><strong>Picking a model</strong></h2>
+<p><br />
+</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="akaike-information-criterion" class="section level3">
+<h3><strong>Akaike Information Criterion</strong></h3>
+<p><br />
+</p>
+<p>As we discussed in this week’s handout, there are many fit statistics and tests to determine which model - OLS, SLM or SEM - is most appropriate. One way of deciding which model is appropriate is to examine the fit statistic Akaike Information Criterion (AIC), which is a index of sorts to indicate how close the model is to reality. A lower value indicates a better fitting model.</p>
+<p>You can extract the AIC from a model by using the function <code>AIC()</code>, which is a part of the pre-installed <strong>stats</strong> package. What is the AIC for the regular OLS model?</p>
+<pre class="r"><code>AIC(fit.ols)</code></pre>
+<pre><code>## [1] 278.3402</code></pre>
+<p>What about the spatial lag and error models?</p>
+<pre class="r"><code>AIC(fit.lag)</code></pre>
+<pre><code>## [1] 279.9578</code></pre>
+<pre class="r"><code>AIC(fit.err)</code></pre>
+<pre><code>## [1] 266.1073</code></pre>
+<p>Let’s extract the AICs, save them in a vector and then present them in a table using <code>kable()</code>.</p>
+<pre class="r"><code>#Save AIC values
+AICs&lt;-c(AIC(fit.ols),AIC(fit.lag), AIC(fit.err))
+labels&lt;-c(&quot;OLS&quot;, &quot;SLM&quot;,&quot;SEM&quot; )
+
+kable(data.frame(Models=labels, AIC=round(AICs, 2)))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Models</th>
+<th align="right">AIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">OLS</td>
+<td align="right">278.34</td>
+</tr>
+<tr class="even">
+<td align="left">SLM</td>
+<td align="right">279.96</td>
+</tr>
+<tr class="odd">
+<td align="left">SEM</td>
+<td align="right">266.11</td>
+</tr>
+</tbody>
+</table>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="lagrange-multiplier-test" class="section level3">
+<h3><strong>Lagrange Multiplier test</strong></h3>
+<p><br />
+</p>
+<p>Another popular set of tests proposed by Anselin (1988) (also see Anselin et al. 1996) are the Lagrange Multiplier (LM) tests. The test compares the a model’s fit relative to the OLS model. A test showing statistical significance rejects the OLS.</p>
+<p>To run the LM tests in R, plug in the saved OLS model <em>fit.ols</em> into the function <code>lm.LMtests()</code>, which is a part of the <strong>spatialreg</strong> package.</p>
+<pre class="r"><code>lm.LMtests(fit.ols, listw = seaw, test = &quot;all&quot;,  zero.policy=TRUE)</code></pre>
+<pre><code>## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov +
+## pnhblk + phisp + log(tpop), data = sea.tracts)
+## weights: seaw
+## 
+## LMerr = 10.681, df = 1, p-value = 0.001083
+## 
+## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov +
+## pnhblk + phisp + log(tpop), data = sea.tracts)
+## weights: seaw
+## 
+## LMlag = 0.37027, df = 1, p-value = 0.5429
+## 
+## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov +
+## pnhblk + phisp + log(tpop), data = sea.tracts)
+## weights: seaw
+## 
+## RLMerr = 14.638, df = 1, p-value = 0.0001302
+## 
+## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov +
+## pnhblk + phisp + log(tpop), data = sea.tracts)
+## weights: seaw
+## 
+## RLMlag = 4.3278, df = 1, p-value = 0.03749
+## 
+## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov +
+## pnhblk + phisp + log(tpop), data = sea.tracts)
+## weights: seaw
+## 
+## SARMA = 15.009, df = 2, p-value = 0.0005507</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Practice Question</strong>: Which model is “best”? Why?
+</p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>

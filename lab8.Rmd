@@ -1,0 +1,530 @@
+---
+title: "Lab 8: Spatial Regression"
+subtitle: <h4 style="font-style:normal">CRD 230 - Spatial Methods in Community Research</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">February 23, 2021</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+In this lab, you will be learning how to run spatial regression models in R.  We focus on how to model spatial dependence both as a nuisance to control for and as a process of theoretical interest.  The objectives of the guide are as follows
+
+1. Learn how to run a linear regression model
+2. Learn the process for detecting spatial autocorrelation
+3. Learn how to run a spatial lag model
+4. Learn how to run a spatial error model
+5. Learn how to select the appropriate model
+
+To help us accomplish these learning objectives, we will examine the association between neighborhood characteristics and poor mental health in the City of Seattle, WA.  The methods covered in this lab follow those discussed in Handout 7. 
+
+<div style="margin-bottom:25px;">
+</div>
+## **Load necessary packages**
+\
+
+We'll be introducing the following packages in this lab. Install them using `install.packages()`.
+
+```{r eval = FALSE}
+install.packages("broom")
+install.packages("car")
+install.packages("stargazer")
+install.packages("spatialreg")
+```
+
+Load in the above packages and additional packages we've already installed and will need in this lab using `library()`.
+
+```{r warning = FALSE, message = FALSE}
+library(sf)
+library(tidyverse)
+library(tidycensus)
+library(tmap)
+library(spdep)
+library(tigris)
+library(rmapshaper)
+library(broom)
+library(car)
+library(spatialreg)
+library(knitr)
+library(stargazer)
+```
+
+<div style="margin-bottom:25px;">
+</div>
+## **Read in the data**
+\
+
+The following code uses the Census API to bring in 2013-2017 American Community Survey (ACS) demographic and socioeconomic tract-level data for the City of Seattle.  We won't go through each line of code in detail because we've covered all of these operations and functions in prior labs.  I've embedded comments within the code that briefly explains what each chunk is doing. Go back to prior guides (or RDS/GWR) if you need further help. 
+
+```{r warning=FALSE, results = "hide", message=FALSE}
+# Bring in census tract data. 
+wa.tracts <- get_acs(geography = "tract", 
+              year = 2017,
+              variables = c(tpop = "B01003_001", tpopr = "B03002_001", 
+                            nhwhite = "B03002_003", nhblk = "B03002_004",
+                             nhasn = "B03002_006", hisp = "B03002_012",
+                            unemptt = "B23025_003", unemp = "B23025_005",
+                            povt = "B17001_001", pov = "B17001_002", 
+                            colt = "B15003_001", col1 = "B15003_022", 
+                            col2 = "B15003_023", col3 = "B15003_024", 
+                            col4 = "B15003_025", mobt = "B07003_001", 
+                            mob1 = "B07003_004"),
+              state = "WA",
+              survey = "acs5",
+              geometry = TRUE)
+
+# Make the data tidy, calculate percent race/ethnicity, and keep essential vars.
+wa.tracts <- wa.tracts %>% 
+  dplyr::select(-(moe)) %>%
+  spread(key = variable, value = estimate) %>%
+  mutate(pnhwhite = 100*(nhwhite/tpopr), pnhasn = 100*(nhasn/tpopr), 
+              pnhblk = 100*(nhblk/tpopr), phisp = 100*(hisp/tpopr),
+              unempr = 100*(unemp/unemptt),
+              ppov = 100*(pov/povt), 
+              pcol = 100*((col1+col2+col3+col4)/colt), 
+              pmob = 100-100*(mob1/mobt)) %>%
+  dplyr::select(c(GEOID,tpop, pnhwhite, pnhasn, pnhblk, phisp, ppov,
+                  unempr, pcol, pmob))  
+
+# Bring in city boundary data
+pl <- places(state = "WA", year = 2017, cb = TRUE)
+
+# Keep Seattle city
+sea.city <- filter(pl, NAME == "Seattle")
+
+#Clip tracts using Seattle boundary
+sea.tracts <- ms_clip(target = wa.tracts, clip = sea.city, remove_slivers = TRUE)
+
+#reproject to UTM NAD 83
+sea.tracts <-st_transform(sea.tracts, 
+                                 crs = "+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80")
+#make GEOID into numeric
+sea.tracts <- sea.tracts %>%
+              mutate(GEOID = as.numeric(GEOID))
+```
+
+Next, bring in a neighborhood-level measure of resident mental health. This measure is the 2017 crude prevalence of residents aged 18 years and older reporting that their mental health is not good.  Data come from the Centers for Disease Control and Prevention (CDC) 500 cities project, which uses the [Behavioral Risk Factor Surveillance System (BRFSS)](https://www.cdc.gov/brfss/index.html) to estimate tract-level prevalence of health characteristics. The data were downloaded from the [CDC website](https://chronicdata.cdc.gov/500-Cities/500-Cities-Census-Tract-level-Data-GIS-Friendly-Fo/k86t-wghb), which also includes the data's metadata.
+
+I cleaned the file and uploaded it onto GitHub.  Read it in using `read_csv()`.
+
+```{r}
+cdcfile <- read_csv("https://raw.githubusercontent.com/crd230/data/master/500_Cities__Census_Tract-level_Data__GIS_Friendly_Format___2019_release.csv")
+```
+
+Take a look at what we brought in.
+
+```{r eval = FALSE}
+glimpse(cdcfile)
+```
+
+Keep the tract ID *TractFIPS* and the mental health measure *MHLTH_CrudePrev*. 
+
+```{r}
+cdcfile <- cdcfile %>%
+            select(TractFIPS, MHLTH_CrudePrev)
+```
+
+Then join to *sea.tracts*.
+
+```{r}
+sea.tracts <- left_join(sea.tracts, cdcfile, by = c("GEOID" = "TractFIPS"))
+```
+
+Look at your dataset to make sure the data wrangling went as expected.  
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Exploratory Data Analysis**
+\
+
+We're interested in examining the demographic and socioeconomic neighborhood characteristics associated with neighborhood-level poor mental health in Seattle. Specifically, we are interested in the relationship between poor mental health and the unemployment rate *unempr*, the percent of residents who moved in the past year *pmob*, percent of 25 year olds with a college degree *pcol*, percent poverty *ppov*, percent non-Hispanic black *pnhblk*, percent Hispanic *phisp*, and the log population size. Before running any model, we should conduct an Exploratory Data Analysis (EDA), an approach focused on descriptively understanding the data without employing any formal statistical modelling.  EDA graphical and visual methods are used to identify data properties for purposes of pattern detection in data, hypothesis formulation from the data, and aspects of models assessment (e.g., goodness-of-fit). With EDA the emphasis is on descriptive methods rather than formal hypothesis testing.
+
+The central purpose of EDA is to numerically and visually summarize the data to get a broad understanding of the distribution and scale of each variable in the analysis. This includes examining basic summary statistics like the mean, median and standard deviation. For example, we can use our friend `summary()` to get standard summary statistics of our variables of interest.
+
+```{r}
+sea.tracts %>%
+  select(MHLTH_CrudePrev, unempr, pmob, pcol, ppov, pnhblk, phisp, tpop) %>%
+  st_drop_geometry() %>%
+  summary()
+```
+
+Summary statistics can provide a lot of information, but sometimes a picture is worth a thousand words (or numbers).  As such, visualizations like charts and plots are also important tools in EDA.  We learned about **ggplot** in [Lab 2](https://crd230.github.io/lab2.html#Summarizing_variables_using_graphs), which is the main **tidyverse** package for running visualizations.  For example, we can visualize the distribution of our dependent variable *MHLTH_CrudePrev* using a histogram.  This will help us to detect errors and outliers, and determine if we need to transform the variable to meet normality assumptions.
+
+```{r}
+sea.tracts %>%
+  ggplot() +
+    geom_histogram(aes(x=MHLTH_CrudePrev)) +
+    xlab("Crude prevalance of poor mental health")
+```
+
+We can also create visuals descriptively showing the relationship between our independent variables and the dependent variable. For example, let's examine a scatterplot of poor mental health and the unemployment rate.
+
+```{r}
+sea.tracts %>%
+  ggplot() +
+    geom_point(aes(x = unempr, y = MHLTH_CrudePrev)) +
+    xlab("Unemployment rate") +
+    ylab("Crude prevalance of poor mental health")
+```
+
+We can pair the scatterplot with the correlation coefficient.
+
+```{r}
+cor(sea.tracts$MHLTH_CrudePrev, sea.tracts$unempr)
+```
+
+That's a pretty high value.
+
+EDA is typically taught in standard introductory statistics courses (and can be and often is taught as its own course). You just got a taste of EDA above. If you would like to see more, check out [Chapter 7](https://r4ds.had.co.nz/exploratory-data-analysis.html) in RDS or Roger Peng's online book [Exploratory Data Analysis in R](https://bookdown.org/rdpeng/exdata/).
+
+<div style="margin-bottom:25px;">
+</div>
+## **Standard linear regression**
+\
+
+Our task is to examine the relationship between neighborhood socioeconomic and demographic characteristics and the prevalence of poor health at the neighborhood level. Let's first run a simple linear regression.  The outcome is poor mental health and the independent variable is unemployment rate *unempr* (I start with the unemployment rate for no special reason). We estimate regression models in R using the function `lm()`.  We save the results of the model into the object *fit.ols.simple*.
+
+```{r}
+fit.ols.simple <- lm(MHLTH_CrudePrev ~ unempr, data = sea.tracts)
+```
+
+The first argument in `lm()` takes on a formula object. A formula is indicated by a tilde `~`. The dependent variable *MHLTH_CrudePrev* comes first, followed by the tilde `~`, and then the independent variables.  You can run generalized linear models, which allows you to run different types of regression models (e.g. logit) using the function `glm()`. 
+
+We can look at a summary of results using the `summary()` function
+
+```{r}
+summary(fit.ols.simple)
+```
+
+What does the value of the coefficient for *unempr* mean? Is the value statistically significant from 0?  The summary also provides model fit statistics (e.g. R-squared, F stat).
+
+Let's next run a multiple linear regression. In addition to the unemployment rate *unempr*, we will include the percent of residents who moved in the past year *pmob*, percent of 25 year olds with a college degree *pcol*, percent poverty *ppov*, percent non-Hispanic black *pnhblk*, percent Hispanic *phisp*, and the log population size.   We save the results of the model into the object *fit.ols*.
+
+```{r}
+fit.ols <- lm(MHLTH_CrudePrev ~ unempr + pmob + pcol + ppov + pnhblk + phisp + log(tpop), data = sea.tracts)
+```
+
+The independent variables are separated by the `+` sign. Note that I logged population size using the function `log()`.  We can look at a summary of results using the `summary()` function
+
+```{r}
+summary(fit.ols)
+```
+
+We can make the results look "tidy" by using the function `tidy()`, which is a part of the **broom** package.
+
+```{r}
+tidy(fit.ols)
+```
+
+A positive coefficient represents a positive association with poor mental health.  We use a p-value threshold of 0.05 to indicate a significant result (e.g. a p-value less than 0.05 indicates that the coefficient is significantly different from 0 or no association). It appears that higher unemployment and poverty rates are associated with higher levels of poor mental health whereas higher percent college educated is associated with lower levels.
+
+<div style="margin-bottom:25px;">
+</div>
+### **Diagnostics**
+\
+
+R has some useful commands for running diagnostics to see if a regression model has some problems, specifically if it’s breaking any of the OLS assumptions outlined in Handout 7.  One assumption is that the errors are normally distributed. We can visually inspect for violations of this assumption using a number of different charts and plots.  First, we can create a basic histogram of the residuals.  To extract the residuals from the saved regression model, use the function `resid()`.
+
+```{r}
+ggplot() + 
+  geom_histogram(mapping = aes(x=resid(fit.ols))) +
+  xlab("OLS residuals")
+```
+
+Normally distributed residuals should show a bell curve pattern. One problem with the histogram is its sensitivity to the choice of breakpoints for the bars - small changes can alter the visual impression quite drastically in some cases. 
+
+Another visual tool for checking normality is the quantile-quantile (Q-Q) plot, which plots the quantile of the residuals against the expected quantile of the standard normal distribution. We use the function `qqPlot()`, which is a part of the **car** package.
+
+```{r message = FALSE}
+#QQ plot
+qqPlot(fit.ols)
+```
+
+The above figure is a quantile-comparison plot, graphing for each observation its `fit.ols` model residual on the y axis and the corresponding quantile in the t-distribution on the x axis. In contrast to the histogram, the q-q plot is more straightforward and effective and it is generally easier to assess whether the points are close to the diagonal line. The dashed lines indicate 95% confidence intervals calculated under the assumption that the errors are normally distributed. If a significant number of observations fall outside this range, this is an indication that the normality assumption has been violated.  It looks like the vast majority of our points are within the band.  
+
+Another assumption is that errors are not heteroskedastic - that is the variance of residuals are constant.  You can plot the residuals to explore the presence of heteroskedasticity.  If we see the spread of the points narrow or widen from left to right, heteroskedasticity is present.  
+
+```{r}
+plot(resid(fit.ols))
+```
+
+There appears to be no pattern, just a cloud of points, suggesting no presence of heteroskedasticity.  Hooray!
+
+We won't go through all the tools and approaches to testing the OLS assumptions (and other OLS issues) because it is beyond the scope of this course.  In this lab, we're interested in determining whether our models need to incorporate spatial dependency, an issue if not corrected will break assumptions 3 and 5 in Handout 7.  We focus on this task in the following sections.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Exploratory Spatial Data Analysis**
+\
+
+The above sections go through the steps conducted in non spatial regression analysis. The focus of this lab, however, is to account for spatial dependence in the error term and the dependent variable. Before doing any kind of spatial modelling, you should conduct an Exploratory Spatial Data Analysis (ESDA) to gain an understanding of how your data are spatially structured. ESDA is a subset of EDA methods that focus on the distinguishing characteristics of geographical data and, specifically, on spatial autocorrelation and spatial heterogeneity. ESDA techniques can help detect spatial patterns in data, lead to the formulation of hypotheses based on the geography of the data, and in assessing spatial models. 
+
+<div style="margin-bottom:25px;">
+</div>
+### **Map your data**
+\
+
+The first step in ESDA is to map your dependent variable.  Let's map neighborhood prevalence of poor mental health using our trusty friend `tm_shape()`.  You want to visually detect for spatial dependency or autocorrelation in your outcome.
+
+
+```{r}
+tm_shape(sea.tracts, unit = "mi") +
+  tm_polygons(col = "MHLTH_CrudePrev", style = "quantile",palette = "Reds", 
+              border.alpha = 0, title = "") +
+  tm_scale_bar(breaks = c(0, 2, 4), text.size = 1, position = c("right", "bottom")) +
+  tm_layout(main.title = "Poor Mental Health Prevalence, Seattle 2017 ",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE, 
+            attr.outside = TRUE)
+```
+
+
+Next, you'll want to map the residuals from your regression model to see if there is visual evidence of spatial autocorrelation in the error. To extract the residuals from *fit.ols*, use the `resid()` function.  Save it back into *sea.tracts*.
+
+```{r}
+sea.tracts <- sea.tracts %>%
+              mutate(olsresid = resid(fit.ols))
+```
+
+Plot the residuals.  
+
+```{r}
+tm_shape(sea.tracts, unit = "mi") +
+  tm_polygons(col = "olsresid", style = "equal",palette = "Reds", 
+              border.alpha = 0, title = "") +
+  tm_scale_bar(breaks = c(0, 2, 4), text.size = 1, position = c("right", "bottom")) +
+  tm_layout(main.title = "Residuals from linear regression in Seattle Tracts",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE,
+            attr.outside = TRUE)
+```
+
+Both the outcome and the residuals appear to cluster.  Let's move forward then.
+
+<div style="margin-bottom:25px;">
+</div>
+### **Spatial Autocorrelation**
+\
+
+There appears to be evidence of clustering based on the exploratory maps. Rather than eyeballing it, let’s formally test it by using a measure of spatial autocorrelation, which we covered in [Lab 7](https://crd230.github.io/lab7.html).  Before we do so, we need to create a spatial weights matrix, which we also covered in [Lab 7](https://crd230.github.io/lab7.html#Spatial_weights_matrix).  Let's use Queen contiguity with row-standardized weights.   First, create the neighbor *nb* object.
+
+```{r}
+seab<-poly2nb(sea.tracts, queen=T)
+```
+
+Then the *listw*  weights object.
+
+```{r}
+seaw<-nb2listw(seab, style="W", zero.policy = TRUE)
+```
+
+```{r echo=FALSE}
+sea.coords <- st_centroid(sea.tracts)
+Seanb_distt2 <- dnearneigh(sea.coords, d1 = 0, d2 = 2000, row.names = sea.tracts$GEOID10) 
+Seaw_distt2<-nb2listw(Seanb_distt2, style="W", zero.policy = TRUE)
+```
+
+Next, examine the Moran scatterplot, which we covered in [Lab 7](https://crd230.github.io/lab7.html#Moran_Scatterplot).
+
+```{r}
+moran.plot(sea.tracts$MHLTH_CrudePrev, listw=seaw, xlab="Standardized Poor Mental Health Prevalence", ylab="Neighbors Standardized Poor Mental Health Prevalence",
+main=c("Moran Scatterplot for Poor Mental Health", "in Seatte") )
+```
+
+Does it look like there is an association? Yes.
+
+Finally, the Global Moran's I.  We use monte carlo simulation to get the p-value.
+
+```{r}
+moran.mc(sea.tracts$MHLTH_CrudePrev, seaw, nsim=999)
+```
+
+Repeat for the OLS residuals using the `lm.morantest()` function.
+
+```{r}
+lm.morantest(fit.ols, seaw)
+```
+
+Both the dependent variable and the residuals indicate spatial autocorrelation, although the Moran's I for the residuals is not strong (but significant).
+
+You should use other spatial weight matrices to test the robustness of your ESDA results. For example, do you get similar results using a 3-nearest neighbor definition?  What about a 2000 meter definition?
+
+<div style="margin-bottom:25px;">
+</div>
+## **Spatial lag model**
+\
+
+Based on the exploratory mapping, Moran scatterplot, and the global Moran's I, there appears to be spatial autocorrelation in the dependent variable.  This means that if there is a spatial lag process going on and we fit an OLS model our coefficients will be biased and inefficient.  That is, the coefficient sizes and signs are not close to their true value and its standard errors are underestimated. This means [trouble](https://www.youtube.com/watch?v=FPzI4dpEcF8). [Big trouble](https://www.youtube.com/watch?v=cGIIhcMCquc). [Real big trouble](https://www.youtube.com/watch?v=AXsBBqPb5YE).
+
+
+As outlined in Handout 7, there are two standard types of spatial regression models: a spatial lag model, which models dependency in the outcome, and a spatial error model, which models dependency in the residuals. A spatial lag model (SLM) can be estimated in R using the command `lagsarlm()`, which is a part of the **spatialreg** package.  
+
+```{r}
+fit.lag<-lagsarlm(MHLTH_CrudePrev ~ unempr + pmob+ pcol + ppov + pnhblk  + phisp + log(tpop),  data = sea.tracts, listw = seaw) 
+```
+
+The only real difference between the code for `lm()` and `lagsarlm()` is the argument `listw`, which you use to specify the spatial weights matrix.  Get a summary of the  results.
+
+```{r}
+summary(fit.lag)
+```
+
+
+The unemployment rate, percent college educated and percent poverty continue to be statistically significant.  The lag parameter is Rho, whose value is quite small at -0.035 and not statistically significant across all tests.  This indicates that the spatial lag in the dependent variable is accounted for through the demographic and socioeconomic variables already included in the model.  This likely shows that a spatial lag on the dependent variable is not needed.  But, we'll test this further later in the lab.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Spatial error model**
+\
+
+The spatial error model (SEM) incorporates spatial dependence in the errors. If there is a spatial error process going on and we fit an OLS model our coefficients will be unbiased but inefficient.  That is, the coefficient size and sign are asymptotically correct but its standard errors are underestimated. 
+
+We can estimate a  spatial error model in R using the command `errorsarlm()` also in the **spatialreg** package.
+
+```{r}
+fit.err<-errorsarlm(MHLTH_CrudePrev ~ unempr + pmob+ pcol + ppov + pnhblk  + phisp + log(tpop),  data = sea.tracts, listw = seaw) 
+```
+
+A summary of the modelling results
+
+```{r}
+summary(fit.err)
+```
+
+The unemployment rate, percent college educated and percent poverty continue to be statistically significant.  The lag error parameter Lambda is positive and significant, indicating the need to control for spatial autocorrelation in the error.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Presenting your results**
+\
+
+An organized table of results is an essential component not just in academic papers, but in any professional report or presentation.  Up till this point, we've been reporting results by simply summarizing objects, like the following
+
+```{r results = "hide"}
+summary(fit.ols)
+```
+
+We also used the function `tidy()` above to create a tibble of modelling results. We can make these results prettier by using a couple of functions for making nice tables in R. First, there is the `kable()` function from the **knitr** package.   
+
+```{r}
+fit.ols %>% 
+  tidy() %>%
+  kable(digits = 3)
+```
+
+There are options within `kable()` to control whether row names are included or not, column alignment, and other options that depend on the output type.
+
+The table produced by `kable()`looks good. But what if we want to present results for more than one model, such as presenting *fit.ols*, *fit.lag*, and *fit.err* side by side? We can use the `stargazer()` function from the **stargazer** package to do this.
+
+```{r results = 'asis', warning=FALSE, message=FALSE}
+stargazer(fit.ols, fit.lag, fit.err, type = "html",
+                    title="Title: Regression Results")
+```
+
+
+\
+
+There are a number of options you can tweak to make the table more presentation ready, such as adding footnotes and changing column and row labels.
+
+Note three things: First, if you ran the `stargazer()` function above directly in your R console, you'll get output that won't make sense.  Knit the document and you'll see your pretty table. Second, you will need to add `results = 'asis'` as an R Markdown chunk option (````{r results = 'asis'}`).
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Picking a model**
+\
+
+<div style="margin-bottom:25px;">
+</div>
+### **Akaike Information Criterion**
+\
+
+
+As we discussed in this week's handout, there are many fit statistics and tests to determine which model - OLS, SLM or SEM - is most appropriate.  One way of deciding which model is appropriate is to examine the fit statistic Akaike Information Criterion (AIC), which is a index of sorts to indicate how close the model is to reality.  A lower value indicates a better fitting model.  
+
+You can extract the AIC from a model by using the function `AIC()`, which is  a part of the pre-installed **stats** package.  What is the AIC for the regular OLS model? 
+
+```{r}
+AIC(fit.ols)
+```
+
+What about the spatial lag and error models?
+
+```{r}
+AIC(fit.lag)
+AIC(fit.err)
+```
+
+Let's extract the AICs, save them in a vector and then present them in a table using `kable()`.
+
+```{r}
+#Save AIC values
+AICs<-c(AIC(fit.ols),AIC(fit.lag), AIC(fit.err))
+labels<-c("OLS", "SLM","SEM" )
+
+kable(data.frame(Models=labels, AIC=round(AICs, 2)))
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Lagrange Multiplier test**
+\
+
+Another popular set of tests proposed by Anselin (1988) (also see Anselin et al. 1996) are the Lagrange Multiplier (LM) tests. The test compares the a model's fit relative to the OLS model.  A test showing statistical significance rejects the OLS. 
+
+
+To run the LM tests in R, plug in the saved OLS model *fit.ols* into the function `lm.LMtests()`, which is a part of the **spatialreg** package.
+
+```{r}
+lm.LMtests(fit.ols, listw = seaw, test = "all",  zero.policy=TRUE)
+```
+
+<br>
+
+<p class="comment">**Practice Question**: Which model is "best"? Why?</p>
+
+***
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
