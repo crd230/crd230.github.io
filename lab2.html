@@ -412,6 +412,9 @@ div.tocify {
     <li>
       <a href="lab8.html">Lab 8</a>
     </li>
+    <li>
+      <a href="lab9.html">Lab 9</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -592,11 +595,11 @@ View(v18)</code></pre>
 <pre class="r"><code>glimpse(ca)</code></pre>
 <pre><code>## Rows: 290
 ## Columns: 5
-## $ GEOID    &lt;chr&gt; &quot;06001&quot;, &quot;06001&quot;, &quot;06001&quot;, &quot;06001&quot;, &quot;06001&quot;, &quot;06003&quot;, &quot;06003…
-## $ NAME     &lt;chr&gt; &quot;Alameda County, California&quot;, &quot;Alameda County, California&quot;, …
-## $ variable &lt;chr&gt; &quot;tpopr&quot;, &quot;nhwhite&quot;, &quot;nhblk&quot;, &quot;nhasn&quot;, &quot;hisp&quot;, &quot;tpopr&quot;, &quot;nhwh…
-## $ estimate &lt;dbl&gt; 1643700, 523391, 172329, 483067, 369061, 1146, 678, 9, 8, 10…
-## $ moe      &lt;dbl&gt; NA, 408, 1410, 1874, NA, 161, 152, 20, 16, 57, NA, 17, 128, …</code></pre>
+## $ GEOID    &lt;chr&gt; &quot;06001&quot;, &quot;06001&quot;, &quot;06001&quot;, &quot;06001&quot;, &quot;06001&quot;, &quot;06003&quot;, &quot;06003&quot;…
+## $ NAME     &lt;chr&gt; &quot;Alameda County, California&quot;, &quot;Alameda County, California&quot;, &quot;…
+## $ variable &lt;chr&gt; &quot;tpopr&quot;, &quot;nhwhite&quot;, &quot;nhblk&quot;, &quot;nhasn&quot;, &quot;hisp&quot;, &quot;tpopr&quot;, &quot;nhwhi…
+## $ estimate &lt;dbl&gt; 1643700, 523391, 172329, 483067, 369061, 1146, 678, 9, 8, 105…
+## $ moe      &lt;dbl&gt; NA, 408, 1410, 1874, NA, 161, 152, 20, 16, 57, NA, 17, 128, 9…</code></pre>
 <p>You get a quick, compact summary of your tibble. The function takes one argument: the name of a data frame or tibble. It then tells us how many rows it has, how many variables there are, what these variables are called, and what kind of data are associated with each variable. This function is useful when we’re working with a data set containing many variables.</p>
 <p class="comment">
 <strong>Question</strong>: What is the Census variable ID for median household income?
@@ -632,10 +635,10 @@ View(v18)</code></pre>
 <pre class="r"><code>glimpse(ca.pm)</code></pre>
 <pre><code>## Rows: 58
 ## Columns: 4
-## $ `FIPS Code`                                                  &lt;dbl&gt; 6071, 60…
-## $ County                                                       &lt;chr&gt; &quot;San Ber…
-## $ `Formatted FIPS`                                             &lt;chr&gt; &quot;06071&quot;,…
-## $ `Estimated median income of a household, between 2014-2018.` &lt;dbl&gt; 60164, 5…</code></pre>
+## $ `FIPS Code`                                                  &lt;dbl&gt; 6071, 602…
+## $ County                                                       &lt;chr&gt; &quot;San Bern…
+## $ `Formatted FIPS`                                             &lt;chr&gt; &quot;06071&quot;, …
+## $ `Estimated median income of a household, between 2014-2018.` &lt;dbl&gt; 60164, 52…</code></pre>
 <p>If you like viewing your data through an Excel style worksheet, type in <code>View(ca.pm)</code>, and <em>ca.pm</em> should pop up in the top left window of your R Studio interface. Scroll up and down, left and right.</p>
 <p>By learning how to read in data the tidy way, you’ve earned another badge! Hooray!</p>
 <center>
@@ -937,7 +940,7 @@ ca1</code></pre>
   summarize(mean(medinc))</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   region              `mean(medinc)`
-##   &lt;chr&gt;                        &lt;dbl&gt;
+## * &lt;chr&gt;                        &lt;dbl&gt;
 ## 1 Bay Area                    96680.
 ## 2 Capital Region              67390.
 ## 3 Central Valley              51143.
@@ -960,7 +963,7 @@ ca1</code></pre>
             Correlation = cor(medinc, phisp))</code></pre>
 <pre><code>## # A tibble: 5 x 5
 ##   region                Mean Median     SD Correlation
-##   &lt;chr&gt;                &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;
+## * &lt;chr&gt;                &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;
 ## 1 Bay Area            96680. 93712  15192.      -0.490
 ## 2 Capital Region      67390. 64912. 12674.      -0.865
 ## 3 Central Valley      51143. 51230   2219.      -0.177
@@ -973,7 +976,7 @@ ca1</code></pre>
   mutate(freq = n / sum(n))</code></pre>
 <pre><code>## # A tibble: 2 x 3
 ##   mhisp            n  freq
-##   &lt;chr&gt;        &lt;int&gt; &lt;dbl&gt;
+## * &lt;chr&gt;        &lt;int&gt; &lt;dbl&gt;
 ## 1 Majority        11 0.190
 ## 2 Not Majority    47 0.810</code></pre>
 <p>The code <code>group_by(mhisp)</code> separates the counties by the categories of <em>mhisp</em> (Majority, Not Majority). We then used <code>summarize()</code> to count the number of counties that are Majority and Not Majority. The function to get a count is <code>n()</code>, and we saved this count in a variable named <em>n</em>.</p>
